@@ -1,0 +1,24 @@
+{
+  "event_id": "chao_phraya_2022",
+  "period": "2022-09-25/2022-10-15",
+  "layer_date": "2022-10-10",
+  "reservoir_active": {
+    "RES-BHUMIBOL": true,
+    "RES-SIRIKIT": true,
+    "RES-CHAOPHRAYA": true
+  },
+  "reach_level": {
+    "RR-PING": 5.0,
+    "RR-NAN": 6.0,
+    "RR-CP-UPPER": 9.5,
+    "RR-CP-LOWER": 8.5
+  },
+  "gold_flooded": [
+    "NAKHONSAWAN",
+    "CHAINAT",
+    "SINGBURI",
+    "ANGTHONG",
+    "AYUTTHAYA",
+    "PATHUMTHANI"
+  ]
+}

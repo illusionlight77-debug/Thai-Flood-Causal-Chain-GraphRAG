@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# ติดตั้ง deps ก่อน copy code เพื่อใช้ layer cache
+# ติดตั้ง core deps ก่อน copy code เพื่อใช้ layer cache
+# (heavy/optional libs อยู่ใน requirements-optional.txt — ไม่ติดตั้งใน image หลัก)
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt

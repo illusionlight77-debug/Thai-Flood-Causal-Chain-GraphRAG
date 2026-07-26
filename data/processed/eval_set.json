@@ -1,0 +1,86 @@
+[
+  {
+    "question": "ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Nakhon Sawan",
+    "event": "chao_phraya_2022",
+    "hop": 4,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดชัยนาทถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Chai Nat",
+    "event": "chao_phraya_2022",
+    "hop": 4,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดสิงห์บุรีถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Sing Buri",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดอ่างทองถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Ang Thong",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดพระนครศรีอยุธยาถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Ayutthaya",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดปทุมธานีถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Pathum Thani",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Pathum Thani",
+      "Sing Buri"
+    ]
+  }
+]

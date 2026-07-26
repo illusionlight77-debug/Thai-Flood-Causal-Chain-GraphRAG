@@ -42,6 +42,25 @@ def traceability(flags: Sequence[bool]) -> float:
     return mean(1.0 if f else 0.0 for f in flags) if flags else 0.0
 
 
-def run_eval(retriever, eval_set) -> dict:  # noqa: ANN001 — types มาเฟส 4/5
-    """รัน retriever บน eval set → F1-by-hop + traceability. (stub เฟส 5)"""
-    raise NotImplementedError("Phase 5: wire retriever + GISTDA-labeled eval set")
+def eval_one_system(retriever, eval_items) -> dict:  # noqa: ANN001
+    """รัน retriever ตัวเดียวบน eval set → F1-by-hop + traceability + latency."""
+    preds = []          # (hop, pred_set, gold_set)
+    trace_flags = []    # answer traceable?
+    latencies = []
+    for it in eval_items:
+        ans = retriever.answer(it.question, province=it.province)
+        preds.append((it.hop, set(ans.provinces), set(it.gold_provinces)))
+        trace_flags.append(ans.is_traceable)
+        latencies.append(ans.latency_s)
+    hop_scores = f1_by_hop(preds)
+    return {
+        "f1_by_hop": {str(k): round(v, 4) for k, v in hop_scores.items()},
+        "f1_overall": round(mean(f1(p, g) for _, p, g in preds), 4) if preds else 0.0,
+        "traceability": round(traceability(trace_flags), 4),
+        "avg_latency_ms": round(1000 * mean(latencies), 2) if latencies else 0.0,
+    }
+
+
+def run_eval(retrievers: dict, eval_items) -> dict:  # noqa: ANN001
+    """รันทั้ง 3 ระบบบน eval set เดียวกัน → ผลเทียบกัน (ตัวเลขจริง ห้าม hardcode)."""
+    return {name: eval_one_system(r, eval_items) for name, r in retrievers.items()}

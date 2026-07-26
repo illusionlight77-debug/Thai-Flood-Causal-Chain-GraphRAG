@@ -1,0 +1,22 @@
+{
+  "D1_data_go_th_ckan": {
+    "ok": true,
+    "endpoint": "https://data.go.th/api/3/action/package_search",
+    "detail": "count=12"
+  },
+  "D2_thaiwater_dam_daily": {
+    "ok": false,
+    "endpoint": "https://www.thaiwater.net/api/v1/thaiwater/public/dam_daily",
+    "detail": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "D3_gistda_stac": {
+    "ok": false,
+    "endpoint": "https://disaster.gistda.or.th/api/stac/search",
+    "detail": "UNREACHABLE → fixture fallback (HTTPSConnectionPool(host='disaster.gistda.or.th', port=443):)"
+  },
+  "D4_basin_province_geometry": {
+    "ok": true,
+    "endpoint": "fixture data/processed/*.geojson",
+    "detail": "provinces + reach outlets (EPSG:4326) → เฟส 2 PIP"
+  }
+}

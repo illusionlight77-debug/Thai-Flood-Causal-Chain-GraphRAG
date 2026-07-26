@@ -1,0 +1,29 @@
+{
+  "causal-graphrag": {
+    "f1_by_hop": {
+      "2": 1.0,
+      "4": 1.0
+    },
+    "f1_overall": 1.0,
+    "traceability": 1.0,
+    "avg_latency_ms": 9.98
+  },
+  "entity-graphrag": {
+    "f1_by_hop": {
+      "2": 0.8571,
+      "4": 0.75
+    },
+    "f1_overall": 0.8214,
+    "traceability": 0.0,
+    "avg_latency_ms": 13.08
+  },
+  "vector-rag": {
+    "f1_by_hop": {
+      "2": 0.25,
+      "4": 0.25
+    },
+    "f1_overall": 0.25,
+    "traceability": 0.0,
+    "avg_latency_ms": 1.14
+  }
+}

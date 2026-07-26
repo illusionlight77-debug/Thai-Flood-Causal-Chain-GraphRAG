@@ -1,0 +1,13 @@
+# ── ต่อยอด (ไม่ได้ใช้ใน pipeline ปัจจุบัน — เก็บไว้ให้เฟสถัดไป) ──
+# PropertyGraphIndex เต็มรูป (LlamaIndex + Neo4j) แทน Cypher ตรง
+llama-index>=0.11
+llama-index-graph-stores-neo4j>=0.3
+llama-index-llms-anthropic>=0.3
+llama-index-embeddings-huggingface>=0.3
+# vector store จริง (แทน TF-IDF baseline)
+faiss-cpu>=1.8
+chromadb>=0.5
+# GISTDA STAC (เมื่อ endpoint ใช้ได้)
+pystac-client>=0.7
+# eval framework เสริม
+ragas>=0.1

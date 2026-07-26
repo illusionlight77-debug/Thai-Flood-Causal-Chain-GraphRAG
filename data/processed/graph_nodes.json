@@ -1,0 +1,170 @@
+[
+  {
+    "label": "RainStation",
+    "id": "RS-PING",
+    "name": "สถานีฝนปิงตอนบน (Ping upper)",
+    "lat": 18.79,
+    "lon": 98.98,
+    "basin": "Ping"
+  },
+  {
+    "label": "RainStation",
+    "id": "RS-NAN",
+    "name": "สถานีฝนน่านตอนบน (Nan upper)",
+    "lat": 19.19,
+    "lon": 100.78,
+    "basin": "Nan"
+  },
+  {
+    "label": "Reservoir",
+    "id": "RES-BHUMIBOL",
+    "name": "เขื่อนภูมิพล (Bhumibol)",
+    "capacity_mcm": 13462,
+    "spillway_level": 260.0,
+    "active": true,
+    "lat": 17.24,
+    "lon": 98.97,
+    "basin": "Ping"
+  },
+  {
+    "label": "Reservoir",
+    "id": "RES-SIRIKIT",
+    "name": "เขื่อนสิริกิติ์ (Sirikit)",
+    "capacity_mcm": 9510,
+    "spillway_level": 162.0,
+    "active": true,
+    "lat": 17.76,
+    "lon": 100.56,
+    "basin": "Nan"
+  },
+  {
+    "label": "Reservoir",
+    "id": "RES-CHAOPHRAYA",
+    "name": "เขื่อนเจ้าพระยา (Chao Phraya Dam)",
+    "capacity_mcm": 0,
+    "spillway_level": 16.5,
+    "active": true,
+    "lat": 15.16,
+    "lon": 100.18,
+    "basin": "ChaoPhraya"
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-PING",
+    "name": "ปิงท้ายเขื่อนภูมิพล",
+    "basin": "Ping",
+    "order": 4,
+    "level": 5.0
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-NAN",
+    "name": "น่านท้ายเขื่อนสิริกิติ์",
+    "basin": "Nan",
+    "order": 4,
+    "level": 6.0
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-CP-UPPER",
+    "name": "เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)",
+    "basin": "ChaoPhraya",
+    "order": 6,
+    "level": 9.5
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-CP-LOWER",
+    "name": "เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)",
+    "basin": "ChaoPhraya",
+    "order": 7,
+    "level": 8.5
+  },
+  {
+    "label": "Confluence",
+    "id": "CONF-PAKNAMPHO",
+    "name": "ปากน้ำโพ (Pak Nam Pho)",
+    "lat": 15.7,
+    "lon": 100.12
+  },
+  {
+    "label": "Province",
+    "id": "TAK",
+    "name_th": "ตาก",
+    "name_en": "Tak",
+    "lat": 16.87,
+    "lon": 99.13
+  },
+  {
+    "label": "Province",
+    "id": "PHITSANULOK",
+    "name_th": "พิษณุโลก",
+    "name_en": "Phitsanulok",
+    "lat": 16.82,
+    "lon": 100.27
+  },
+  {
+    "label": "Province",
+    "id": "NAKHONSAWAN",
+    "name_th": "นครสวรรค์",
+    "name_en": "Nakhon Sawan",
+    "lat": 15.7,
+    "lon": 100.14
+  },
+  {
+    "label": "Province",
+    "id": "CHAINAT",
+    "name_th": "ชัยนาท",
+    "name_en": "Chai Nat",
+    "lat": 15.19,
+    "lon": 100.13
+  },
+  {
+    "label": "Province",
+    "id": "SINGBURI",
+    "name_th": "สิงห์บุรี",
+    "name_en": "Sing Buri",
+    "lat": 14.89,
+    "lon": 100.4
+  },
+  {
+    "label": "Province",
+    "id": "ANGTHONG",
+    "name_th": "อ่างทอง",
+    "name_en": "Ang Thong",
+    "lat": 14.59,
+    "lon": 100.46
+  },
+  {
+    "label": "Province",
+    "id": "AYUTTHAYA",
+    "name_th": "พระนครศรีอยุธยา",
+    "name_en": "Ayutthaya",
+    "lat": 14.35,
+    "lon": 100.58
+  },
+  {
+    "label": "Province",
+    "id": "PATHUMTHANI",
+    "name_th": "ปทุมธานี",
+    "name_en": "Pathum Thani",
+    "lat": 14.02,
+    "lon": 100.53
+  },
+  {
+    "label": "Province",
+    "id": "NONTHABURI",
+    "name_th": "นนทบุรี",
+    "name_en": "Nonthaburi",
+    "lat": 13.86,
+    "lon": 100.51
+  },
+  {
+    "label": "Province",
+    "id": "BANGKOK",
+    "name_th": "กรุงเทพมหานคร",
+    "name_en": "Bangkok",
+    "lat": 13.75,
+    "lon": 100.52
+  }
+]

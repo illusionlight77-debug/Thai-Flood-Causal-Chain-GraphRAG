@@ -1,0 +1,101 @@
+[
+  {
+    "type": "FEEDS",
+    "src": "RS-PING",
+    "dst": "RES-BHUMIBOL",
+    "lag_hours": 48,
+    "evidence": {
+      "station_id": "RS-PING",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th telemetry"
+    }
+  },
+  {
+    "type": "FEEDS",
+    "src": "RS-NAN",
+    "dst": "RES-SIRIKIT",
+    "lag_hours": 48,
+    "evidence": {
+      "station_id": "RS-NAN",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th telemetry"
+    }
+  },
+  {
+    "type": "OVERFLOWS_TO",
+    "src": "RES-BHUMIBOL",
+    "dst": "RR-PING",
+    "spillway": 260.0,
+    "evidence": {
+      "station_id": "RES-BHUMIBOL",
+      "timestamp": "2022-10-10",
+      "dataset": "D2/thaiwater dam_daily"
+    }
+  },
+  {
+    "type": "OVERFLOWS_TO",
+    "src": "RES-SIRIKIT",
+    "dst": "RR-NAN",
+    "spillway": 162.0,
+    "evidence": {
+      "station_id": "RES-SIRIKIT",
+      "timestamp": "2022-10-10",
+      "dataset": "D2/thaiwater dam_daily"
+    }
+  },
+  {
+    "type": "OVERFLOWS_TO",
+    "src": "RES-CHAOPHRAYA",
+    "dst": "RR-CP-LOWER",
+    "spillway": 16.5,
+    "evidence": {
+      "station_id": "RES-CHAOPHRAYA",
+      "timestamp": "2022-10-10",
+      "dataset": "D2/thaiwater dam_daily"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-PING",
+    "dst": "CONF-PAKNAMPHO",
+    "lag_hours": 36,
+    "evidence": {
+      "station_id": "RR-PING",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th river gauge"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-NAN",
+    "dst": "CONF-PAKNAMPHO",
+    "lag_hours": 36,
+    "evidence": {
+      "station_id": "RR-NAN",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th river gauge"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "CONF-PAKNAMPHO",
+    "dst": "RR-CP-UPPER",
+    "lag_hours": 12,
+    "evidence": {
+      "station_id": "CONF-PAKNAMPHO",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th river gauge"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-CP-UPPER",
+    "dst": "RR-CP-LOWER",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RR-CP-UPPER",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th river gauge"
+    }
+  }
+]

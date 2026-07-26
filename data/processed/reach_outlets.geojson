@@ -1,0 +1,165 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PING",
+        "threshold": 8.0,
+        "expected_prov": "TAK",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.13,
+          16.87
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-NAN",
+        "threshold": 8.0,
+        "expected_prov": "PHITSANULOK",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.27,
+          16.82
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-UPPER",
+        "threshold": 8.0,
+        "expected_prov": "NAKHONSAWAN",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.14,
+          15.7
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-UPPER",
+        "threshold": 9.0,
+        "expected_prov": "CHAINAT",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.13,
+          15.19
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 7.0,
+        "expected_prov": "SINGBURI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.4,
+          14.89
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 7.0,
+        "expected_prov": "ANGTHONG",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.46,
+          14.59
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 7.5,
+        "expected_prov": "AYUTTHAYA",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.58,
+          14.35
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 8.0,
+        "expected_prov": "PATHUMTHANI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.53,
+          14.02
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 9.0,
+        "expected_prov": "NONTHABURI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.51,
+          13.86
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-CP-LOWER",
+        "threshold": 9.5,
+        "expected_prov": "BANGKOK",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.52,
+          13.75
+        ]
+      }
+    }
+  ]
+}

@@ -1,27 +1,76 @@
-"""ลุ่มน้ำ/ปลายลำน้ำ → จังหวัดท้ายน้ำ (point-in-polygon) → INUNDATES edges.
+"""เฟส 2 — GeoPandas point-in-polygon: ปลายลำน้ำ (reach outlet) → จังหวัดท้ายน้ำ
+→ สร้าง INUNDATES edges (+evidence). และ overlay flood extent → gold provinces.
 
-กติกาเหล็ก (skill geo-basin-to-province): reproject ทุกชั้นเป็น CRS เดียวก่อน sjoin.
-CRS ไม่ตรง = จับจังหวัดผิด = บั๊คเงียบที่สุดในงานนี้.
+กติกาเหล็ก (skill geo-basin-to-province):
+  reproject ทุกชั้นเป็น CRS เดียว (EPSG:32647) ก่อน sjoin — CRS ไม่ตรง = จับจังหวัดผิด.
+ทุก INUNDATES edge แนบ evidence = {station_id: reach_id, timestamp: layer_date, dataset: D4/D3}.
 """
 from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import geopandas as gpd
 
 from src.config import settings
 
 CRS = settings.project_crs  # EPSG:32647 (UTM 47N)
 
 
-def reach_to_province(reaches, provinces):  # noqa: ANN001 — GeoDataFrame (เฟส 2)
-    """sjoin จุดปลายน้ำของ reach → จังหวัด (predicate='within'). คืน mapping."""
-    raise NotImplementedError("Phase 2: gpd.sjoin(reaches.to_crs(CRS), provinces.to_crs(CRS))")
+def _load(name: str) -> gpd.GeoDataFrame:
+    path = settings.data_processed_dir / name
+    gdf = gpd.read_file(path)
+    if gdf.crs is None:
+        gdf = gdf.set_crs("EPSG:4326")  # fixture เป็น lat/lon
+    return gdf.to_crs(CRS)
 
 
-def gistda_flood_to_gold(flood, provinces):  # noqa: ANN001
-    """overlay flood extent (D3) × province → set จังหวัด gold สำหรับ eval."""
-    raise NotImplementedError("Phase 2: gpd.overlay(flood, provinces, how='intersection')")
+def reach_to_province() -> gpd.GeoDataFrame:
+    """sjoin จุดปลายน้ำ → จังหวัด (predicate='within'). คืน mapping reach→province."""
+    outlets = _load("reach_outlets.geojson")
+    provinces = _load("provinces.geojson")[["prov_id", "name_en", "geometry"]]
+    pip = gpd.sjoin(outlets, provinces, how="left", predicate="within")
+    # กติกา skill: ห้ามมี reach ที่ join แล้วได้ province = NaN (จุดหลุดขอบเขต = CRS/geom พัง)
+    unresolved = pip[pip["prov_id"].isna()]
+    if len(unresolved):
+        raise ValueError(f"{len(unresolved)} reach outlet หลุด polygon จังหวัด — ตรวจ CRS/geometry")
+    return pip
 
 
-def main() -> None:
-    raise NotImplementedError("Phase 2: build INUNDATES edges from spatial join")
+def build_inundates_edges() -> list[dict]:
+    """(:RiverReach)-[:INUNDATES {threshold, evidence}]->(:Province)."""
+    pip = reach_to_province()
+    edges: list[dict] = []
+    for _, row in pip.iterrows():
+        edges.append({
+            "type": "INUNDATES",
+            "src": str(row["reach_id"]),
+            "dst": str(row["prov_id"]),
+            "threshold": float(row["threshold"]),
+            "evidence": {"station_id": str(row["reach_id"]), "timestamp": str(row["layer_date"]),
+                         "dataset": "D4/basin+province PIP + D3/GISTDA extent"},
+        })
+    return edges
+
+
+def gold_provinces_from_flood() -> set[str]:
+    """overlay GISTDA flood extent (D3) × province → set จังหวัด gold สำหรับ eval."""
+    flood = _load("gistda_flood_extent.geojson")
+    provinces = _load("provinces.geojson")[["prov_id", "name_en", "geometry"]]
+    hit = gpd.overlay(provinces, flood, how="intersection", keep_geom_type=True)
+    hit = hit[hit.geometry.area > 1.0]  # กรอง sliver
+    return {str(x) for x in hit["prov_id"].unique()}
+
+
+def main() -> Path:
+    edges = build_inundates_edges()
+    out = settings.data_processed_dir / "inundates_edges.json"
+    out.write_text(json.dumps(edges, ensure_ascii=False, indent=2), "utf-8")
+    gold = sorted(gold_provinces_from_flood())
+    (settings.data_processed_dir / "gold_provinces.json").write_text(
+        json.dumps(gold, ensure_ascii=False, indent=2), "utf-8")
+    print(f"INUNDATES edges={len(edges)}  gold_provinces={gold}")
+    return out
 
 
 if __name__ == "__main__":

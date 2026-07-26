@@ -1,37 +1,31 @@
-# ── core ──────────────────────────────────────────────────────
+# ── core (พอสำหรับ ingest → geo → graph → 3 retrievers → eval → UI) ──
 python-dotenv>=1.0
 requests>=2.31
 pydantic>=2.6
 
-# ── graph ─────────────────────────────────────────────────────
+# graph
 neo4j>=5.20
 
-# ── RAG / LLM ─────────────────────────────────────────────────
-llama-index>=0.11
-llama-index-graph-stores-neo4j>=0.3
-llama-index-llms-anthropic>=0.3
-llama-index-embeddings-huggingface>=0.3
-anthropic>=0.40
-# vector baseline
-faiss-cpu>=1.8
-chromadb>=0.5
-
-# ── geo ───────────────────────────────────────────────────────
+# geo
 geopandas>=0.14
 shapely>=2.0
 pyproj>=3.6
-fiona>=1.9
 
-# ── data / eval ───────────────────────────────────────────────
+# data / eval / vector baseline (vector-rag ใช้ scikit-learn ไม่ต้องใช้ faiss)
 pandas>=2.2
 numpy>=1.26
-pystac-client>=0.7        # GISTDA STAC (D3)
-ragas>=0.1
+scikit-learn>=1.4
 
-# ── UI ────────────────────────────────────────────────────────
+# LLM generation (optional ตอนรัน; retriever ปัจจุบันเป็น deterministic ไม่บังคับ key)
+anthropic>=0.40
+
+# UI
 streamlit>=1.36
-pydeck>=0.9               # map overlay of flood extent
-plotly>=5.22
+pydeck>=0.9        # overlay flood extent บนแผนที่
 
-# ── test ──────────────────────────────────────────────────────
+# test
 pytest>=8.2
+
+# ── heavy/optional (สำหรับต่อยอด — ไม่ได้ใช้ใน pipeline ปัจจุบัน) ──
+# ติดตั้งเพิ่มเมื่อจะใช้ PropertyGraphIndex เต็มรูป / FAISS / ragas:
+#   pip install -r requirements-optional.txt
