@@ -1,0 +1,32 @@
+# secrets
+.env
+
+# raw data (keep processed/fixtures if small; ignore heavy raw pulls)
+data/raw/
+*.tif
+*.tiff
+*.gpkg
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# vector stores / indexes
+storage/
+*.faiss
+.chroma/
+
+# neo4j docker volume (if mounted locally)
+neo4j_data/
+neo4j_logs/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

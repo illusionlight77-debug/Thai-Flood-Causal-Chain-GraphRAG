@@ -1,0 +1,14 @@
+.git
+.gitignore
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.ipynb_checkpoints
+data/raw
+neo4j_data
+neo4j_logs
+docs/*.png
+.env
+notebooks

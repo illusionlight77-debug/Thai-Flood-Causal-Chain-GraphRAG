@@ -1,0 +1,60 @@
+# ─────────────────────────────────────────────────────────────
+# Thai Flood Causal-Chain GraphRAG — full stack, single command:
+#     docker compose up -d --build
+# ยกทั้ง Neo4j + app/UI พร้อมใช้ในครั้งเดียว. app รอ Neo4j healthy ก่อนค่อยเริ่ม.
+#
+# พอร์ต host เลือกไม่ให้ชนกับ container อื่นในเครื่องนี้:
+#   Neo4j HTTP 7476 · Neo4j Bolt 7689 · Streamlit 8501
+# ─────────────────────────────────────────────────────────────
+services:
+  neo4j:
+    image: neo4j:5.23
+    container_name: thaiflood-neo4j
+    ports:
+      - "${NEO4J_HTTP_PORT:-7476}:7474"   # Browser UI
+      - "${NEO4J_BOLT_PORT:-7689}:7687"   # Bolt
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-floodgraph123}"
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      # ใช้ cypher-shell ยืนยันว่า DB รับ query ได้จริง ไม่ใช่แค่พอร์ตเปิด
+      test: ["CMD-SHELL", "cypher-shell -u $${NEO4J_USER:-neo4j} -p $${NEO4J_PASSWORD:-floodgraph123} 'RETURN 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: thaiflood-app
+    depends_on:
+      neo4j:
+        condition: service_healthy   # รอ Neo4j พร้อมก่อน
+    ports:
+      - "${STREAMLIT_PORT:-8501}:8501"
+    environment:
+      # ภายใน network ของ compose ใช้ชื่อ service + พอร์ตภายใน
+      NEO4J_URI: "bolt://neo4j:7687"
+      NEO4J_USER: "${NEO4J_USER:-neo4j}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:-floodgraph123}"
+    env_file:
+      - .env
+    volumes:
+      # mount source เพื่อ dev ได้ทันที (แก้โค้ด → reload)
+      - ./src:/app/src
+      - ./ui:/app/ui
+      - ./data:/app/data
+    command: >
+      streamlit run ui/app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+    restart: unless-stopped
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
