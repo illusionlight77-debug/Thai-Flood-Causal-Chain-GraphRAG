@@ -68,6 +68,70 @@
 5. **Eval** — F1 แยกตาม chain length + traceability, เทียบ ground truth GISTDA.
 6. **UI** — Streamlit ถามตอบ + แสดง chain + evidence.
 
+### 🖥️ หน้าจอทั้งหมด / UI windows tour
+
+เดินครบทุกหน้าต่างของ Test UI (`http://localhost:8501`) — ข้อมูลด้านล่างจับจากหน้าจริง
+(คำถามตัวอย่าง: *"ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?"*).
+
+#### ① Layout ทั้งหน้า
+```
+┌──────────────┬──────────────────────────────────────────────────────────────┐
+│  SIDEBAR     │  🌊 ทำไมจังหวัดนี้ถึงน้ำท่วม?                                  │
+│  ⚙️ ตั้งค่า   │  คำถาม: ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วม…ปี 2565?                 │
+│              ├───────────────┬───────────────┬──────────────────────────────┤
+│ • เลือกจังหวัด│ causal-graphrag│ entity-graphrag│ vector-rag                   │  ② เทียบ 3 ระบบ
+│ • Neo4j uri  │  hop4 F1 1.00 ✓│ hop3 F1 0.75 ✗ │ hop0 F1 0.25 ✗               │
+│ • gold set   ├───────────────┴───────────────┴──────────────────────────────┤
+│              │  🔗 Causal chain viewer        │  🧾 Evidence panel            │  ③ chain + ④ evidence
+│              ├───────────────────────────────┴──────────────────────────────┤
+│              │  🗺️ Overlay flood extent (GISTDA) 🔵 จริง · 🔴 ที่ทำนาย        │  ⑤ แผนที่
+└──────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+#### ② หน้าต่างเทียบ 3 ระบบ side-by-side (ตัวชี้วัดสด hop / F1 / traceability)
+```
+┌─ causal-graphrag ─────────┐ ┌─ entity-graphrag ─────────┐ ┌─ vector-rag ──────────────┐
+│ ของเรา—เดินเหตุ-ผล+evidence│ │ baseline—ไม่สนทิศ/หลักฐาน  │ │ baseline—ค้นข่าวด้วย vector│
+│  hop:4   F1:1.00  trace:✓ │ │  hop:3   F1:0.75  trace:✗ │ │  hop:0   F1:0.25  trace:✗ │
+│  ⏱686ms · ทำนาย 6 จังหวัด │ │  ⏱348ms · ทำนาย 10 จังหวัด│ │  ⏱5ms · ทำนาย 2 จังหวัด   │
+│ ✅ ถูก: ครบ 6 จังหวัด      │ │ ✅ ถูก: 6                  │ │ ✅ ถูก: Nakhon Sawan       │
+│ (ไม่มีเกิน/ตกหล่น)         │ │ ❌ เกิน: Bangkok, Nontha-  │ │ ❌ เกิน: Bangkok           │
+│                           │ │    buri, Phitsanulok, Tak │ │ ⚠️ ตกหล่น: อีก 5 จังหวัด   │
+└───────────────────────────┘ └───────────────────────────┘ └───────────────────────────┘
+```
+> แต่ละคอลัมน์ลงสีจังหวัด **ถูก(∈gold)/เกิน(∉gold)/ตกหล่น** เทียบ ground truth ให้เห็นทันที.
+
+#### ③ Causal chain viewer (เฉพาะ causal-graphrag — chain มาจาก Cypher เท่านั้น)
+```
+เขื่อนภูมิพล ─▶ ปิงท้ายเขื่อนภูมิพล ─▶ ปากน้ำโพ ─▶ เจ้าพระยาตอนบน ─▶ Nakhon Sawan
+(Bhumibol)                         (Confluence)   (ปากน้ำโพ–ชัยนาท)
+              ความยาวสายเหตุ-ผล = 4-hop (ข้ามลุ่มน้ำผ่านจุดบรรจบ)
+```
+
+#### ④ Evidence panel (คลิก expander เห็น source record → พิสูจน์ traceability / H1)
+```
+▸ ✅ evidence #1: D2/thaiwater dam_daily      station_id=RES-BHUMIBOL  ts=2022-10-10
+▸ ✅ evidence #2: D1/data.go.th river gauge   station_id=RR-PING       ts=2022-10-10
+▸ ✅ evidence #3: D1/data.go.th river gauge   station_id=CONF-PAKNAMPHO ts=2022-10-10
+▸ ✅ evidence #4: D4/basin+province PIP + D3/GISTDA extent  station_id=RR-CP-UPPER
+```
+
+#### ⑤ แผนที่ overlay flood extent (GISTDA)
+```
+🔵 พื้นที่น้ำท่วมจริง (GISTDA D3)      🔴 จังหวัดที่ causal-graphrag ทำนายว่าท่วม
+   → เคสนี้ 🔴 ทับ 🔵 พอดีทั้ง 6 จังหวัด (F1 = 1.00)   [pydeck GeoJsonLayer]
+```
+
+#### ⑥ Neo4j Browser (ดูกราฟดิบ) — `http://localhost:7476`  (user `neo4j` / pass `floodgraph123`)
+```
+ลองรัน Cypher นับ hop:
+  MATCH p=(:Reservoir {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|INUNDATES*2..4]
+          ->(:Province) RETURN p
+→ เห็นเส้นทาง 2-hop (เขื่อนเจ้าพระยา→ลุ่มล่าง) และ 4-hop (ภูมิพล/สิริกิติ์→ปากน้ำโพ→…)
+```
+
+📄 ผลจริงเต็ม ๆ ของ ①–⑤: [docs/ui-sample-output.md](docs/ui-sample-output.md)
+
 ---
 
 ## 🔗 System — All Links
