@@ -121,18 +121,18 @@
 
 ## 🖥️ Test UI (หน้าทดสอบใช้งาน)
 
-**Streamlit** `ui/app.py` → `streamlit run ui/app.py` → http://localhost:8501
+**Streamlit** `ui/app.py` — มากับ stack (`docker compose up`) ที่ http://localhost:8501
+(หรือรันเอง: `streamlit run ui/app.py`).
 
-องค์ประกอบหน้าจอที่ต้องมี:
-- **เลือกจังหวัด + ช่วงเวลา** ของเหตุการณ์น้ำท่วม.
-- **ปุ่มถาม:** "ทำไมจังหวัดนี้ถึงน้ำท่วม?"
-- **แผง 3 คอลัมน์เทียบกัน:** `causal-graphrag` / `entity-graphrag` / `vector-rag` — คำตอบ + เวลาที่ใช้.
-- **Causal chain viewer:** วาด path ฝน→เขื่อน→แม่น้ำ→จังหวัด พร้อม hop count.
-- **Evidence panel:** คลิก edge แล้วเห็น source record (station id, timestamp, dataset) → พิสูจน์ traceability.
-- **แผนที่:** overlay flood extent จริงจาก GISTDA เทียบคำตอบ.
-- **ตัวชี้วัดสด:** hop length, F1 (ถ้าอยู่ใน eval set), traceability ✓/✗.
+📄 **ตัวอย่างผลจริงจากหน้าจอ:** [docs/ui-sample-output.md](docs/ui-sample-output.md)
+(จับจากหน้าจริง — เปิด http://localhost:8501 แล้ว save เป็น `docs/ui-why-flood.png` ได้)
 
-*(เก็บ screenshot ใส่ `docs/ui-*.png` แล้วลิงก์ที่นี่เมื่อทำเสร็จ)*
+องค์ประกอบหน้าจอ (ทำแล้ว):
+- **เลือกจังหวัด** (จากจังหวัดที่ท่วมจริงตาม GISTDA) — คำถามประกอบอัตโนมัติ.
+- **แผง 3 คอลัมน์เทียบกัน:** `causal-graphrag` / `entity-graphrag` / `vector-rag` — คำตอบ + ตัวชี้วัดสด (**hop / F1 / traceability ✓✗** + latency) + แยกสีจังหวัด ถูก/เกิน/ตกหล่น เทียบ gold.
+- **Causal chain viewer:** แสดง path เขื่อน→ลำน้ำ→(จุดบรรจบ)→จังหวัด พร้อม hop count (2-hop เขื่อนเดียว / 4-hop ข้ามลุ่มน้ำ).
+- **Evidence panel:** คลิก expander เห็น source record (station_id, timestamp, dataset) → พิสูจน์ traceability (H1).
+- **แผนที่ (pydeck):** overlay flood extent GISTDA (🔵) เทียบจังหวัดที่ causal ทำนาย (🔴).
 
 ---
 

@@ -6,6 +6,11 @@
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
+
+# streamlit วาง path เป็นโฟลเดอร์ ui/ → เพิ่ม repo root เพื่อ import src.*
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 
