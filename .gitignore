@@ -1,6 +1,10 @@
 # secrets
 .env
 
+# internal working docs — เก็บไว้ในเครื่อง ไม่แสดงบน GitHub
+CLAUDE.md
+KICKOFF.md
+
 # raw data (keep processed/fixtures if small; ignore heavy raw pulls)
 data/raw/
 *.tif

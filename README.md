@@ -164,8 +164,6 @@
 ### ภายใน repo / Internal
 | ไฟล์ | หน้าที่ |
 |---|---|
-| `CLAUDE.md` | บริบทถาวร + schema + workflow |
-| `KICKOFF.md` | prompt แรกสำหรับ Claude Code |
 | `.claude/skills/causal-graphrag/SKILL.md` | สร้าง/query causal graph + F1-by-hop |
 | `.claude/skills/geo-basin-to-province/SKILL.md` | point-in-polygon ลุ่มน้ำ→จังหวัด |
 | `docker-compose.yml` · `Dockerfile` | ยก Neo4j + app/UI ครั้งเดียว |
@@ -315,5 +313,3 @@ pytest
 ```
 
 แก้โค้ดใน `src/` `ui/` แล้ว Streamlit reload อัตโนมัติ (mount ไว้ใน compose).
-
-เริ่มงานจริงใน Claude Code: เปิด `KICKOFF.md` แล้ว copy prompt ไปวาง.
