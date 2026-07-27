@@ -160,34 +160,43 @@
 
 ## 📊 Results (ผลลัพธ์)
 
-> ตัวเลขด้านล่าง **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode) บน dataset
-> เหตุการณ์ลุ่มเจ้าพระยา 2565 (**fixture** — GISTDA STAC ต่อไม่ติด, ดู Bugs). รันซ้ำได้ทุกครั้ง;
-> ผลเขียนลง `data/processed/eval_results.json` + `results_table.md`.
-> eval set = 6 คำถาม (2-hop: 4 จังหวัด, 4-hop: 2 จังหวัด), gold = flood extent 6 จังหวัด.
+> ตัวเลข **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode). retriever มี config เดียว
+> (**TF-IDF**; ยังไม่มี semantic/hybrid). ground truth ยังเป็น **fixture** (GISTDA STAC ต่อไม่ติด — Item 3 ยังไม่เสร็จ).
+> ผลเขียนลง `data/processed/eval_results.json` + `results_table.md`. eval set = 6 คำถาม (2-hop:4, 4-hop:2).
 
-### F1 by causal-hop length (on fixture: Chao Phraya 2022)
+#### 🔧 Item 1 (2026-07-27) — แก้ threshold circularity ด้วยสเปกเขื่อนจริง
+`spillway` + สถานะ `active` ของเขื่อน ตอนนี้ดึงจาก [`data/processed/dam_specs.json`](data/processed/dam_specs.json)
+(สเปกจริง EGAT/RID + สถานะสังเกตปี 2565 พร้อม `source_url`) แทนค่าที่ตั้งให้เข้ากับผล.
+
+**เปรียบเทียบ ก่อน–หลัง (causal-graphrag):**
+| | F1@2-hop | F1@4-hop | Traceability | ที่มาของ `active` |
+|---|---|---|---|---|
+| **ก่อน** (tuned) | 1.000 | 1.000 | 100% | สมมติเขื่อนล้นทุกตัว (ตั้งให้ตรง gold) |
+| **หลัง** (spec-driven) | **0.800** | **0.800** | **66.7%** | สถานะเขื่อนจริงปี 2565 (dam_specs.json) |
+
+**ทำไม F1 ตก — รายงานตรง ๆ ไม่ซ่อน:** ข้อมูลจริงปี 2565 ชี้ว่า **เขื่อนภูมิพล/สิริกิติ์กักน้ำไว้ ไม่ได้ล้นสปิลเวย์**
+(ภูมิพล 76.5% "งดการระบายน้ำ" 4 ต.ค. 65; สิริกิติ์ 67% ปลายปี, inflow>outflow) — เหตุน้ำท่วมจริงคือ
+**ฝน→น้ำท่า + การระบายผ่านเขื่อนเจ้าพระยา (barrage) 3,048 ≥ 2,800 ลบ.ม./วินาที** ไม่ใช่เขื่อนเก็บน้ำล้น.
+พอเลิกสมมติว่าเขื่อนล้น (ตามจริง) causal chain ที่ยึด "เขื่อนล้น" เป็นต้นเหตุ **อธิบายจังหวัดจุดบรรจบ
+(นครสวรรค์/ชัยนาท, 4-hop) ไม่ได้อีกต่อไป** → F1 1.000→0.800, traceability 100%→66.7%.
+**นี่ยืนยันว่า F1=1.000 เดิมพึ่งสมมติที่ผิดจริง (เข้าข้างตัวเอง).**
+
+### F1 by causal-hop length (spec-driven active, on fixture ground truth)
 | System | F1 @ 2-hop (เขื่อนเดียว) | F1 @ 4-hop (ข้ามลุ่มน้ำ) | ΔF1 (2→4) | Traceability | Latency (ms) |
 |---|---|---|---|---|---|
-| **causal-graphrag (ours)** | **1.000** | **1.000** | **0.000** | **100%** | 10.0 |
-| entity-graphrag | 0.857 | 0.750 | 0.107 | 0% | 13.1 |
-| vector-rag | 0.250 | 0.250 | 0.000 | 0% | 1.1 |
+| causal-graphrag (ours) | 0.800 | 0.800 | 0.000 | **66.7%** | ~10 |
+| entity-graphrag | 0.857 | 0.750 | 0.107 | 0% | ~19 |
+| vector-rag | 0.250 | 0.250 | 0.000 | 0% | ~1 |
 
-**อ่านผล:**
-- **causal-graphrag** ทำนายตรง gold ทั้งหมด (F1=1.0) เพราะกรองด้วย threshold ระดับน้ำ + เดินตามทิศการไหลจริง → ตัด false positive (ต้นน้ำที่ไม่ท่วม) ออกหมด, และ **ไม่ลดลงเมื่อ chain ยาวขึ้น** (ΔF1=0).
-- **entity-graphrag** (undirected, ไม่กรอง) เก็บจังหวัดเกินจริง → precision ตก, และ **ยิ่ง chain ยาว (4-hop) ยิ่งดูดจังหวัดต้นน้ำผิด ๆ เข้ามา** (Tak/Phitsanulok) → F1 ลดจาก 0.857 → 0.750.
-- **vector-rag** ได้เฉพาะจังหวัดที่ข่าวรายงาน + ติด "กรุงเทพ" (ข่าวเด่น) เป็น false positive ทุกคำถาม → F1 ต่ำคงที่ 0.25.
-
-### Traceability (% คำตอบที่ชี้ evidence กลับ source ได้)
-| System | Traceability % | ทำไม |
-|---|---|---|
-| causal-graphrag | **100%** | ทุก edge บน chain มี `evidence` (station_id+timestamp+dataset) ครบ |
-| entity-graphrag | 0% | เดินกราฟโดยไม่อ่าน evidence |
-| vector-rag | 0% | ไม่มีโครงสร้าง evidence (ชี้ได้แค่ข่าว ไม่ใช่ source record) |
+**อ่านผล (ฉบับซื่อสัตย์):**
+- causal ยัง **ΔF1=0** (ทน hop) และยังนำด้าน **traceability** (66.7% vs 0%) เด็ดขาด — แต่ **F1 รวม 0.800 ตอนนี้ต่ำกว่า entity (0.821) เล็กน้อย** เพราะ causal เลือก precision (ไม่เดาเกิน) แลกกับ recall: มัน **พลาด 2 จังหวัดที่ schema อธิบายไม่ได้** (จุดบรรจบที่มาจากน้ำท่า ไม่ใช่เขื่อนล้น).
+- entity/vector **ไม่เปลี่ยน** (ไม่ได้ใช้สถานะเขื่อน) → ยืนยันว่าการตกของ causal มาจากการ de-circularize จริง ไม่ใช่ noise.
+- **บทเรียนเชิงโครงสร้าง:** F1 ที่ "สวยเกินไป" (1.000) เป็นธงแดง. พอใช้สถานะจริง เห็นข้อจำกัดของ schema (ยึดเขื่อนเป็นต้นเหตุเดียว — ยังไม่มี path `ฝน→น้ำท่า→ลำน้ำ` ที่ bypass เขื่อน) ซึ่งคือ root cause ที่แท้จริงของน้ำท่วม 2565.
 
 ### เหตุการณ์ที่ทดสอบ / Test events
 | Event | ลุ่มน้ำ | ช่วงเวลา | #จังหวัด gold | ground truth |
 |---|---|---|---|---|
-| chao_phraya_2022 | เจ้าพระยา (Ping+Nan→ปากน้ำโพ→เจ้าพระยา) | 2022-09-25 → 10-15 | 6 | GISTDA D3 *(fixture — STAC ต่อไม่ติด)* |
+| chao_phraya_2022 | เจ้าพระยา (Ping+Nan→ปากน้ำโพ→เจ้าพระยา) | 2022-09-25 → 10-15 | 6 | fixture *(GISTDA STAC ต่อไม่ติด — Item 3)* |
 
 ---
 
@@ -203,6 +212,9 @@
 | 2026-07-26 | **GISTDA STAC ต่อไม่ติด** (`disaster.gistda.or.th/api/stac` → connection fail 000) | ไม่มี public STAC endpoint ตามที่คาด / อาจเป็น internal | fallback เป็น fixture flood extent (D3) เป็น ground truth ชั่วคราว, log ไว้; connector ยังลองยิงจริงทุกครั้ง | **ใช่ (บางส่วน)** — gold เป็น fixture ไม่ใช่ GISTDA จริง → ผลเป็น "on fixture" |
 | 2026-07-26 | รัน script บน Windows แล้ว `UnicodeEncodeError` (cp874) | คอนโซลไทยเข้ารหัสอักขระ box-drawing/emoji ไม่ได้ | รัน host ด้วย `PYTHONUTF8=1`; ใน Docker (Linux) ไม่มีปัญหา | ไม่ |
 | 2026-07-26 | point-in-polygon จับจังหวัดผิด/ซ้ำ + gold เกิน | polygon จังหวัด fixture (box ±0.18°) **ทับกัน** (นนทบุรี/กรุงเทพห่าง ~0.11°) | ย่อ box เป็น ±0.05° ไม่ให้ทับ → PIP ได้จังหวัดเดียวชัด (ตรงกับ anti-pattern "sliver" ใน skill) | ไม่ |
+| 2026-07-27 | **Threshold circularity**: `active`/threshold ตั้งให้เข้ากับ gold → causal F1=1.000 เกินจริง | ค่าถูก tune ให้ผลออกมาสวย ไม่ได้มาจากสเปกจริง | ดึง spillway+active จาก `dam_specs.json` (สเปก EGAT/RID จริง + สถานะปี 2565). ผล: F1 1.000→0.800, trace 100%→66.7% | **ใช่ (สำคัญ)** — พิสูจน์ว่าผลเดิมเข้าข้างตัวเอง |
+| 2026-07-27 | **Schema mis-attribution**: chain ยึด "เขื่อนล้น" เป็นต้นเหตุ แต่ปี 2565 เขื่อนภูมิพล/สิริกิติ์ **กักน้ำ ไม่ได้ล้น** | schema ไม่มี path `ฝน→น้ำท่า→ลำน้ำ` ที่ bypass เขื่อน (เหตุจริงของน้ำท่วม 2565) | ยังไม่แก้เต็ม — บันทึกเป็น limitation; causal จึงพลาดจังหวัดจุดบรรจบ (นครสวรรค์/ชัยนาท) | **ใช่** — root cause ของ recall ที่ตก |
+| 2026-07-27 | eval hop-tag เลื่อนตามเหตุการณ์ (bucket 4-hop ว่าง → F1@4hop=0.000 ปลอม) | `HOP_PER_PROVINCE` กรอง `active:true` → hop ขึ้นกับว่าเขื่อนไหน active | เอา `active` ออกจาก query hop-tag ให้ hop = ความยาวสายเหตุ-ผล**เชิงโครงสร้าง** (คงที่) — correctness fix, ทำให้ bucket 2/4-hop frozen | ไม่ (แก้ให้เทียบได้ถูกต้อง) |
 
 **Known-risk checklist (เฝ้าระวัง):**
 - Timestamp/timezone ของ D1–D3 ไม่ตรงกัน → lag_hours เพี้ยน.
@@ -214,19 +226,27 @@
 
 ## 🧾 Research Conclusions (ข้อสรุปงานวิจัย)
 
-> อ้างตัวเลขจาก Results เท่านั้น. **ข้อควรระวัง:** ผลปัจจุบันมาจาก dataset **fixture**
-> (ลุ่มเจ้าพระยา 2565) เพราะ GISTDA STAC ต่อไม่ติด → ถือเป็น *ผลสาธิตเชิงวิธี* (methodology
-> demonstration) ที่รันซ้ำได้ ยังไม่ใช่ข้อสรุปเชิงประจักษ์บนข้อมูลจริงเต็มรูป.
+> อ้างตัวเลขจาก Results เท่านั้น. **ข้อควรระวัง:** ground truth ยังเป็น **fixture** (GISTDA STAC ต่อไม่ติด, Item 3
+> ยังไม่เสร็จ). แต่ตั้งแต่ 2026-07-27 (Item 1) สถานะเขื่อน (`active`/spillway) มาจาก **สเปกจริง** แล้ว
+> (dam_specs.json) — ผลจึงเป็น *กึ่งจริง*: input เชิงกายภาพจริง + ground truth ยังเป็น fixture.
 
-- **H1 (traceability): สนับสนุน.** causal-graphrag = **100%** traceable (ทุก edge มี evidence ครบ) เทียบกับ entity-graphrag และ vector-rag = **0%**. การบังคับ `evidence` บนทุก edge ทำให้ traceability กลายเป็นคุณสมบัติที่ตรวจได้ฟรี.
-- **H2 (ทน hop): สนับสนุน.** F1 ของ causal-graphrag **คงที่ 1.000 ทั้ง 2-hop และ 4-hop (ΔF1=0)** ขณะที่ entity-graphrag ลดลง 0.857→0.750 (ΔF1=0.107) เมื่อ chain ยาวขึ้น. กราฟที่เดินตามสายเหตุ-ผลจริง + กรอง threshold ทน hop ได้ดีกว่า baseline relational ชัดเจน.
-- **causal vs relational hop:** causal hop **ไม่ได้** ยากขึ้นแบบเดียวกับ entity-relation hop — ตรงกันข้าม การใส่ทิศการไหล + threshold ทำให้ 4-hop (ข้ามลุ่มน้ำผ่านปากน้ำโพ) ยังแม่นเท่า 2-hop, ต่างจาก entity ที่ 4-hop ดูดจังหวัดต้นน้ำผิดเข้ามา. → causal เป็นมิติที่ *ต่าง* จาก relational hop ไม่ใช่แค่ยากขึ้นตามระยะ.
-- **Limitations:**
-  - ground truth เป็น **fixture** ไม่ใช่ GISTDA flood extent จริง (STAC ต่อไม่ติด) → ตัวเลขเป็นเชิงวิธี.
-  - dataset เล็ก (1 เหตุการณ์, 6 จังหวัด gold, 10 จังหวัดในกราฟ) → ยังไม่ generalize.
-  - threshold/ระดับน้ำเป็นค่าที่ตั้งให้ coherent กับเหตุการณ์ ไม่ได้ดึงจาก telemetry จริงรายชั่วโมง.
-  - vector corpus เล็ก (8 ข่าว) → ตัวเลข vector ไวต่อ coverage ของข่าว.
-- **ต่อยอด:** เปลี่ยน fixture → ข้อมูลจริงเมื่อได้ STAC/telemetry, เพิ่มหลายเหตุการณ์/หลายลุ่มน้ำ, ต่อยอด early-warning + dashboard ความเสี่ยงสะสม (climate-resilience / NECTEC).
+- **H1 (traceability): ยังสนับสนุน (แต่ตัวเลขลดลงตามความจริง).** causal-graphrag = **66.7%** traceable
+  (เดิม 100% ตอน active=tuned) เทียบกับ entity/vector = **0%**. ที่ลดเพราะ causal **ไม่เดา**จังหวัดที่มันอธิบาย
+  (มี evidence) ไม่ได้ → ยอมพลาดดีกว่าตอบมั่ว. ข้อได้เปรียบด้าน traceability ยังเด็ดขาด.
+- **H2 (ทน hop): ยังสนับสนุน.** causal ΔF1 = **0.000** (2-hop=4-hop=0.800) ขณะ entity ลดลง 0.857→0.750
+  (ΔF1=0.107). กราฟ causal ยังทน hop ดีกว่า baseline relational.
+- **⚠️ ผลใหม่ที่ต้องซื่อสัตย์: F1 รวมของ causal (0.800) ตอนนี้ต่ำกว่า entity (0.821) เล็กน้อย.**
+  หลัง de-circularize causal เสีย recall (พลาดนครสวรรค์/ชัยนาท) เพราะ **schema ยึด "เขื่อนล้น" เป็นต้นเหตุเดียว**
+  แต่เหตุจริงปี 2565 คือ *ฝน→น้ำท่า + การระบายผ่าน barrage*. → causal ยัง**ชนะเชิง traceability/precision**
+  แต่**ยังไม่ชนะเชิง F1 รวม**บนเหตุการณ์นี้ จนกว่าจะเติม path น้ำท่าใน schema. ผลเดิม (causal ชนะทุกด้าน)
+  พึ่ง threshold ที่เข้าข้างตัวเอง.
+- **Limitations (อัปเดต):**
+  - ground truth ยังเป็น **fixture** (Item 3 ยังไม่เสร็จ) → recall/precision สัมบูรณ์ยังต้องยืนยันกับ flood extent จริง.
+  - **schema gap:** ไม่มี node/edge สำหรับ *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน — ทำให้ causal อธิบายน้ำท่วมจาก runoff ไม่ได้ (root cause ของ recall ที่ตก). งานถัดไปควรเติม.
+  - INUNDATES threshold + `reach.level` **ยัง tuned** (ยังไม่ de-circularize) — ต้องใช้ river-gauge จริง (เช่น C.2 นครสวรรค์) จึงจะครบ. Item 1 แก้เฉพาะ spillway+active.
+  - dataset เล็ก (1 เหตุการณ์) → generalization รอ Item 4.
+  - vector corpus เล็ก (8 ข่าว) → รอ Item 2.
+- **ต่อยอด:** Item 2 (ขยาย corpus), Item 3 (ground truth จริง Sentinel-1/CEMS), Item 4 (หลายเหตุการณ์), และเติม path น้ำท่าใน schema; ปลายทาง early-warning + dashboard ความเสี่ยง (climate-resilience / NECTEC).
 
 ---
 
@@ -242,6 +262,8 @@
 | 2026-07-26 | **entity-graphrag ยิ่ง chain ยาวยิ่งแย่** (0.857→0.750) เพราะ undirected traversal จากจังหวัดปลายน้ำ 4-hop ดูดจังหวัด*ต้นน้ำ*ที่ไม่ท่วมเข้ามา | เป็นหลักฐานตรงของ H2: กราฟที่ไม่คุมทิศ/หลักฐาน *ไม่ได้* ทน hop เหมือน causal |
 | 2026-07-26 | vector-rag ติด "กรุงเทพ" เป็น false positive ทุกคำถาม เพราะข่าว "ทำไมกรุงเทพน้ำท่วมทุกปี" เด่นใน corpus | โชว์จุดอ่อน vector: ตอบตาม *ความถี่ข่าว* ไม่ใช่ *สายเหตุ-ผล* → ปลายน้ำจริงที่ข่าวไม่รายงานหลุดหมด |
 | 2026-07-26 | จุดที่ทำให้ 2-hop/4-hop ต่างกันคือ **จุดบรรจบปากน้ำโพ** (Confluence) — 4-hop = ต้องข้ามลุ่มน้ำผ่าน node นี้ | ทำให้ "causal hop" เป็นมิติใหม่จริง (ข้ามลุ่มน้ำ) ไม่ใช่แค่ระยะทางกราฟ |
+| 2026-07-27 | **การ de-circularize ทำให้เจอความจริงที่สำคัญกว่าตัวเลขสวย**: พอใช้สถานะเขื่อนจริง (ภูมิพล/สิริกิติ์ กักน้ำ ไม่ล้น) F1 ตกจาก 1.000→0.800 และ **เผยว่าเหตุน้ำท่วม 2565 คือฝน+น้ำท่า+barrage ไม่ใช่เขื่อนเก็บน้ำล้น** | ธง "F1=1.000" คือสัญญาณ overfit; ผลจริงที่ต่ำกว่าแต่ตรวจสอบได้ มีค่ากว่าในเชิงวิจัย และชี้ทิศ schema รุ่นถัดไป (ต้องมี path ฝน→น้ำท่า) |
+| 2026-07-27 | เขื่อนเจ้าพระยาไม่ใช่เขื่อน "เก็บน้ำ" แต่เป็น **barrage** ที่ตัดสินน้ำท่วมท้ายน้ำด้วย *อัตราการระบายเทียบเกณฑ์* (C.13 3,048 ≥ 2,800 ลบ.ม./วินาที) | ให้เกณฑ์ INUNDATES ที่ "จริง" และไม่ circular สำหรับ reach ล่าง (ต่างจากเขื่อนเก็บน้ำที่วัดด้วยระดับกักเก็บ) |
 
 ---
 

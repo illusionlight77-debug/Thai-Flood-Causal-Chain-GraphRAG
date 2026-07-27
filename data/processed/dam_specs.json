@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "description": "Physical specs + observed Oct-2022 state of the Chao Phraya control structures. Consumed by src/ingest/fixtures.py to drive OVERFLOWS_TO spillway levels and reservoir `active` (spilled) flags from cited real data instead of tuned-to-fit values.",
+    "retrieved_date": "2026-07-27",
+    "unit_notes": "levels in m MSL (เมตร รทก.); volume in MCM (ล้าน ลบ.ม.); discharge in m3/s (ลบ.ม./วินาที)",
+    "circularity_note": "spilled_2022 is derived from observed 2022 reservoir status, NOT tuned to reproduce the flood gold set. See README Bugs/Conclusions for the impact on F1."
+  },
+  "RES-BHUMIBOL": {
+    "name_en": "Bhumibol Dam",
+    "type": "storage (concrete arch)",
+    "full_supply_level_m_msl": 260.0,
+    "min_operating_level_m_msl": 213.0,
+    "total_capacity_mcm": 13462,
+    "active_capacity_mcm": 9762,
+    "observed_2022": {
+      "storage_mcm_on_2022_10_04": 10298.99,
+      "storage_pct_on_2022_10_04": 76.5,
+      "spillway_discharge_on_2022_10_04": "งดการระบายน้ำ (suspended)",
+      "year_end_pct": 88,
+      "spilled_via_spillway_2022": false,
+      "note": "Retaining, not spilling: 76.5% and discharge suspended on 4 Oct 2022; peaked ~88% at year end — below the 260 m MSL spillway crest. Inflow (8,404 MCM) >> outflow (4,115 MCM) in 2022."
+    },
+    "sources": [
+      {"field": "total/active capacity, arch type", "url": "https://en.wikipedia.org/wiki/Bhumibol_Dam", "retrieved_date": "2026-07-27"},
+      {"field": "observed 2022-10-04 storage 76.5% / 10,298.99 MCM / discharge suspended", "url": "https://edulampang.prd.go.th/th/content/category/detail/id/57/iid/125238", "retrieved_date": "2026-07-27"},
+      {"field": "2022 year-end 88%, inflow/outflow, retaining", "url": "https://www.thaiwater.net/uploads/contents/current/YearlyReport2022/dam2.html", "retrieved_date": "2026-07-27"},
+      {"field": "full_supply_level 260 / min 213 m MSL (EGAT normal high/low water level — secondary, not re-verified from a single primary URL this session)", "url": "https://en.wikipedia.org/wiki/Bhumibol_Dam", "retrieved_date": "2026-07-27", "confidence": "medium"}
+    ]
+  },
+  "RES-SIRIKIT": {
+    "name_en": "Sirikit Dam",
+    "type": "storage (earthfill, clay core)",
+    "full_supply_level_m_msl": 162.0,
+    "min_operating_level_m_msl": 149.5,
+    "total_capacity_mcm": 9510,
+    "observed_2022": {
+      "year_end_pct": 67,
+      "inflow_mcm_2022": 5412,
+      "outflow_mcm_2022": 3179,
+      "spilled_via_spillway_2022": false,
+      "note": "Retaining: year-end 67% capacity (moderate), well below the 162 m MSL upper rule / spillway; inflow > outflow in 2022. Tunnel spillway capacity 3,250 m3/s (unused)."
+    },
+    "sources": [
+      {"field": "capacity 9,510 MCM, earthfill, tunnel spillway 3,250 m3/s", "url": "https://www.egat.co.th/home/en/sirikit-dm-specification/", "retrieved_date": "2026-07-27"},
+      {"field": "operating rule 149.50 (Jun) to 162.00 m MSL (Jul-Oct)", "url": "https://www.egat.co.th/home/en/sirikit-dm/", "retrieved_date": "2026-07-27", "confidence": "medium"},
+      {"field": "2022 year-end 67%, inflow 5,412 / outflow 3,179 MCM, retaining", "url": "https://www.thaiwater.net/uploads/contents/current/YearlyReport2022/dam2.html", "retrieved_date": "2026-07-27"}
+    ]
+  },
+  "RES-CHAOPHRAYA": {
+    "name_en": "Chao Phraya Dam (diversion barrage, station C.13, Chai Nat)",
+    "type": "diversion barrage (gated)",
+    "normal_upstream_retention_m_msl": 16.5,
+    "control_upstream_level_m_msl": 17.6,
+    "downstream_flood_threshold_cms": 2800,
+    "observed_2022": {
+      "discharge_cms_on_2022_10_09": 3048,
+      "upstream_level_m_msl_on_2022_10_09": 17.73,
+      "passed_flood_flow_2022": true,
+      "note": "Barrage passed 3,048 m3/s on 9 Oct 2022 (upstream +17.73), above the ~2,800 m3/s downstream flood threshold -> lower Chao Phraya provinces flooded. This, not reservoir spillover, was the dominant 2022 driver."
+    },
+    "sources": [
+      {"field": "C.13 discharge 3,048 m3/s & upstream +17.73 m MSL on 9 Oct 2022 (RID bulletin)", "url": "http://water.rid.go.th/flood/news/", "retrieved_date": "2026-07-27"},
+      {"field": "control upstream +17.6 m MSL, flow >2,900-3,000 (NWC 49/2565, 6 Oct 2022)", "url": "https://www.bangkokbiznews.com/news/news-update/1031499", "retrieved_date": "2026-07-27"},
+      {"field": "downstream flood threshold ~2,800 m3/s", "url": "https://www.thaipbs.or.th/news/content/358360", "retrieved_date": "2026-07-27"}
+    ]
+  }
+}

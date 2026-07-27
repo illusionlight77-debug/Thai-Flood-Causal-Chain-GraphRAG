@@ -29,7 +29,7 @@
     "evidence": {
       "station_id": "RES-BHUMIBOL",
       "timestamp": "2022-10-10",
-      "dataset": "D2/thaiwater dam_daily"
+      "dataset": "D2/dam_specs.json (EGAT/thaiwater 2565)"
     }
   },
   {
@@ -40,7 +40,7 @@
     "evidence": {
       "station_id": "RES-SIRIKIT",
       "timestamp": "2022-10-10",
-      "dataset": "D2/thaiwater dam_daily"
+      "dataset": "D2/dam_specs.json (EGAT/thaiwater 2565)"
     }
   },
   {
@@ -51,7 +51,7 @@
     "evidence": {
       "station_id": "RES-CHAOPHRAYA",
       "timestamp": "2022-10-10",
-      "dataset": "D2/thaiwater dam_daily"
+      "dataset": "D2/dam_specs.json (RID C.13 9 ต.ค. 65)"
     }
   },
   {

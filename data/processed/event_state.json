@@ -3,8 +3,8 @@
   "period": "2022-09-25/2022-10-15",
   "layer_date": "2022-10-10",
   "reservoir_active": {
-    "RES-BHUMIBOL": true,
-    "RES-SIRIKIT": true,
+    "RES-BHUMIBOL": false,
+    "RES-SIRIKIT": false,
     "RES-CHAOPHRAYA": true
   },
   "reach_level": {

@@ -21,7 +21,7 @@
     "name": "เขื่อนภูมิพล (Bhumibol)",
     "capacity_mcm": 13462,
     "spillway_level": 260.0,
-    "active": true,
+    "active": false,
     "lat": 17.24,
     "lon": 98.97,
     "basin": "Ping"
@@ -32,7 +32,7 @@
     "name": "เขื่อนสิริกิติ์ (Sirikit)",
     "capacity_mcm": 9510,
     "spillway_level": 162.0,
-    "active": true,
+    "active": false,
     "lat": 17.76,
     "lon": 100.56,
     "basin": "Nan"

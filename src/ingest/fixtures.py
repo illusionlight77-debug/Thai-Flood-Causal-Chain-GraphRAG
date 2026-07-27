@@ -51,11 +51,46 @@ REACH_INUNDATION: dict[str, list[tuple[str, float]]] = {
                     ("PATHUMTHANI", 8.0), ("NONTHABURI", 9.0), ("BANGKOK", 9.5)],
 }
 
-# ── สถานะเหตุการณ์: เขื่อนที่ล้น + ระดับน้ำแต่ละ reach (ม.) ──────
-RESERVOIR_ACTIVE = {"RES-BHUMIBOL": True, "RES-SIRIKIT": True, "RES-CHAOPHRAYA": True}
+# ── สถานะเขื่อน: ดึงจาก dam_specs.json (สเปกจริง + สถานะสังเกตปี 2565) ──────
+#   spillway_level, active (เขื่อนล้นสปิลเวย์จริงไหม) มาจากข้อมูลจริง ไม่ใช่ค่าที่ตั้งให้เข้ากับผล
+#   (แก้ threshold circularity — ดู README Bugs 2026-07-27)
+_DAM_SPECS_PATH = settings.data_processed_dir / "dam_specs.json"
+
+# fallback (ใช้เมื่อ dam_specs.json หาย เพื่อคง reproducibility) = ค่าเดิมก่อน 2026-07-27
+_FALLBACK_SPILLWAY = {"RES-BHUMIBOL": 260.0, "RES-SIRIKIT": 162.0, "RES-CHAOPHRAYA": 16.5}
+_FALLBACK_ACTIVE = {"RES-BHUMIBOL": True, "RES-SIRIKIT": True, "RES-CHAOPHRAYA": True}
+
+
+def _load_dam_specs() -> dict:
+    if _DAM_SPECS_PATH.exists():
+        return json.loads(_DAM_SPECS_PATH.read_text("utf-8"))
+    print(f"[fixtures] WARNING: {_DAM_SPECS_PATH.name} หาย → ใช้ fallback (ค่าเดิม tuned)")
+    return {}
+
+
+def _spillway_level(specs: dict, rid: str) -> float:
+    s = specs.get(rid, {})
+    lvl = s.get("full_supply_level_m_msl", s.get("normal_upstream_retention_m_msl"))
+    return float(lvl) if lvl is not None else _FALLBACK_SPILLWAY[rid]
+
+
+def _is_active(specs: dict, rid: str) -> bool:
+    """เขื่อน active = ล้นสปิลเวย์จริง (storage dam) หรือส่งน้ำเกิน flood threshold (barrage)."""
+    obs = specs.get(rid, {}).get("observed_2022")
+    if obs is None:
+        return _FALLBACK_ACTIVE[rid]
+    return bool(obs.get("spilled_via_spillway_2022") or obs.get("passed_flood_flow_2022"))
+
+
+_SPECS = _load_dam_specs()
+RESERVOIR_SPILLWAY = {rid: _spillway_level(_SPECS, rid) for rid in _FALLBACK_SPILLWAY}
+RESERVOIR_ACTIVE = {rid: _is_active(_SPECS, rid) for rid in _FALLBACK_ACTIVE}
+# ผลจริงปี 2565: ภูมิพล/สิริกิติ์ = retaining (ไม่ล้นสปิลเวย์) → active False;
+#   เขื่อนเจ้าพระยา (barrage) ส่งน้ำ 3,048 ≥ 2,800 → active True. ดู dam_specs.json.
+
 REACH_LEVEL = {"RR-PING": 5.0, "RR-NAN": 6.0, "RR-CP-UPPER": 9.5, "RR-CP-LOWER": 8.5}
-# → threshold filter: Tak/Phitsanulok/Nonthaburi/Bangkok ไม่ถึง = ไม่ท่วม
-#   ท่วมจริง = {NakhonSawan, ChaiNat, SingBuri, AngThong, Ayutthaya, PathumThani}
+# ⚠️ REACH_LEVEL + INUNDATES threshold ยัง tuned อยู่ (ต้องใช้ river-gauge จริงจึงจะ de-circularize
+#    ครบ — ดู README Limitations). Item 1 นี้แก้เฉพาะ spillway + active ให้มาจากสเปกจริง.
 
 GOLD_FLOODED = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"]
 
@@ -76,14 +111,14 @@ def build_nodes() -> list[dict]:
     # Reservoir
     nodes += [
         {"label": "Reservoir", "id": "RES-BHUMIBOL", "name": "เขื่อนภูมิพล (Bhumibol)",
-         "capacity_mcm": 13462, "spillway_level": 260.0, "active": RESERVOIR_ACTIVE["RES-BHUMIBOL"],
-         "lat": 17.24, "lon": 98.97, "basin": "Ping"},
+         "capacity_mcm": 13462, "spillway_level": RESERVOIR_SPILLWAY["RES-BHUMIBOL"],
+         "active": RESERVOIR_ACTIVE["RES-BHUMIBOL"], "lat": 17.24, "lon": 98.97, "basin": "Ping"},
         {"label": "Reservoir", "id": "RES-SIRIKIT", "name": "เขื่อนสิริกิติ์ (Sirikit)",
-         "capacity_mcm": 9510, "spillway_level": 162.0, "active": RESERVOIR_ACTIVE["RES-SIRIKIT"],
-         "lat": 17.76, "lon": 100.56, "basin": "Nan"},
+         "capacity_mcm": 9510, "spillway_level": RESERVOIR_SPILLWAY["RES-SIRIKIT"],
+         "active": RESERVOIR_ACTIVE["RES-SIRIKIT"], "lat": 17.76, "lon": 100.56, "basin": "Nan"},
         {"label": "Reservoir", "id": "RES-CHAOPHRAYA", "name": "เขื่อนเจ้าพระยา (Chao Phraya Dam)",
-         "capacity_mcm": 0, "spillway_level": 16.5, "active": RESERVOIR_ACTIVE["RES-CHAOPHRAYA"],
-         "lat": 15.16, "lon": 100.18, "basin": "ChaoPhraya"},
+         "capacity_mcm": 0, "spillway_level": RESERVOIR_SPILLWAY["RES-CHAOPHRAYA"],
+         "active": RESERVOIR_ACTIVE["RES-CHAOPHRAYA"], "lat": 15.16, "lon": 100.18, "basin": "ChaoPhraya"},
     ]
     # RiverReach (แนบระดับน้ำเหตุการณ์)
     for rid, (name, basin, order) in {
@@ -114,14 +149,17 @@ def build_causal_edges() -> list[dict]:
         {"type": "FEEDS", "src": "RS-NAN", "dst": "RES-SIRIKIT", "lag_hours": 48,
          "evidence": _ev("RS-NAN", "D1/data.go.th telemetry")},
     ]
-    # OVERFLOWS_TO (เขื่อน → ลำน้ำ)
+    # OVERFLOWS_TO (เขื่อน → ลำน้ำ) — spillway ดึงจาก dam_specs.json (สเปกจริง)
     edges += [
-        {"type": "OVERFLOWS_TO", "src": "RES-BHUMIBOL", "dst": "RR-PING", "spillway": 260.0,
-         "evidence": _ev("RES-BHUMIBOL", "D2/thaiwater dam_daily")},
-        {"type": "OVERFLOWS_TO", "src": "RES-SIRIKIT", "dst": "RR-NAN", "spillway": 162.0,
-         "evidence": _ev("RES-SIRIKIT", "D2/thaiwater dam_daily")},
-        {"type": "OVERFLOWS_TO", "src": "RES-CHAOPHRAYA", "dst": "RR-CP-LOWER", "spillway": 16.5,
-         "evidence": _ev("RES-CHAOPHRAYA", "D2/thaiwater dam_daily")},
+        {"type": "OVERFLOWS_TO", "src": "RES-BHUMIBOL", "dst": "RR-PING",
+         "spillway": RESERVOIR_SPILLWAY["RES-BHUMIBOL"],
+         "evidence": _ev("RES-BHUMIBOL", "D2/dam_specs.json (EGAT/thaiwater 2565)")},
+        {"type": "OVERFLOWS_TO", "src": "RES-SIRIKIT", "dst": "RR-NAN",
+         "spillway": RESERVOIR_SPILLWAY["RES-SIRIKIT"],
+         "evidence": _ev("RES-SIRIKIT", "D2/dam_specs.json (EGAT/thaiwater 2565)")},
+        {"type": "OVERFLOWS_TO", "src": "RES-CHAOPHRAYA", "dst": "RR-CP-LOWER",
+         "spillway": RESERVOIR_SPILLWAY["RES-CHAOPHRAYA"],
+         "evidence": _ev("RES-CHAOPHRAYA", "D2/dam_specs.json (RID C.13 9 ต.ค. 65)")},
     ]
     # FLOWS_TO (ลำน้ำ → จุดบรรจบ/ลำน้ำ)
     edges += [

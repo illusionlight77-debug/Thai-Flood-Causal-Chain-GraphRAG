@@ -43,9 +43,17 @@ def test_two_and_four_hop_paths_exist(loaded):
 
 
 @pytest.mark.integration
-def test_threshold_prediction_matches_gold(loaded):
+def test_threshold_prediction_reflects_spec_driven_active(loaded):
+    # หลังแก้ threshold circularity (2026-07-27): active มาจาก dam_specs.json (สถานะจริงปี 2565)
+    # → มีเพียงเขื่อนเจ้าพระยา (barrage) ที่ active; ภูมิพล/สิริกิติ์ retaining (ไม่ล้นสปิลเวย์).
+    # ดังนั้น causal ทำนายได้เฉพาะจังหวัดที่ราบลุ่มล่าง (2-hop) และ *พลาด* จังหวัดจุดบรรจบ
+    # (นครสวรรค์/ชัยนาท 4-hop) เพราะเหตุจริงคือ runoff+barrage ไม่ใช่เขื่อนล้น. เดิม pred==gold
+    # (ตอน active=all True แบบ tuned) — เปลี่ยนเป็นสะท้อนความจริง ไม่ใช่ผลที่เข้าข้างตัวเอง.
     c, _ = loaded
     from src.graph import queries
     pred = {r["province"] for r in c.run(queries.CAUSAL_FLOOD_PREDICT)}
     gold = {fixtures.PROVINCES[p][3] for p in fixtures.GOLD_FLOODED}
-    assert pred == gold
+    lower_2hop = {"Sing Buri", "Ang Thong", "Ayutthaya", "Pathum Thani"}
+    assert pred == lower_2hop            # barrage-driven 2-hop เท่านั้น
+    assert pred < gold                   # เป็น subset — พลาดจังหวัดจุดบรรจบ
+    assert "Nakhon Sawan" not in pred and "Chai Nat" not in pred

@@ -47,9 +47,13 @@ RETURN p.id AS pid, p.name_en AS province,
 ORDER BY hops, province
 """
 
-# ── hop ต่ำสุดจากเขื่อน active ไปแต่ละจังหวัด (ไม่กรอง threshold) — ใช้ tag hop ให้ eval ──
+# ── hop ต่ำสุดจากเขื่อน "ใดก็ได้" ไปแต่ละจังหวัด — ใช้ tag hop ให้ eval ──
+#   ⚠️ ต้องไม่กรอง active! hop = ความยาวสายเหตุ-ผลเชิงโครงสร้าง (2-hop เขื่อนเดียว /
+#   4-hop ข้ามลุ่มน้ำผ่านจุดบรรจบ) — เป็นสมบัติของภูมิศาสตร์ ไม่ใช่ของเหตุการณ์.
+#   (แก้ correctness bug 2026-07-27: เดิมกรอง active:true ทำให้ hop-tag เลื่อนตามว่าเขื่อนไหน
+#    active ในเหตุการณ์นั้น → bucket 2/4-hop ของ eval set ไม่คงที่ ดู README.)
 HOP_PER_PROVINCE = f"""
-MATCH path = (src:Reservoir {{active:true}})-[:{CAUSAL_RELS}*2..4]->(p:Province)
+MATCH path = (src:Reservoir)-[:{CAUSAL_RELS}*2..4]->(p:Province)
 RETURN p.id AS pid, p.name_en AS province, min(length(path)) AS hops
 ORDER BY hops, province
 """
