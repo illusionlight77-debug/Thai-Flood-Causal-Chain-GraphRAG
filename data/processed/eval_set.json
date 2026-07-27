@@ -1,5 +1,35 @@
 [
   {
+    "question": "ทำไมจังหวัดตากถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Tak",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
+    ]
+  },
+  {
+    "question": "ทำไมจังหวัดพิษณุโลกถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
+    "province": "Phitsanulok",
+    "event": "chao_phraya_2022",
+    "hop": 2,
+    "gold_provinces": [
+      "Ang Thong",
+      "Ayutthaya",
+      "Chai Nat",
+      "Nakhon Sawan",
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
+    ]
+  },
+  {
     "question": "ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
     "province": "Nakhon Sawan",
     "event": "chao_phraya_2022",
@@ -9,8 +39,9 @@
       "Ayutthaya",
       "Chai Nat",
       "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
     ]
   },
   {
@@ -23,8 +54,9 @@
       "Ayutthaya",
       "Chai Nat",
       "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
     ]
   },
   {
@@ -37,8 +69,9 @@
       "Ayutthaya",
       "Chai Nat",
       "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
     ]
   },
   {
@@ -51,8 +84,9 @@
       "Ayutthaya",
       "Chai Nat",
       "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
     ]
   },
   {
@@ -65,22 +99,9 @@
       "Ayutthaya",
       "Chai Nat",
       "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
-    ]
-  },
-  {
-    "question": "ทำไมจังหวัดปทุมธานีถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?",
-    "province": "Pathum Thani",
-    "event": "chao_phraya_2022",
-    "hop": 2,
-    "gold_provinces": [
-      "Ang Thong",
-      "Ayutthaya",
-      "Chai Nat",
-      "Nakhon Sawan",
-      "Pathum Thani",
-      "Sing Buri"
+      "Phitsanulok",
+      "Sing Buri",
+      "Tak"
     ]
   }
 ]

@@ -6,7 +6,9 @@ CLAUDE.md
 KICKOFF.md
 
 # raw data (keep processed/fixtures if small; ignore heavy raw pulls)
-data/raw/
+data/raw/*
+# ...except committed real inputs needed for reproducibility (Item 3):
+!data/raw/gadm41_THA_1.json
 *.tif
 *.tiff
 *.gpkg

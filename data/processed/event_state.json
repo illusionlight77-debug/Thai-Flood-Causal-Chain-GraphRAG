@@ -14,11 +14,12 @@
     "RR-CP-LOWER": 8.5
   },
   "gold_flooded": [
+    "TAK",
+    "PHITSANULOK",
     "NAKHONSAWAN",
     "CHAINAT",
     "SINGBURI",
     "ANGTHONG",
-    "AYUTTHAYA",
-    "PATHUMTHANI"
+    "AYUTTHAYA"
   ]
 }

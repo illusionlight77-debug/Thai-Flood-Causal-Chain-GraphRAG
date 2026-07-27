@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "description": "REAL ground truth for the 2022 Chao Phraya (NORU) flood — GISTDA satellite flood-area analysis (28 Sep - 14 Oct 2022), published via thaiwater.net. Replaces the earlier fixture gold. Used by src/ingest/fixtures.py to set GOLD_FLOODED.",
+    "event_id": "chao_phraya_2022",
+    "window": "2022-09-28/2022-10-14",
+    "source_primary": "https://www.thaiwater.net/uploads/contents/current/2022/NORU2022/flood_area.html",
+    "source_note": "GISTDA satellite analysis; total 8,067,730 rai across 53 provinces. This is the D3 ground truth the project targeted — obtained via thaiwater's published GISTDA product because disaster.gistda.or.th STAC API is unreachable (see Bugs).",
+    "corroboration": [
+      {"provinces": "Chai Nat, Sing Buri, Ang Thong, Ayutthaya, Pathum Thani, Nonthaburi district-level flooding", "url": "https://en.vietnamplus.vn/flooding-continues-in-17-provinces-across-thailand-post330331.vnp"},
+      {"provinces": "Nakhon Sawan (Hwy 225 Keychai-Srimongkol flooded 26 Sep 2022)", "url": "https://nakhonsawan.prd.go.th/th/content/category/detail/id/57/iid/123244"}
+    ],
+    "significance_cutoff_rai": 10000,
+    "cutoff_rationale": "gold = provinces with GISTDA flooded area >= 10,000 rai (~16 km2) = provincially-significant flooding. Sub-threshold provinces recorded but excluded from gold; sensitivity noted in README.",
+    "retrieved_date": "2026-07-27"
+  },
+  "flooded_area_rai": {
+    "NAKHONSAWAN": 867239,
+    "AYUTTHAYA": 523352,
+    "PHITSANULOK": 360610,
+    "SINGBURI": 123201,
+    "CHAINAT": 114212,
+    "ANGTHONG": 102146,
+    "TAK": 58598,
+    "PATHUMTHANI": 3190,
+    "NONTHABURI": 38,
+    "BANGKOK": 0
+  },
+  "gold_flooded": ["TAK", "PHITSANULOK", "NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA"],
+  "below_cutoff": {"PATHUMTHANI": 3190, "NONTHABURI": 38, "BANGKOK": 0},
+  "diff_vs_fixture": {
+    "fixture_gold": ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"],
+    "added_by_real": ["TAK", "PHITSANULOK"],
+    "removed_by_real": ["PATHUMTHANI"],
+    "note": "Real GISTDA data adds upstream provinces (Tak, Phitsanulok) that flooded from local rain — which the reservoir-centric graph cannot reach — and drops Pathum Thani (only 3,190 rai, below cutoff). Nonthaburi flooded only 38 rai (negligible)."
+  }
+}

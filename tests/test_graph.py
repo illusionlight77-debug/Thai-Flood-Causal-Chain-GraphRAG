@@ -52,8 +52,11 @@ def test_threshold_prediction_reflects_spec_driven_active(loaded):
     c, _ = loaded
     from src.graph import queries
     pred = {r["province"] for r in c.run(queries.CAUSAL_FLOOD_PREDICT)}
-    gold = {fixtures.PROVINCES[p][3] for p in fixtures.GOLD_FLOODED}
+    gold = {fixtures.PROVINCES[p][3] for p in fixtures.GOLD_FLOODED}  # real GISTDA gold (Item 3)
     lower_2hop = {"Sing Buri", "Ang Thong", "Ayutthaya", "Pathum Thani"}
     assert pred == lower_2hop            # barrage-driven 2-hop เท่านั้น
-    assert pred < gold                   # เป็น subset — พลาดจังหวัดจุดบรรจบ
-    assert "Nakhon Sawan" not in pred and "Chai Nat" not in pred
+    # เทียบกับ ground truth จริง (GISTDA): causal ทั้งพลาดและเดินเกิน
+    assert {"Sing Buri", "Ang Thong", "Ayutthaya"} <= gold      # ถูก 3
+    assert "Pathum Thani" in pred and "Pathum Thani" not in gold  # FP (GISTDA 3,190 ไร่ < cutoff)
+    assert "Nakhon Sawan" not in pred and "Chai Nat" not in pred  # miss จุดบรรจบ (4-hop)
+    assert {"Tak", "Phitsanulok"} <= gold and not ({"Tak", "Phitsanulok"} & pred)  # miss ต้นน้ำ (runoff)

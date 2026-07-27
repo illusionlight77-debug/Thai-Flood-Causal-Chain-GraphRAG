@@ -92,7 +92,47 @@ REACH_LEVEL = {"RR-PING": 5.0, "RR-NAN": 6.0, "RR-CP-UPPER": 9.5, "RR-CP-LOWER":
 # ⚠️ REACH_LEVEL + INUNDATES threshold ยัง tuned อยู่ (ต้องใช้ river-gauge จริงจึงจะ de-circularize
 #    ครบ — ดู README Limitations). Item 1 นี้แก้เฉพาะ spillway + active ให้มาจากสเปกจริง.
 
-GOLD_FLOODED = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"]
+# ── ground truth (gold) — จาก GISTDA จริง (Item 3) ผ่าน ground_truth_2022.json ──────
+#   fallback = ชุด fixture เดิม เพื่อคง reproducibility ถ้าไฟล์หาย
+_FALLBACK_GOLD = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"]
+_GROUND_TRUTH_PATH = settings.data_processed_dir / "ground_truth_2022.json"
+
+
+def _load_gold() -> list[str]:
+    if _GROUND_TRUTH_PATH.exists():
+        gt = json.loads(_GROUND_TRUTH_PATH.read_text("utf-8"))
+        return list(gt.get("gold_flooded", _FALLBACK_GOLD))
+    print(f"[fixtures] WARNING: {_GROUND_TRUTH_PATH.name} หาย → ใช้ gold fixture เดิม")
+    return _FALLBACK_GOLD
+
+
+GOLD_FLOODED = _load_gold()
+
+# ── geometry จริง: GADM level-1 (จังหวัด) — Item 3 แทน box สังเคราะห์ ──────
+_GADM_PATH = settings.data_processed_dir.parent / "raw" / "gadm41_THA_1.json"
+GADM_NAME = {  # prov_id → GADM NAME_1
+    "TAK": "Tak", "PHITSANULOK": "Phitsanulok", "NAKHONSAWAN": "NakhonSawan",
+    "CHAINAT": "ChaiNat", "SINGBURI": "SingBuri", "ANGTHONG": "AngThong",
+    "AYUTTHAYA": "PhraNakhonSiAyutthaya", "PATHUMTHANI": "PathumThani",
+    "NONTHABURI": "Nonthaburi", "BANGKOK": "BangkokMetropolis",
+}
+
+
+def _load_gadm_geoms() -> dict:
+    """{prov_id: geojson-geometry} จาก GADM. ว่าง = ใช้ box fallback."""
+    if not _GADM_PATH.exists():
+        return {}
+    d = json.loads(_GADM_PATH.read_text("utf-8"))
+    by_name = {f["properties"].get("NAME_1"): f["geometry"] for f in d["features"]}
+    out = {}
+    for pid, name in GADM_NAME.items():
+        if name in by_name:
+            out[pid] = by_name[name]
+    return out
+
+
+_GADM_GEOMS = _load_gadm_geoms()
+USE_REAL_GEOM = len(_GADM_GEOMS) == len(GADM_NAME)
 
 
 def _ev(station_id: str, dataset: str, timestamp: str = LAYER_DATE) -> dict:
@@ -180,12 +220,31 @@ def _box(lon: float, lat: float) -> list:
              [lon + HALF, lat + HALF], [lon - HALF, lat + HALF], [lon - HALF, lat - HALF]]]
 
 
+def _prov_geometry(pid: str) -> dict:
+    """geometry จริงจาก GADM ถ้ามี; ไม่งั้น box สังเคราะห์ (fallback)."""
+    if pid in _GADM_GEOMS:
+        return _GADM_GEOMS[pid]
+    lon, lat, *_ = PROVINCES[pid]
+    return {"type": "Polygon", "coordinates": _box(lon, lat)}
+
+
+def _outlet_point(pid: str) -> list:
+    """จุดตัวแทนภายใน polygon จังหวัด (representative_point) → PIP ตกในจังหวัดแน่นอน."""
+    if pid in _GADM_GEOMS:
+        from shapely.geometry import shape
+        p = shape(_GADM_GEOMS[pid]).representative_point()
+        return [p.x, p.y]
+    lon, lat, *_ = PROVINCES[pid]
+    return [lon, lat]
+
+
 def build_provinces_geojson() -> dict:
     feats = []
     for pid, (lon, lat, th, en) in PROVINCES.items():
         feats.append({"type": "Feature",
-                      "properties": {"prov_id": pid, "name_th": th, "name_en": en},
-                      "geometry": {"type": "Polygon", "coordinates": _box(lon, lat)}})
+                      "properties": {"prov_id": pid, "name_th": th, "name_en": en,
+                                     "geom_source": "GADM4.1" if pid in _GADM_GEOMS else "box"},
+                      "geometry": _prov_geometry(pid)})
     return {"type": "FeatureCollection", "features": feats}
 
 
@@ -194,25 +253,23 @@ def build_reach_outlets_geojson() -> dict:
     feats = []
     for reach, targets in REACH_INUNDATION.items():
         for pid, threshold in targets:
-            lon, lat, *_ = PROVINCES[pid]
             feats.append({"type": "Feature",
                           "properties": {"reach_id": reach, "threshold": threshold,
                                          "expected_prov": pid, "layer_date": LAYER_DATE},
-                          "geometry": {"type": "Point", "coordinates": [lon, lat]}})
+                          "geometry": {"type": "Point", "coordinates": _outlet_point(pid)}})
     return {"type": "FeatureCollection", "features": feats}
 
 
 def build_flood_extent_geojson() -> dict:
-    """ground truth (gold) — พื้นที่น้ำท่วมจริง (แทน GISTDA D3)."""
-    polys = []
+    """ground truth (gold) — พื้นที่น้ำท่วมจริง = union polygon จังหวัด gold (GADM) จาก GISTDA."""
+    feats = []
     for pid in GOLD_FLOODED:
-        lon, lat, *_ = PROVINCES[pid]
-        polys.append(_box(lon, lat))
-    return {"type": "FeatureCollection", "features": [
-        {"type": "Feature",
-         "properties": {"event": EVENT_ID, "source": "fixture/GISTDA-D3 (STAC unreachable)",
-                        "layer_date": LAYER_DATE},
-         "geometry": {"type": "MultiPolygon", "coordinates": polys}}]}
+        feats.append({"type": "Feature",
+                      "properties": {"event": EVENT_ID, "prov_id": pid,
+                                     "source": "GISTDA NORU2022 (thaiwater) + GADM4.1 geometry",
+                                     "layer_date": LAYER_DATE},
+                      "geometry": _prov_geometry(pid)})
+    return {"type": "FeatureCollection", "features": feats}
 
 
 def build_event_state() -> dict:
@@ -254,6 +311,19 @@ def build_news_corpus() -> list[dict]:
     ]
 
 
+def build_deprecated_fixture_flood_extent() -> dict:
+    """เก็บ ground truth เดิม (box + gold fixture 6 จังหวัด) ไว้เทียบย้อนหลัง (Item 3 ไม่ลบทิ้ง)."""
+    polys = []
+    for pid in _FALLBACK_GOLD:
+        lon, lat, *_ = PROVINCES[pid]
+        polys.append(_box(lon, lat))
+    return {"type": "FeatureCollection", "features": [
+        {"type": "Feature",
+         "properties": {"event": EVENT_ID, "source": "DEPRECATED fixture (box, tuned gold 6 จว.)",
+                        "layer_date": LAYER_DATE},
+         "geometry": {"type": "MultiPolygon", "coordinates": polys}}]}
+
+
 def write_all(out_dir: Path | None = None) -> Path:
     out = out_dir or settings.data_processed_dir
     out.mkdir(parents=True, exist_ok=True)
@@ -262,6 +332,9 @@ def write_all(out_dir: Path | None = None) -> Path:
     (out / "provinces.geojson").write_text(json.dumps(build_provinces_geojson(), ensure_ascii=False, indent=2), "utf-8")
     (out / "reach_outlets.geojson").write_text(json.dumps(build_reach_outlets_geojson(), ensure_ascii=False, indent=2), "utf-8")
     (out / "gistda_flood_extent.geojson").write_text(json.dumps(build_flood_extent_geojson(), ensure_ascii=False, indent=2), "utf-8")
+    # เก็บ ground truth เดิมไว้ (ไม่ลบ) สำหรับเทียบ fixture↔real
+    (out / "gistda_flood_extent_fixture_deprecated.geojson").write_text(
+        json.dumps(build_deprecated_fixture_flood_extent(), ensure_ascii=False, indent=2), "utf-8")
     (out / "event_state.json").write_text(json.dumps(build_event_state(), ensure_ascii=False, indent=2), "utf-8")
     (out / "news_corpus.json").write_text(json.dumps(build_news_corpus(), ensure_ascii=False, indent=2), "utf-8")
     return out

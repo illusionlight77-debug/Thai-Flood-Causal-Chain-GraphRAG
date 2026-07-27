@@ -104,8 +104,10 @@
 | thaiwater dam_daily | `https://www.thaiwater.net/api/v1/thaiwater/public/dam_daily` | ⚠️ 200 แต่ body ไม่ใช่ JSON สะอาด → fixture | ระดับน้ำ/ระบายเขื่อน (D2) |
 | thaiwater (path เดิม) | `https://api.thaiwater.net/v1/...` | ❌ **404** (ย้าย host) | — |
 | GISTDA flood portal | https://disaster.gistda.or.th/flood/ | ℹ️ เว็บ 200 | flood extent maps (D3) |
-| GISTDA STAC API | `https://disaster.gistda.or.th/api/stac/search` | ❌ **ต่อไม่ติด (000)** → fixture fallback | flood extent = ground truth (D3) |
-| ขอบเขตลุ่มน้ำ/จังหวัด | data.go.th (ค้น "ลุ่มน้ำ", "ขอบเขตจังหวัด") | ⚙️ fixture geojson (เฟส 2 PIP) | shapefile/GeoJSON (D4) |
+| GISTDA STAC API | `https://disaster.gistda.or.th/api/stac/search` | ❌ **ต่อไม่ติด (000)** | เดิมตั้งใจใช้เป็น D3 |
+| **GISTDA satellite flood (via thaiwater)** | `https://www.thaiwater.net/uploads/contents/current/2022/NORU2022/flood_area.html` | ✅ **ใช้จริง (Item 3)** — พื้นที่ท่วมรายจังหวัด NORU 2565 | **ground truth D3 จริง** |
+| **GADM 4.1 (province boundaries)** | `https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_THA_1.json` | ✅ **ใช้จริง (Item 3)** — polygon จังหวัด 77 จว. | geometry จริง (D4) |
+| Sentinel-1 SAR via Google Earth Engine | earthengine.google.com | ❌ ทำไม่ได้ (ต้อง OAuth/account) | ทางเลือก D3 ที่ลองแล้วติด |
 
 ### เครื่องมือ / Tooling
 | Tool | Link |
@@ -161,8 +163,9 @@
 ## 📊 Results (ผลลัพธ์)
 
 > ตัวเลข **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode). retriever มี config เดียว
-> (**TF-IDF**; ยังไม่มี semantic/hybrid). ground truth ยังเป็น **fixture** (GISTDA STAC ต่อไม่ติด — Item 3 ยังไม่เสร็จ).
-> ผลเขียนลง `data/processed/eval_results.json` + `results_table.md`. eval set = 6 คำถาม (2-hop:4, 4-hop:2).
+> (**TF-IDF**; ยังไม่มี semantic/hybrid). **ผลปัจจุบัน (Item 3) ใช้ ground truth จริงจาก GISTDA + geometry GADM จริง**
+> (ดูหัวข้อ Item 3). ผลเขียนลง `data/processed/eval_results.json` + `results_table.md`. eval set = 7 คำถาม (2-hop:5, 4-hop:2).
+> ด้านล่างเรียงตามลำดับการยกระดับ: Item 1 (สเปกเขื่อนจริง) → Item 2 (corpus จริง) → **Item 3 (ground truth จริง = ผลปัจจุบัน)**.
 
 #### 🔧 Item 1 (2026-07-27) — แก้ threshold circularity ด้วยสเปกเขื่อนจริง
 `spillway` + สถานะ `active` ของเขื่อน ตอนนี้ดึงจาก [`data/processed/dam_specs.json`](data/processed/dam_specs.json)
@@ -181,10 +184,10 @@
 (นครสวรรค์/ชัยนาท, 4-hop) ไม่ได้อีกต่อไป** → F1 1.000→0.800, traceability 100%→66.7%.
 **นี่ยืนยันว่า F1=1.000 เดิมพึ่งสมมติที่ผิดจริง (เข้าข้างตัวเอง).**
 
-### F1 by causal-hop length (spec-driven active, on fixture ground truth)
+### F1 by causal-hop length (หลัง Item 1 เท่านั้น — *ยังใช้ fixture gold*; ผลปัจจุบันอยู่ใน Item 3 ด้านล่าง)
 | System | F1 @ 2-hop (เขื่อนเดียว) | F1 @ 4-hop (ข้ามลุ่มน้ำ) | ΔF1 (2→4) | Traceability | Latency (ms) |
 |---|---|---|---|---|---|
-| causal-graphrag (ours) | 0.800 | 0.800 | 0.000 | **66.7%** | ~10 |
+| causal-graphrag (ours) | 0.800 | 0.800 | 0.000 | 66.7% | ~10 |
 | entity-graphrag | 0.857 | 0.750 | 0.107 | 0% | ~19 |
 | vector-rag | 0.250 | 0.250 | 0.000 | 0% | ~1 |
 
@@ -209,10 +212,43 @@ scrape ข่าวจริงจาก Google News RSS ([`src/ingest/scrape_ne
 ปลายสายยังถูกกลบ. → **ยืนยันว่าจุดอ่อนของ vector ในโดเมนนี้เป็นเชิงโครงสร้าง ไม่ใช่แค่ corpus เล็ก** —
 เติมข้อมูลจริงไม่ช่วย เพราะปัญหาคือ "ตอบตามข่าวดัง" ไม่ใช่ "ตอบตามเหตุ-ผล".
 
+#### 🛰️ Item 3 (2026-07-27) — ground truth จริงจาก GISTDA (แทน fixture)
+GISTDA STAC API ยังต่อไม่ติด และ **Sentinel-1 ผ่าน Google Earth Engine ทำไม่ได้** (ต้องมี GEE account/OAuth
+ซึ่ง environment นี้ไม่มี — ดู Bugs). จึงใช้ **ผลวิเคราะห์ภาพดาวเทียม GISTDA ของเหตุการณ์ NORU 28 ก.ย.–14 ต.ค. 2565**
+(เผยแพร่ผ่าน thaiwater.net) เป็น ground truth จริง → [`data/processed/ground_truth_2022.json`](data/processed/ground_truth_2022.json)
+(พื้นที่ท่วมรายจังหวัดเป็น "ไร่" พร้อม source). **geometry จังหวัดเปลี่ยนจาก box สังเคราะห์ → GADM4.1 จริง.**
+gold = จังหวัดที่ GISTDA วัดพื้นที่ท่วม **≥ 10,000 ไร่** (เกณฑ์ที่ประกาศไว้). fixture เดิมเก็บเป็น `*_fixture_deprecated`.
+
+**gold เปลี่ยนจริง (fixture 6 → GISTDA 7 จังหวัด):**
+| | fixture gold (เดิม) | GISTDA gold (จริง) |
+|---|---|---|
+| จังหวัด | นครสวรรค์, ชัยนาท, สิงห์บุรี, อ่างทอง, อยุธยา, **ปทุมธานี** | ตาก, พิษณุโลก, นครสวรรค์, ชัยนาท, สิงห์บุรี, อ่างทอง, อยุธยา |
+| ต่าง | — | **+ตาก(58k ไร่), +พิษณุโลก(360k)**; **−ปทุมธานี**(แค่ 3,190 ไร่ < เกณฑ์); นนทบุรี 38 ไร่, กรุงเทพ 0 |
+
+**ผล eval กับ ground truth จริง (3 ระบบ, eval set = 7 คำถาม):**
+| System | F1 @ 2-hop | F1 @ 4-hop | ΔF1 | F1 รวม | Traceability |
+|---|---|---|---|---|---|
+| causal-graphrag | 0.545 | 0.545 | 0.000 | **0.545** | **42.9%** |
+| entity-graphrag | 0.691 | 0.824 | −0.133 | **0.729** | 0% |
+| vector-rag | 0.262 | 0.382 | −0.120 | 0.296 | 0% |
+
+**การเดินทางของ F1 (causal-graphrag) — ซื่อสัตย์ทุกก้าว:**
+`1.000 (fixture+tuned)` → `0.800 (Item 1: active จริง)` → **`0.545 (Item 3: ground truth จริง)`**
+
+**Finding สำคัญ (ต้องรายงาน ไม่ซ่อน):**
+- **พอใช้ ground truth จริง causal-graphrag กลายเป็น F1 ต่ำสุดในกลุ่มกราฟ (0.545 < entity 0.729).** เพราะ schema
+  ยึด "เขื่อนล้น" เป็นต้นเหตุ แต่เหตุจริงปี 2565 คือ **ฝน→น้ำท่วมทั่วลุ่มน้ำ**: (a) ตาก/พิษณุโลก ท่วมจากฝนท้องถิ่น
+  (กราฟไปถึงได้เฉพาะผ่านเขื่อนที่ปีนั้น *ไม่ล้น*) → miss, (b) นครสวรรค์/ชัยนาท จุดบรรจบ → miss, (c) ปทุมธานี
+  ทำนายท่วมแต่ GISTDA แค่ 3,190 ไร่ → **false positive**.
+- **causal ยังชนะเด็ดขาดด้าน traceability (42.9% vs 0%)** และยังไม่เดามั่ว (precision ของสิ่งที่ตอบยังสูง) —
+  แต่ "ชนะทุกด้าน" แบบเดิมนั้น *ไม่จริง*; มันมาจาก fixture ที่เข้าข้างตัวเอง.
+- **บทเรียน:** ค่า ground truth จริงเปิดเผยข้อจำกัดเชิงโครงสร้างของ schema (ขาด path ฝน→น้ำท่า) ที่ตัวเลข fixture
+  ปิดบังไว้ — นี่คือคุณค่าที่แท้จริงของการเปลี่ยนมาใช้ข้อมูลจริง.
+
 ### เหตุการณ์ที่ทดสอบ / Test events
 | Event | ลุ่มน้ำ | ช่วงเวลา | #จังหวัด gold | ground truth |
 |---|---|---|---|---|
-| chao_phraya_2022 | เจ้าพระยา (Ping+Nan→ปากน้ำโพ→เจ้าพระยา) | 2022-09-25 → 10-15 | 6 | fixture *(GISTDA STAC ต่อไม่ติด — Item 3)* |
+| chao_phraya_2022 | เจ้าพระยา (Ping+Nan→ปากน้ำโพ→เจ้าพระยา) | 2022-09-28 → 10-14 | 7 | **GISTDA satellite (NORU 2565) จริง** + GADM4.1 |
 
 ---
 
@@ -231,6 +267,9 @@ scrape ข่าวจริงจาก Google News RSS ([`src/ingest/scrape_ne
 | 2026-07-27 | **Threshold circularity**: `active`/threshold ตั้งให้เข้ากับ gold → causal F1=1.000 เกินจริง | ค่าถูก tune ให้ผลออกมาสวย ไม่ได้มาจากสเปกจริง | ดึง spillway+active จาก `dam_specs.json` (สเปก EGAT/RID จริง + สถานะปี 2565). ผล: F1 1.000→0.800, trace 100%→66.7% | **ใช่ (สำคัญ)** — พิสูจน์ว่าผลเดิมเข้าข้างตัวเอง |
 | 2026-07-27 | **Schema mis-attribution**: chain ยึด "เขื่อนล้น" เป็นต้นเหตุ แต่ปี 2565 เขื่อนภูมิพล/สิริกิติ์ **กักน้ำ ไม่ได้ล้น** | schema ไม่มี path `ฝน→น้ำท่า→ลำน้ำ` ที่ bypass เขื่อน (เหตุจริงของน้ำท่วม 2565) | ยังไม่แก้เต็ม — บันทึกเป็น limitation; causal จึงพลาดจังหวัดจุดบรรจบ (นครสวรรค์/ชัยนาท) | **ใช่** — root cause ของ recall ที่ตก |
 | 2026-07-27 | eval hop-tag เลื่อนตามเหตุการณ์ (bucket 4-hop ว่าง → F1@4hop=0.000 ปลอม) | `HOP_PER_PROVINCE` กรอง `active:true` → hop ขึ้นกับว่าเขื่อนไหน active | เอา `active` ออกจาก query hop-tag ให้ hop = ความยาวสายเหตุ-ผล**เชิงโครงสร้าง** (คงที่) — correctness fix, ทำให้ bucket 2/4-hop frozen | ไม่ (แก้ให้เทียบได้ถูกต้อง) |
+| 2026-07-27 | **Sentinel-1 ผ่าน Google Earth Engine ทำไม่ได้** (Item 3 เส้นทาง a) | GEE ต้องมี account + `ee.Authenticate()` OAuth แบบ interactive ซึ่ง environment นี้ไม่มี | ใช้เส้นทางสำรอง: **ผลวิเคราะห์ภาพดาวเทียม GISTDA** (NORU 28 ก.ย.–14 ต.ค. 65 ผ่าน thaiwater) เป็น ground truth จริง + GADM4.1 เป็น geometry | ไม่ (ยังได้ ground truth จริงจากดาวเทียม) |
+| 2026-07-27 | province geometry เป็น box สังเคราะห์ (overlay กับ flood จริงไม่ได้ความหมาย) | fixture ใช้ box ±0.05° | ดาวน์โหลด **GADM4.1 THA level-1** เป็น polygon จังหวัดจริง; PIP ใช้ representative_point; overlay ใช้เกณฑ์พื้นที่ทับ ≥ 50% (แทน sliver 1 m²) | ไม่ (ทำให้ geospatial สมจริง) |
+| 2026-07-27 | ใช้ ground truth จริงแล้ว **causal F1 ตกเหลือ 0.545 และต่ำกว่า entity** | schema ไม่มี path ฝน→น้ำท่า → miss ตาก/พิษณุโลก/นครสวรรค์/ชัยนาท + FP ปทุมธานี | ยังไม่แก้ schema รอบนี้ — รายงานตรง ๆ เป็น finding หลัก; ทางแก้คือเติม node/edge runoff | **ใช่ (สำคัญที่สุด)** — เผยข้อจำกัดจริงของ schema ที่ fixture ปิดบัง |
 
 **Known-risk checklist (เฝ้าระวัง):**
 - Timestamp/timezone ของ D1–D3 ไม่ตรงกัน → lag_hours เพี้ยน.
@@ -242,27 +281,31 @@ scrape ข่าวจริงจาก Google News RSS ([`src/ingest/scrape_ne
 
 ## 🧾 Research Conclusions (ข้อสรุปงานวิจัย)
 
-> อ้างตัวเลขจาก Results เท่านั้น. **ข้อควรระวัง:** ground truth ยังเป็น **fixture** (GISTDA STAC ต่อไม่ติด, Item 3
-> ยังไม่เสร็จ). แต่ตั้งแต่ 2026-07-27 (Item 1) สถานะเขื่อน (`active`/spillway) มาจาก **สเปกจริง** แล้ว
-> (dam_specs.json) — ผลจึงเป็น *กึ่งจริง*: input เชิงกายภาพจริง + ground truth ยังเป็น fixture.
+> อ้างตัวเลขจาก Results เท่านั้น. **สถานะข้อมูล (หลัง Item 1–3):** สเปกเขื่อน + สถานะปี 2565 = จริง (dam_specs.json),
+> vector corpus = ข่าวจริง 194 ชิ้น, **ground truth = GISTDA satellite จริง** (ground_truth_2022.json), geometry = GADM จริง.
+> เหลือ *fixture* เฉพาะ: โครง causal graph (nodes/edges) + INUNDATES threshold/reach.level ที่ยัง tuned. ยัง 1 เหตุการณ์.
 
-- **H1 (traceability): ยังสนับสนุน (แต่ตัวเลขลดลงตามความจริง).** causal-graphrag = **66.7%** traceable
-  (เดิม 100% ตอน active=tuned) เทียบกับ entity/vector = **0%**. ที่ลดเพราะ causal **ไม่เดา**จังหวัดที่มันอธิบาย
-  (มี evidence) ไม่ได้ → ยอมพลาดดีกว่าตอบมั่ว. ข้อได้เปรียบด้าน traceability ยังเด็ดขาด.
-- **H2 (ทน hop): ยังสนับสนุน.** causal ΔF1 = **0.000** (2-hop=4-hop=0.800) ขณะ entity ลดลง 0.857→0.750
-  (ΔF1=0.107). กราฟ causal ยังทน hop ดีกว่า baseline relational.
-- **⚠️ ผลใหม่ที่ต้องซื่อสัตย์: F1 รวมของ causal (0.800) ตอนนี้ต่ำกว่า entity (0.821) เล็กน้อย.**
-  หลัง de-circularize causal เสีย recall (พลาดนครสวรรค์/ชัยนาท) เพราะ **schema ยึด "เขื่อนล้น" เป็นต้นเหตุเดียว**
-  แต่เหตุจริงปี 2565 คือ *ฝน→น้ำท่า + การระบายผ่าน barrage*. → causal ยัง**ชนะเชิง traceability/precision**
-  แต่**ยังไม่ชนะเชิง F1 รวม**บนเหตุการณ์นี้ จนกว่าจะเติม path น้ำท่าใน schema. ผลเดิม (causal ชนะทุกด้าน)
-  พึ่ง threshold ที่เข้าข้างตัวเอง.
+**เดิมสรุปว่า causal ชนะทุกด้าน (F1 1.000). พอยกเป็นข้อมูลจริงทีละชั้น ข้อสรุปเปลี่ยน — และนี่คือผลที่ซื่อสัตย์กว่า:**
+
+- **H1 (traceability): ยังสนับสนุน.** causal-graphrag = **42.9%** traceable เทียบ entity/vector = **0%**.
+  traceability เป็นคุณสมบัติเชิงโครงสร้าง (ทุก edge มี evidence) แยกจากความแม่น — causal ยังนำเด็ดขาดในมิตินี้.
+  (ตัวเลขลดจาก 100%→66.7%→42.9% ตามจำนวนจังหวัดที่ schema อธิบายไม่ได้ ซึ่งซื่อสัตย์.)
+- **H2 (ทน hop): ผลไม่ชัดบนข้อมูลจริงแล้ว.** บน fixture causal ΔF1=0 ขณะ baseline ลด — ดูเหมือนทน hop.
+  แต่บน ground truth จริง ทั้ง entity/vector กลับ **F1@4hop > F1@2hop** (ΔF1 ติดลบ) เพราะ gold จริงมีจังหวัดต้นน้ำ
+  (2-hop) ที่กราฟ/ข่าวพลาด. → **สรุป H2 บนเหตุการณ์เดียว + schema ปัจจุบัน ยังไม่หนักแน่น**; ต้องรอ schema ที่ครบ + หลายเหตุการณ์ (Item 4).
+- **⚠️ ผลหลักที่ต้องซื่อสัตย์: บน ground truth จริง causal F1 = 0.545 ต่ำสุดในกลุ่มกราฟ (entity 0.729).**
+  สาเหตุ: schema ยึด "เขื่อนล้น" เป็นต้นเหตุ แต่เหตุจริงปี 2565 คือ **ฝน→น้ำท่วมทั่วลุ่มน้ำ** → causal miss ตาก/พิษณุโลก
+  (ฝนท้องถิ่น), นครสวรรค์/ชัยนาท (จุดบรรจบ) และ FP ปทุมธานี. **ข้อสรุป "causal เหนือกว่า" จึงจริงเฉพาะมิติ traceability
+  ยังไม่จริงเชิง F1** จนกว่าจะเติม path น้ำท่าและใช้ river-gauge จริง.
+- **causal vs relational hop:** ยังเป็นมิติที่ *ต่าง* — แต่ข้อได้เปรียบ F1 ที่เคยเห็นเป็นของ fixture ไม่ใช่ของ causal จริง.
 - **Limitations (อัปเดต):**
-  - ground truth ยังเป็น **fixture** (Item 3 ยังไม่เสร็จ) → recall/precision สัมบูรณ์ยังต้องยืนยันกับ flood extent จริง.
-  - **schema gap:** ไม่มี node/edge สำหรับ *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน — ทำให้ causal อธิบายน้ำท่วมจาก runoff ไม่ได้ (root cause ของ recall ที่ตก). งานถัดไปควรเติม.
-  - INUNDATES threshold + `reach.level` **ยัง tuned** (ยังไม่ de-circularize) — ต้องใช้ river-gauge จริง (เช่น C.2 นครสวรรค์) จึงจะครบ. Item 1 แก้เฉพาะ spillway+active.
-  - dataset เล็ก (1 เหตุการณ์) → generalization รอ Item 4.
-  - ~~vector corpus เล็ก (8 ข่าว)~~ **แก้แล้ว (Item 2): ขยายเป็น 194 ข่าวจริง — F1 ไม่ดีขึ้น (จุดอ่อนเชิงโครงสร้าง).**
-- **ต่อยอด:** Item 2 (ขยาย corpus), Item 3 (ground truth จริง Sentinel-1/CEMS), Item 4 (หลายเหตุการณ์), และเติม path น้ำท่าใน schema; ปลายทาง early-warning + dashboard ความเสี่ยง (climate-resilience / NECTEC).
+  - ✅ ground truth = **จริง (GISTDA)** แล้ว; ✅ dam specs/สถานะ = จริง; ✅ vector corpus = จริง.
+  - **schema gap (root cause หลัก):** ไม่มี node/edge *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน → causal อธิบายน้ำท่วมจาก runoff ไม่ได้. งานถัดไปสำคัญสุด.
+  - INUNDATES threshold + `reach.level` **ยัง tuned** — ต้องใช้ river-gauge จริง (C.2/C.13) จึงจะ de-circularize ครบ.
+  - **1 เหตุการณ์** → generalization ยังพิสูจน์ไม่ได้ (Item 4 ยังไม่ทำ).
+  - Sentinel-1/GEE ทำไม่ได้ใน environment นี้ → ใช้ GISTDA product แทน (ยังเป็น satellite จริง).
+- **ต่อยอด (เรียงความสำคัญ):** (1) เติม path ฝน→น้ำท่าใน schema, (2) ใช้ river-gauge จริงแทน threshold tuned,
+  (3) Item 4 หลายเหตุการณ์/ลุ่มน้ำ, (4) early-warning + dashboard (climate-resilience / NECTEC).
 
 ---
 
@@ -281,6 +324,8 @@ scrape ข่าวจริงจาก Google News RSS ([`src/ingest/scrape_ne
 | 2026-07-27 | **การ de-circularize ทำให้เจอความจริงที่สำคัญกว่าตัวเลขสวย**: พอใช้สถานะเขื่อนจริง (ภูมิพล/สิริกิติ์ กักน้ำ ไม่ล้น) F1 ตกจาก 1.000→0.800 และ **เผยว่าเหตุน้ำท่วม 2565 คือฝน+น้ำท่า+barrage ไม่ใช่เขื่อนเก็บน้ำล้น** | ธง "F1=1.000" คือสัญญาณ overfit; ผลจริงที่ต่ำกว่าแต่ตรวจสอบได้ มีค่ากว่าในเชิงวิจัย และชี้ทิศ schema รุ่นถัดไป (ต้องมี path ฝน→น้ำท่า) |
 | 2026-07-27 | เขื่อนเจ้าพระยาไม่ใช่เขื่อน "เก็บน้ำ" แต่เป็น **barrage** ที่ตัดสินน้ำท่วมท้ายน้ำด้วย *อัตราการระบายเทียบเกณฑ์* (C.13 3,048 ≥ 2,800 ลบ.ม./วินาที) | ให้เกณฑ์ INUNDATES ที่ "จริง" และไม่ circular สำหรับ reach ล่าง (ต่างจากเขื่อนเก็บน้ำที่วัดด้วยระดับกักเก็บ) |
 | 2026-07-27 | **ขยาย vector corpus 8→194 ข่าวจริง แล้ว F1 ไม่ขยับ (0.25→0.24) — FP เพิ่มด้วย** | จุดอ่อน vector เป็น *เชิงโครงสร้าง* (ตอบตามความถี่ข่าว) ไม่ใช่ปัญหา corpus เล็ก | ข้อมูลมากขึ้นไม่ช่วย baseline ที่ผิดหลักการ — ตอกย้ำคุณค่าของ causal (ตอบตามเหตุ-ผล+evidence) |
+| 2026-07-27 | **ground truth จริงทำ causal จาก "ชนะทุกด้าน" → F1 ต่ำสุด (0.545)** — ตัวเลข fixture ปิดบังความจริงหมด | ยิ่งใช้ข้อมูลจริง (สเปกเขื่อน→ground truth) ยิ่งเห็นว่า schema ยึดเขื่อนเป็นต้นเหตุ *ไม่ตรง* กลไกน้ำท่วม 2565 (ฝน→น้ำท่า) | เตือนใจว่า **F1 สูงบน fixture = สัญญาณอันตราย**; งานวิจัยที่ซื่อสัตย์ต้องยืนบนข้อมูลจริง แม้ผลจะ"แพ้" ก็มีค่ากว่าเพราะชี้ทางแก้ที่ถูก |
+| 2026-07-27 | causal ยัง**รักษา traceability (42.9%) เหนือ baseline (0%)** แม้ F1 แพ้ | traceability เป็นคุณสมบัติของ *โครงสร้าง evidence* ไม่ใช่ของความแม่น — สองมิตินี้แยกกัน | ต่อให้ recall ยังต้องพัฒนา จุดขายของ causal-graphrag (คำตอบตรวจสอบย้อนกลับได้) ยังยืนได้จริง |
 
 ---
 

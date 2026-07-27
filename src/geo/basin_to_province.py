@@ -55,11 +55,16 @@ def build_inundates_edges() -> list[dict]:
 
 def gold_provinces_from_flood() -> set[str]:
     """overlay GISTDA flood extent (D3) × province → set จังหวัด gold สำหรับ eval."""
-    flood = _load("gistda_flood_extent.geojson")
-    provinces = _load("provinces.geojson")[["prov_id", "name_en", "geometry"]]
+    # เอาเฉพาะ geometry ของ flood เพื่อเลี่ยงชื่อคอลัมน์ชนกัน (prov_id มีทั้งสองชั้น)
+    flood = _load("gistda_flood_extent.geojson")[["geometry"]]
+    provinces = _load("provinces.geojson")[["prov_id", "name_en", "geometry"]].copy()
+    provinces["prov_area"] = provinces.geometry.area
     hit = gpd.overlay(provinces, flood, how="intersection", keep_geom_type=True)
-    hit = hit[hit.geometry.area > 1.0]  # กรอง sliver
-    return {str(x) for x in hit["prov_id"].unique()}
+    # จังหวัด "ท่วม" = พื้นที่ที่ทับ flood extent >= 50% ของพื้นที่จังหวัด
+    #   (กัน sliver ตามแนวเขตแดนของ polygon จริงที่อยู่ติดกัน — 1 m² น้อยเกินสำหรับ geom จริง)
+    hit["frac"] = hit.geometry.area / hit["prov_area"]
+    flooded = hit[hit["frac"] >= 0.5]
+    return {str(x) for x in flooded["prov_id"].unique()}
 
 
 def main() -> Path:
