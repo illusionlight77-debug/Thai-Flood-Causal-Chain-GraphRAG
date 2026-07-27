@@ -34,6 +34,15 @@ def resolve_province(question: str, province: str | None = None) -> str | None:
 
 @lru_cache(maxsize=1)
 def news_corpus() -> list[dict]:
+    """คลังข่าวสำหรับ vector-rag. ใช้ news_corpus_v2.jsonl (ข่าวจริง ~194 ชิ้น จาก scrape)
+    ถ้ามี; ไม่งั้น fallback เป็น news_corpus.json (8 ข่าว fixture) เพื่อคง reproducibility.
+    ควบคุมด้วย env NEWS_CORPUS = v1 | v2 (default: v2 ถ้ามีไฟล์)."""
+    import os
+
+    v2 = settings.data_processed_dir / "news_corpus_v2.jsonl"
+    pref = os.environ.get("NEWS_CORPUS", "v2")
+    if pref != "v1" and v2.exists():
+        return [json.loads(l) for l in v2.read_text("utf-8").splitlines() if l.strip()]
     return json.loads((settings.data_processed_dir / "news_corpus.json").read_text("utf-8"))
 
 
