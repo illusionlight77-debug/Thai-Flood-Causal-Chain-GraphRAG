@@ -22,51 +22,55 @@
 
 ## 🗺️ System Tour
 
-ไล่จากข้อมูลดิบ → กราฟเหตุผล → 3 ระบบตอบคำถาม → การวัดผล → หน้าเว็บ.
+ไล่จากข้อมูล**จริง** → กราฟเหตุผล (มี path ฝน→น้ำท่า) → 3 ระบบตอบคำถาม → วัดผลกับ GISTDA จริง → หน้าเว็บ.
 
 ```
-                         ┌─────────────────────────────────────────────┐
-  D1 data.go.th ─┐       │  INGEST (src/ingest)                         │
-  D2 thaiwater ──┼──────▶│  ดึงฝน/ระดับน้ำ/เขื่อน + flood extent        │
-  D3 GISTDA STAC ┤       │  → nodes + edges (แนบ evidence ทุกเส้น)      │
-  D4 basin/prov ─┘       └───────────────┬─────────────────────────────┘
-                                         │
-                    ┌────────────────────▼─────────────────────┐
-                    │  GEO (src/geo)  GeoPandas point-in-polygon │
-                    │  ลุ่มน้ำ → จังหวัดท้ายน้ำ                  │
-                    └────────────────────┬─────────────────────┘
-                                         │
-                        ┌────────────────▼────────────────┐
-                        │  Neo4j causal graph              │
-                        │  Rain→Reservoir→River→Province   │
-                        └───┬───────────┬───────────┬──────┘
-                            │           │           │
-              ┌─────────────▼──┐ ┌──────▼───────┐ ┌─▼────────────┐
-              │ causal-graphrag│ │entity-graphrag│ │  vector-rag  │
-              │  (ของเรา)      │ │  (baseline)   │ │  (baseline)  │
-              └─────────────┬──┘ └──────┬───────┘ └─┬────────────┘
-                            └───────────┼───────────┘
-                                        ▼
-                        ┌───────────────────────────────┐
-                        │  EVAL (src/eval)              │
-                        │  F1-by-hop (2-hop vs 4-hop)  │
-                        │  Traceability score          │
-                        │  ground truth = GISTDA D3    │
-                        └───────────────┬───────────────┘
-                                        ▼
-                        ┌───────────────────────────────┐
-                        │  Streamlit UI (ui/)          │
-                        │  "ทำไมจังหวัดนี้ถึงน้ำท่วม"    │
-                        └───────────────────────────────┘
+ แหล่งข้อมูลจริง (cited)                    ┌──────────────────────────────────────────────┐
+  data.go.th CKAN (ฝน/ระดับน้ำ) ──┐        │  INGEST (src/ingest)                          │
+  dam_specs.json (EGAT/RID)  ─────┼───────▶│  fixtures + connectors + scrape_news          │
+  river_gauges_*.json (RID)  ─────┤        │  → nodes + edges (แนบ evidence ทุกเส้น)       │
+  GISTDA satellite (thaiwater) ───┤        │  → ground_truth_{2022,2021}.json (gold จริง)  │
+  GADM4.1 (ขอบเขตจังหวัดจริง) ─────┘        └───────────────┬──────────────────────────────┘
+                                                           │
+                          ┌────────────────────────────────▼─────────────────┐
+                          │  GEO (src/geo)  GeoPandas point-in-polygon (GADM)  │
+                          │  reach outlet → จังหวัด → INUNDATES ; flood overlay │
+                          └────────────────────────────────┬─────────────────┘
+                                                           │
+              ┌────────────────────────────────────────────▼───────────────────────┐
+              │  Neo4j causal graph (schema จริงตามกลไก)                             │
+              │    RainStation ─FEEDS→ Reservoir ─OVERFLOWS_TO→ RiverReach           │
+              │    RainStation ─RUNOFF_TO────────────────────▶ RiverReach  ◀ ใหม่!   │
+              │    RiverReach ─FLOWS_TO→ Confluence ─FLOWS_TO→ RiverReach ─INUNDATES→ │
+              │    Province   · reach.overflow มาจาก river-gauge จริง (C.2/C.13)      │
+              └───┬──────────────────────────┬──────────────────────────┬───────────┘
+                  │                          │                          │
+        ┌─────────▼──────┐          ┌────────▼──────┐          ┌────────▼─────┐
+        │ causal-graphrag│          │entity-graphrag│          │  vector-rag  │
+        │  (ของเรา)      │          │  (baseline)   │          │ (194 ข่าวจริง)│
+        └─────────┬──────┘          └────────┬──────┘          └────────┬─────┘
+                  └──────────────────────────┼──────────────────────────┘
+                                             ▼
+                     ┌───────────────────────────────────────────────┐
+                     │  EVAL (src/eval)  F1-by-hop + Traceability      │
+                     │  ground truth = GISTDA satellite จริง           │
+                     │  2 เหตุการณ์: NORU 2565 · Dianmu 2564 (EVENT_ID) │
+                     └───────────────────────┬───────────────────────┘
+                                             ▼
+                     ┌───────────────────────────────────────────────┐
+                     │  Streamlit UI (ui/)  "ทำไมจังหวัดนี้ถึงน้ำท่วม"  │
+                     └───────────────────────────────────────────────┘
 ```
 
 **เดินระบบทีละสถานี / walk the pipeline:**
-1. **Ingest** — ดึง D1–D4, สร้าง node/edge. กติกา: ทุก edge ต้องมี `evidence` (station id + timestamp + dataset).
-2. **Geo** — GeoPandas จับคู่ลุ่มน้ำ↔จังหวัดท้ายน้ำ (point-in-polygon) → สร้าง `INUNDATES` edges.
-3. **Graph** — โหลดเข้า Neo4j; ใช้ Cypher `-[:*2..4]->` วัด hop.
-4. **Retrievers** — 3 ตัวใช้ eval set เดียวกัน.
-5. **Eval** — F1 แยกตาม chain length + traceability, เทียบ ground truth GISTDA.
-6. **UI** — Streamlit ถามตอบ + แสดง chain + evidence.
+1. **Ingest** — ดึงข้อมูลจริง (D1 CKAN สด, dam_specs/river_gauges/GISTDA/GADM จาก cited sources) → สร้าง node/edge. กติกา: ทุก edge มี `evidence`.
+2. **Geo** — GeoPandas PIP บน polygon จังหวัด **GADM จริง** → `INUNDATES` edges; overlay flood extent GISTDA → gold.
+3. **Graph** — โหลดเข้า Neo4j; schema มี **`RUNOFF_TO` (ฝน→น้ำท่า bypass เขื่อน)**; `reach.overflow` จาก river-gauge จริง; Cypher `*2..4` วัด hop.
+4. **Retrievers** — 3 ตัว, อินเทอร์เฟซเดียว, eval set เดียวกัน. causal เริ่มจาก "ต้นเหตุ active" (เขื่อนล้น *หรือ* ฝน→runoff).
+5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
+6. **UI** — Streamlit ถามตอบ + chain viewer + evidence panel + แผนที่ overlay.
+
+> 📈 **สถานะข้อมูลปัจจุบัน:** สเปกเขื่อน ✅จริง · vector corpus ✅194 ข่าวจริง · ground truth ✅GISTDA satellite จริง · geometry ✅GADM จริง · river-gauge ✅จริง(2565) / medium(2564). เหลือ fixture เฉพาะ *โครง node/edge ของกราฟ* + INUNDATES per-province threshold.
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
 
@@ -75,19 +79,19 @@
 
 ![Test UI — ทุกหน้าต่าง (ผลจริง)](docs/ui-why-flood.png)
 
-**อ่านภาพตามหน้าต่าง:**
-- **① Sidebar (⚙️ ตั้งค่า)** — เลือกจังหวัด (เฉพาะที่ท่วมจริงตาม GISTDA), แสดง gold set + Neo4j uri.
+**อ่านภาพตามหน้าต่าง** (เคสตัวอย่าง = "ทำไมนครสวรรค์ท่วม?", ground truth จริง 2565):
+- **① Sidebar (⚙️ ตั้งค่า)** — เลือกจังหวัด (เฉพาะที่ท่วมจริงตาม GISTDA), แสดง gold set (7 จังหวัด) + Neo4j uri.
 - **② เทียบ 3 ระบบ side-by-side** — ตัวชี้วัดสด hop / F1 / traceability + latency + ลงสีจังหวัด **ถูก(เขียว)/เกิน(แดง)/ตกหล่น(เหลือง)** เทียบ ground truth:
-  - `causal-graphrag`: **F1 1.00 ✓** — ตรง gold ครบ 6 จังหวัด ไม่มีเกิน/ตกหล่น
-  - `entity-graphrag`: F1 0.75 ✗ — เกิน 4 จังหวัด (Bangkok, Nonthaburi, Phitsanulok, Tak)
-  - `vector-rag`: F1 0.25 ✗ — เกิน Bangkok + ตกหล่นอีก 5 จังหวัด
-- **③ Causal chain viewer** — เขื่อนภูมิพล → ปิง → ปากน้ำโพ → เจ้าพระยาตอนบน → นครสวรรค์ (4-hop, chain มาจาก Cypher เท่านั้น).
-- **④ Evidence panel** — 4 source records (✅ ครบทุกชิ้น → traceable / H1).
-- **⑤ Overlay flood extent (GISTDA)** — แผนที่จริง (pydeck) 🔵 พื้นที่ท่วม vs 🔴 จังหวัดที่ทำนาย.
+  - `causal-graphrag`: **F1 0.77 ✓ traceable** — ถูก 5 (Ang Thong, Ayutthaya, Chai Nat, Nakhon Sawan, Sing Buri), เกิน 1 (Pathum Thani), ตกหล่น 2 (Phitsanulok, Tak = ฝนท้องถิ่นที่ลำน้ำหลักไม่ล้น)
+  - `entity-graphrag`: F1 0.82 ✗ — ทำนาย 10 จังหวัด (เกิน Bangkok, Nonthaburi, Pathum Thani)
+  - `vector-rag`: F1 0.40 ✗ — ได้ {Nakhon Sawan, Tak} จากข่าว, ตกหล่น 5
+- **③ Causal chain viewer** — **สถานีฝนปิงตอนบน → ปิงท้ายเขื่อนภูมิพล → ปากน้ำโพ → เจ้าพระยาตอนบน → Nakhon Sawan** (4-hop, เริ่มจาก *ฝน→runoff* ไม่ใช่เขื่อนล้น — กลไกจริงปี 2565; chain มาจาก Cypher เท่านั้น).
+- **④ Evidence panel** — 4 source records (#1 `D1 rain→runoff`, #2/#3 `D1 river gauge`, #4 `D4/D3 GISTDA`) ✅ ครบ → traceable / H1.
+- **⑤ Overlay flood extent (GISTDA)** — แผนที่จริง (pydeck + GADM) 🔵 พื้นที่ท่วมจริง vs 🔴 จังหวัดที่ทำนาย (ม่วง = ทับกัน).
 
 > อีกหน้าต่างนอกแอป: **Neo4j Browser** `http://localhost:7476` (user `neo4j` / pass `floodgraph123`) —
-> รัน `MATCH p=(:Reservoir {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|INUNDATES*2..4]->(:Province) RETURN p`
-> เพื่อดูเส้นทาง 2-hop / 4-hop ดิบบนกราฟ.
+> รัน `MATCH p=(src {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|RUNOFF_TO|INUNDATES*2..4]->(:Province) RETURN p`
+> (src = เขื่อนที่ล้น *หรือ* สถานีฝน) เพื่อดูเส้นทาง 2-hop / 4-hop ดิบบนกราฟ.
 
 📄 ผลตัวเลขเต็ม ๆ: [docs/ui-sample-output.md](docs/ui-sample-output.md)
 
@@ -96,18 +100,20 @@
 ## 🔗 System — All Links
 
 ### แหล่งข้อมูล / Data sources
-> สถานะ endpoint ยืนยันเมื่อ **2026-07-26** (ดู `data/processed/provenance.json` ที่ ingest เขียน).
+> สถานะ endpoint ยืนยันเมื่อ **2026-07-26/27** (ดู `data/processed/provenance.json` ที่ ingest เขียน). ✅ = ใช้จริงในผลปัจจุบัน.
 
-| Source | Link | สถานะ (2026-07-26) | ใช้ทำอะไร |
+| Source | Link | สถานะ | ใช้ทำอะไร |
 |---|---|---|---|
 | data.go.th CKAN | `https://data.go.th/api/3/action/package_search` | ✅ **200** (พบ 12 dataset) | ค้น/ดึงระดับน้ำโทรมาตร (D1) |
-| thaiwater dam_daily | `https://www.thaiwater.net/api/v1/thaiwater/public/dam_daily` | ⚠️ 200 แต่ body ไม่ใช่ JSON สะอาด → fixture | ระดับน้ำ/ระบายเขื่อน (D2) |
+| **GISTDA satellite flood — NORU 2565** | `.../2022/NORU2022/flood_area.html` (thaiwater) | ✅ **ใช้จริง** — พื้นที่ท่วมรายจังหวัด | **ground truth 2565** |
+| **GISTDA satellite flood — Dianmu 2564** | `.../2021/DIANMU2021/flood_area.html` (thaiwater) | ✅ **ใช้จริง (Item 4)** — พื้นที่ท่วมรายจังหวัด | **ground truth 2564** |
+| **GADM 4.1 (ขอบเขตจังหวัดจริง)** | `https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_THA_1.json` | ✅ **ใช้จริง** — polygon 77 จว. | geometry (D4) |
+| **RID river-gauge bulletin (9 ต.ค. 65)** | `http://water.rid.go.th/flood/news/` | ✅ **ใช้จริง** — C.2/C.13/P.7A ความจุ+อัตราไหล | reach.overflow (2565) |
+| **dam specs (EGAT/RID)** | ดู `data/processed/dam_specs.json` (มี source_url ต่อค่า) | ✅ **ใช้จริง** — spillway + สถานะปี 2565 | Reservoir active/spillway |
+| thaiwater dam_daily | `https://www.thaiwater.net/api/v1/thaiwater/public/dam_daily` | ⚠️ 200 แต่ body ไม่ใช่ JSON สะอาด | ระดับน้ำ/ระบายเขื่อน (D2) |
 | thaiwater (path เดิม) | `https://api.thaiwater.net/v1/...` | ❌ **404** (ย้าย host) | — |
-| GISTDA flood portal | https://disaster.gistda.or.th/flood/ | ℹ️ เว็บ 200 | flood extent maps (D3) |
 | GISTDA STAC API | `https://disaster.gistda.or.th/api/stac/search` | ❌ **ต่อไม่ติด (000)** | เดิมตั้งใจใช้เป็น D3 |
-| **GISTDA satellite flood (via thaiwater)** | `https://www.thaiwater.net/uploads/contents/current/2022/NORU2022/flood_area.html` | ✅ **ใช้จริง (Item 3)** — พื้นที่ท่วมรายจังหวัด NORU 2565 | **ground truth D3 จริง** |
-| **GADM 4.1 (province boundaries)** | `https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_THA_1.json` | ✅ **ใช้จริง (Item 3)** — polygon จังหวัด 77 จว. | geometry จริง (D4) |
-| Sentinel-1 SAR via Google Earth Engine | earthengine.google.com | ❌ ทำไม่ได้ (ต้อง OAuth/account) | ทางเลือก D3 ที่ลองแล้วติด |
+| Sentinel-1 SAR via Google Earth Engine | earthengine.google.com | ❌ รันในนี้ไม่ได้ (ต้อง OAuth/account) — โค้ดพร้อมที่ [`sentinel1_flood_extent.py`](src/ingest/sentinel1_flood_extent.py) | ทางเลือก cross-check |
 
 ### เครื่องมือ / Tooling
 | Tool | Link |
@@ -130,13 +136,20 @@
 | `docker-compose.yml` · `Dockerfile` | ยก Neo4j + app/UI ครั้งเดียว |
 | `.env.example` | ตัวแปรแวดล้อม + API keys + พอร์ต |
 | `src/config.py` | จุดเดียวอ่าน port/creds/endpoints |
-| `src/ingest/{fixtures,connectors,run}.py` | D1–D4 + fixture ลุ่มเจ้าพระยา 2565 (+evidence) |
-| `src/geo/basin_to_province.py` | GeoPandas PIP → INUNDATES + gold |
-| `src/graph/{queries,load,client}.py` | schema + variable-length hop cypher + loader |
+| `src/ingest/{fixtures,connectors,run}.py` | สร้าง node/edge (+evidence); `EVENT_ID` เลือกเหตุการณ์ |
+| `src/ingest/scrape_news.py` | scrape ข่าวจริง (Google News RSS) → corpus v2 |
+| `src/ingest/sentinel1_flood_extent.py` | Sentinel-1/GEE flood mapping (พร้อมรันเมื่อมี GEE account) |
+| `src/geo/basin_to_province.py` | GeoPandas PIP (GADM) → INUNDATES + gold overlay |
+| `src/graph/{queries,load,client}.py` | schema (มี `RUNOFF_TO`) + hop cypher + loader |
 | `src/rag/{base,causal_graphrag,entity_graphrag,vector_rag,registry}.py` | 3 retrievers อินเทอร์เฟซเดียว |
 | `src/eval/{build_eval_set,f1_by_hop,run}.py` | eval set + F1-by-hop + traceability |
 | `ui/app.py` | Streamlit UI เทียบ 3 ระบบ |
-| `data/processed/*.json,*.geojson` | fixture + ผล eval (`eval_results.json`) |
+| **`data/processed/dam_specs.json`** | สเปกเขื่อนจริง + สถานะปี 2565 (มี source_url) |
+| **`data/processed/ground_truth_{2022,2021}.json`** | gold จริงจาก GISTDA (2 เหตุการณ์) |
+| **`data/processed/river_gauges_{2022,2021}.json`** | reach.overflow จาก RID gauge จริง |
+| **`data/processed/news_corpus_v2.jsonl`** | ข่าวจริง 194 ชิ้น (vector-rag) |
+| **`data/raw/gadm41_THA_1.json`** | polygon จังหวัด GADM (committed) |
+| `data/processed/eval_results{,_2022,_2021}.json` | ผล eval รายเหตุการณ์ |
 
 > ⚠️ ยืนยัน endpoint ที่แน่นอนของ STAC/CKAN ตอน ingest จริง (โครงสร้าง API อาจเปลี่ยน) แล้วอัปเดตตารางนี้.
 
@@ -162,10 +175,20 @@
 
 ## 📊 Results (ผลลัพธ์)
 
-> ตัวเลข **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode). retriever มี config เดียว
-> (**TF-IDF**; ยังไม่มี semantic/hybrid). **ผลปัจจุบัน (Item 3) ใช้ ground truth จริงจาก GISTDA + geometry GADM จริง**
-> (ดูหัวข้อ Item 3). ผลเขียนลง `data/processed/eval_results.json` + `results_table.md`. eval set = 7 คำถาม (2-hop:5, 4-hop:2).
-> ด้านล่างเรียงตามลำดับการยกระดับ: Item 1 (สเปกเขื่อนจริง) → Item 2 (corpus จริง) → **Item 3 (ground truth จริง = ผลปัจจุบัน)**.
+> ตัวเลข **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode). retriever มี config เดียว (**TF-IDF**; ยังไม่มี semantic/hybrid).
+> **ผลปัจจุบัน (ล่าสุด) = Item 4: 2 เหตุการณ์จริง** (2565 + 2564) ด้วย ground truth จริงจาก GISTDA + geometry GADM จริง + runoff path + river-gauge จริง.
+
+### ⭐ ผลปัจจุบัน (สรุปบนสุด) — causal-graphrag นำทั้ง 2 เหตุการณ์จริง
+| System | 2565 NORU (gold 7) | 2564 Dianmu (gold 6) | Traceability |
+|---|---|---|---|
+| **causal-graphrag (ของเรา)** | **F1 0.769** | **F1 0.833** | **71% / 83%** |
+| entity-graphrag | 0.729 | 0.707 | 0% |
+| vector-rag | 0.296 | 0.141 | 0% |
+
+**เส้นทาง F1 ของ causal (ซื่อสัตย์ทุกก้าว):** `1.000 (fixture)` → `0.800 (I1)` → `0.545 (I3 ground truth จริง)` → `0.769 (I3½ runoff+gauge)` → `0.833 (I4 เหตุการณ์ 2564)`
+
+> ผลเขียนลง `data/processed/eval_results.json` (+ `eval_results_2022.json`, `eval_results_2021.json`).
+> **หัวข้อย่อยด้านล่างเก็บ "ประวัติการยกระดับ" ไว้ครบเพื่อความโปร่งใส** (Item 1 → 2 → 3 → 3½ → 4) — ตัวเลขในนั้นคือ *สถานะ ณ ขั้นนั้น*, ตัวเลขปัจจุบันคือตารางบนนี้.
 
 #### 🔧 Item 1 (2026-07-27) — แก้ threshold circularity ด้วยสเปกเขื่อนจริง
 `spillway` + สถานะ `active` ของเขื่อน ตอนนี้ดึงจาก [`data/processed/dam_specs.json`](data/processed/dam_specs.json)
@@ -184,7 +207,7 @@
 (นครสวรรค์/ชัยนาท, 4-hop) ไม่ได้อีกต่อไป** → F1 1.000→0.800, traceability 100%→66.7%.
 **นี่ยืนยันว่า F1=1.000 เดิมพึ่งสมมติที่ผิดจริง (เข้าข้างตัวเอง).**
 
-### F1 by causal-hop length (หลัง Item 1 เท่านั้น — *ยังใช้ fixture gold*; ผลปัจจุบันอยู่ใน Item 3 ด้านล่าง)
+### F1 by causal-hop length (หลัง Item 1 เท่านั้น — *ยังใช้ fixture gold*; ผลปัจจุบันอยู่ในตารางบนสุด ⭐)
 | System | F1 @ 2-hop (เขื่อนเดียว) | F1 @ 4-hop (ข้ามลุ่มน้ำ) | ΔF1 (2→4) | Traceability | Latency (ms) |
 |---|---|---|---|---|---|
 | causal-graphrag (ours) | 0.800 | 0.800 | 0.000 | 66.7% | ~10 |
@@ -192,7 +215,7 @@
 | vector-rag | 0.250 | 0.250 | 0.000 | 0% | ~1 |
 
 **อ่านผล (ฉบับซื่อสัตย์):**
-- causal ยัง **ΔF1=0** (ทน hop) และยังนำด้าน **traceability** (66.7% vs 0%) เด็ดขาด — แต่ **F1 รวม 0.800 ตอนนี้ต่ำกว่า entity (0.821) เล็กน้อย** เพราะ causal เลือก precision (ไม่เดาเกิน) แลกกับ recall: มัน **พลาด 2 จังหวัดที่ schema อธิบายไม่ได้** (จุดบรรจบที่มาจากน้ำท่า ไม่ใช่เขื่อนล้น).
+- causal ยัง **ΔF1=0** (ทน hop) และยังนำด้าน **traceability** (66.7% vs 0%) เด็ดขาด — แต่ **ณ ขั้นนี้ F1 รวม 0.800 ต่ำกว่า entity (0.821) เล็กน้อย** เพราะ causal เลือก precision (ไม่เดาเกิน) แลกกับ recall: มัน **พลาด 2 จังหวัดที่ schema อธิบายไม่ได้** (จุดบรรจบที่มาจากน้ำท่า ไม่ใช่เขื่อนล้น). *(→ แก้ใน Item 3½ ด้วย runoff path: causal กลับมานำ 0.769 > 0.729)*
 - entity/vector **ไม่เปลี่ยน** (ไม่ได้ใช้สถานะเขื่อน) → ยืนยันว่าการตกของ causal มาจากการ de-circularize จริง ไม่ใช่ noise.
 - **บทเรียนเชิงโครงสร้าง:** F1 ที่ "สวยเกินไป" (1.000) เป็นธงแดง. พอใช้สถานะจริง เห็นข้อจำกัดของ schema (ยึดเขื่อนเป็นต้นเหตุเดียว — ยังไม่มี path `ฝน→น้ำท่า→ลำน้ำ` ที่ bypass เขื่อน) ซึ่งคือ root cause ที่แท้จริงของน้ำท่วม 2565.
 
@@ -340,9 +363,9 @@ confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](
 
 **เดิมสรุปว่า causal ชนะทุกด้าน (F1 1.000). พอยกเป็นข้อมูลจริงทีละชั้น ข้อสรุปเปลี่ยน — และนี่คือผลที่ซื่อสัตย์กว่า:**
 
-- **H1 (traceability): ยังสนับสนุน.** causal-graphrag = **42.9%** traceable เทียบ entity/vector = **0%**.
-  traceability เป็นคุณสมบัติเชิงโครงสร้าง (ทุก edge มี evidence) แยกจากความแม่น — causal ยังนำเด็ดขาดในมิตินี้.
-  (ตัวเลขลดจาก 100%→66.7%→42.9% ตามจำนวนจังหวัดที่ schema อธิบายไม่ได้ ซึ่งซื่อสัตย์.)
+- **H1 (traceability): สนับสนุน (แข็งแรง).** causal-graphrag = **71.4% (2565) / 83.3% (2564)** traceable เทียบ entity/vector = **0%**.
+  traceability เป็นคุณสมบัติเชิงโครงสร้าง (ทุก edge มี evidence) แยกจากความแม่น — causal นำเด็ดขาดในมิตินี้ทั้ง 2 เหตุการณ์.
+  (เคยลง 100%→66.7%→42.9% ตอน de-circularize/ใช้ ground truth จริง แล้ว **กลับขึ้น 71–83% หลังเติม runoff path** ที่อธิบายจังหวัดได้มากขึ้น — ทุกก้าวรายงานตรง.)
 - **H2 (ทน hop): causal ΔF1=0 ทั้ง 2 เหตุการณ์** (2565: 0.769/0.769; 2564: 0.833/0.833) ขณะ baseline ΔF1 ติดลบ.
   causal ทน hop สม่ำเสมอข้ามเหตุการณ์.
 - **Generalization (Item 4, 2 เหตุการณ์จริง): causal นำทั้งคู่** (2565 F1 0.769, 2564 0.833) และนำ traceability เด็ดขาด
@@ -353,7 +376,7 @@ confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](
   พอเติม `RUNOFF_TO` + gate ด้วย river-gauge จริง (ไม่ tune ให้ตรง gold) causal กู้จังหวัดจุดบรรจบคืน → นำกลับ.
   **จุดสำคัญ:** การนำครั้งนี้ยืนบน *ข้อมูลจริง + โครงสร้างถูก* (ต่างจาก 1.000 เดิมที่ยืนบน fixture). ยัง miss
   ตาก/พิษณุโลก (ฝนท้องถิ่น, ลำน้ำหลักไม่ล้น) และ FP ปทุมธานี (per-province threshold ยัง tuned) — รายงานไว้ตรง ๆ.
-- **causal vs relational hop:** ยังเป็นมิติที่ *ต่าง* — แต่ข้อได้เปรียบ F1 ที่เคยเห็นเป็นของ fixture ไม่ใช่ของ causal จริง.
+- **causal vs relational hop:** causal เป็นมิติที่ *ต่าง* จาก relational hop จริง — และหลังเติม runoff + gauge จริง **ข้อได้เปรียบ F1 กลับมายืนบนข้อมูลจริง** (ไม่ใช่ fixture): causal นำ entity ทั้ง 2 เหตุการณ์ (0.769 vs 0.729, 0.833 vs 0.707) พร้อม traceability ที่ baseline ทำไม่ได้.
 - **Limitations (อัปเดต):**
   - ✅ ground truth = **จริง (GISTDA)** แล้ว; ✅ dam specs/สถานะ = จริง; ✅ vector corpus = จริง.
   - **schema gap (root cause หลัก):** ไม่มี node/edge *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน → causal อธิบายน้ำท่วมจาก runoff ไม่ได้. งานถัดไปสำคัญสุด.

@@ -59,7 +59,8 @@ with st.sidebar:
     names = province_names()
     en_by_th = {v["th"]: v["en"] for v in names.values()}
     gold_th = [fixtures.PROVINCES[p][2] for p in fixtures.GOLD_FLOODED]
-    prov_th = st.selectbox("เลือกจังหวัด (จังหวัดที่ท่วมจริงตาม GISTDA)", gold_th)
+    _default = gold_th.index("นครสวรรค์") if "นครสวรรค์" in gold_th else 0  # default = เคสตัวอย่าง runoff
+    prov_th = st.selectbox("เลือกจังหวัด (จังหวัดที่ท่วมจริงตาม GISTDA)", gold_th, index=_default)
     province = en_by_th[prov_th]
     st.divider()
     st.caption(f"Neo4j: `{settings.neo4j_uri}`")
