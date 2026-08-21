@@ -28,8 +28,11 @@ from src.config import settings
 #   และ dam_specs.json → observed_{year}. เพิ่มเหตุการณ์ใหม่ = วางไฟล์ชุดนี้ + ตั้ง EVENT_ID.
 EVENT_ID = os.environ.get("EVENT_ID", "chao_phraya_2022")
 _YEAR = EVENT_ID.rsplit("_", 1)[-1]          # "2022"
-EVENT_PERIOD = "2022-09-25/2022-10-15"
-LAYER_DATE = "2022-10-10"
+_EVENT_DATES = {
+    "2022": ("2022-09-25/2022-10-15", "2022-10-10"),
+    "2021": ("2021-09-24/2021-10-05", "2021-10-01"),  # DIANMU 2564
+}
+EVENT_PERIOD, LAYER_DATE = _EVENT_DATES.get(_YEAR, (f"{_YEAR}-09/{_YEAR}-10", f"{_YEAR}-10-01"))
 
 # ── จังหวัด: (lon, lat, ชื่อไทย, ชื่ออังกฤษ) ─────────────────────
 PROVINCES: dict[str, tuple[float, float, str, str]] = {
