@@ -22,6 +22,28 @@
     }
   },
   {
+    "type": "RUNOFF_TO",
+    "src": "RS-PING",
+    "dst": "RR-PING",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-PING",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
+    "type": "RUNOFF_TO",
+    "src": "RS-NAN",
+    "dst": "RR-NAN",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-NAN",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
     "type": "OVERFLOWS_TO",
     "src": "RES-BHUMIBOL",
     "dst": "RR-PING",

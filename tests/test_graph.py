@@ -53,10 +53,11 @@ def test_threshold_prediction_reflects_spec_driven_active(loaded):
     from src.graph import queries
     pred = {r["province"] for r in c.run(queries.CAUSAL_FLOOD_PREDICT)}
     gold = {fixtures.PROVINCES[p][3] for p in fixtures.GOLD_FLOODED}  # real GISTDA gold (Item 3)
-    lower_2hop = {"Sing Buri", "Ang Thong", "Ayutthaya", "Pathum Thani"}
-    assert pred == lower_2hop            # barrage-driven 2-hop เท่านั้น
-    # เทียบกับ ground truth จริง (GISTDA): causal ทั้งพลาดและเดินเกิน
-    assert {"Sing Buri", "Ang Thong", "Ayutthaya"} <= gold      # ถูก 3
-    assert "Pathum Thani" in pred and "Pathum Thani" not in gold  # FP (GISTDA 3,190 ไร่ < cutoff)
-    assert "Nakhon Sawan" not in pred and "Chai Nat" not in pred  # miss จุดบรรจบ (4-hop)
-    assert {"Tak", "Phitsanulok"} <= gold and not ({"Tak", "Phitsanulok"} & pred)  # miss ต้นน้ำ (runoff)
+    # หลังเติม runoff path + gate ด้วย river-gauge จริง (C.2/C.13 ล้นความจุ):
+    # causal กู้จังหวัดจุดบรรจบคืนได้ (นครสวรรค์/ชัยนาท) ผ่านสาย ฝน→runoff→ปากน้ำโพ
+    assert {"Nakhon Sawan", "Chai Nat"} <= pred                 # กู้คืนได้ (RR-CP-UPPER ล้นจริง)
+    assert {"Sing Buri", "Ang Thong", "Ayutthaya"} <= pred      # reach ล่างล้นจริง (C.13)
+    # แต่ยังพลาด/เกินอย่างซื่อสัตย์ (ไม่ tune ให้ตรง gold):
+    assert "Pathum Thani" in pred and "Pathum Thani" not in gold  # FP (per-prov threshold ยัง tuned)
+    assert {"Tak", "Phitsanulok"} <= gold                        # อยู่ใน gold จริง
+    assert not ({"Tak", "Phitsanulok"} & pred)                   # miss (ลำน้ำหลักไม่ล้น = ฝนท้องถิ่น)

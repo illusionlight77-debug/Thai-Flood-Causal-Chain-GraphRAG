@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "description": "Real RID river-gauge readings for the Chao Phraya, 9 Oct 2022 — channel capacity (Qmax, ความจุลำน้ำ) vs observed discharge. Used to set RiverReach.overflow (does the main channel exceed capacity) from REAL data instead of tuned reach.level. De-circularizes reach flooding.",
+    "source_primary": "RID bulletin สถานการณ์ลุ่มน้ำเจ้าพระยา 9 ต.ค. 2565 (water.rid.go.th/flood/news)",
+    "source_url": "http://water.rid.go.th/flood/news/",
+    "retrieved_date": "2026-07-27",
+    "important_finding": "Instantaneous channel discharge != satellite flood extent. On 9 Oct some tributary gauges had receded (channel below bank) even where GISTDA still mapped large flooded area (peak passed, water persists on floodplain). We therefore gate reach OVERFLOW on the main-stem gauge exceeding capacity; upstream provinces that flooded from LOCAL rain in ungauged sub-basins (Tak, Phitsanulok) are honestly NOT captured by main-stem gauges -> causal misses them."
+  },
+  "reach_gauge": {
+    "RR-PING":     {"station": "P.7A", "capacity_cms": 585,  "observed_cms": 409,  "overflow": false, "note": "Ping main stem below capacity; Tak flooding was local rain"},
+    "RR-NAN":      {"station": "N.67/N.5A", "capacity_cms": 275, "observed_cms": 34, "overflow": false, "note": "Nan main stem low; Phitsanulok flooded from Yom sub-basin (not in graph)"},
+    "RR-CP-UPPER": {"station": "C.2 (นครสวรรค์)", "capacity_cms": 2840, "observed_cms": 3099, "overflow": true, "note": "main Chao Phraya at Nakhon Sawan OVER capacity -> Nakhon Sawan/Chai Nat flood"},
+    "RR-CP-LOWER": {"station": "C.13 (เขื่อนเจ้าพระยา)", "capacity_cms": 3500, "flood_threshold_cms": 2800, "observed_cms": 3048, "overflow": true, "note": "release 3,048 >= 2,800 downstream flood threshold -> lower provinces flood"}
+  }
+}

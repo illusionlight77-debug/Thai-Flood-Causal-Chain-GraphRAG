@@ -3,6 +3,7 @@
     "label": "RainStation",
     "id": "RS-PING",
     "name": "สถานีฝนปิงตอนบน (Ping upper)",
+    "active": true,
     "lat": 18.79,
     "lon": 98.98,
     "basin": "Ping"
@@ -11,6 +12,7 @@
     "label": "RainStation",
     "id": "RS-NAN",
     "name": "สถานีฝนน่านตอนบน (Nan upper)",
+    "active": true,
     "lat": 19.19,
     "lon": 100.78,
     "basin": "Nan"
@@ -54,7 +56,8 @@
     "name": "ปิงท้ายเขื่อนภูมิพล",
     "basin": "Ping",
     "order": 4,
-    "level": 5.0
+    "level": 5.0,
+    "overflow": false
   },
   {
     "label": "RiverReach",
@@ -62,7 +65,8 @@
     "name": "น่านท้ายเขื่อนสิริกิติ์",
     "basin": "Nan",
     "order": 4,
-    "level": 6.0
+    "level": 6.0,
+    "overflow": false
   },
   {
     "label": "RiverReach",
@@ -70,7 +74,8 @@
     "name": "เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)",
     "basin": "ChaoPhraya",
     "order": 6,
-    "level": 9.5
+    "level": 9.5,
+    "overflow": true
   },
   {
     "label": "RiverReach",
@@ -78,7 +83,8 @@
     "name": "เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)",
     "basin": "ChaoPhraya",
     "order": 7,
-    "level": 8.5
+    "level": 8.5,
+    "overflow": true
   },
   {
     "label": "Confluence",

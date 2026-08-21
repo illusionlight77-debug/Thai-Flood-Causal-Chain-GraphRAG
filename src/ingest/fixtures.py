@@ -18,11 +18,16 @@ demonstration dataset — ตัวเลข eval ที่ได้จึงเ
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from src.config import settings
 
-EVENT_ID = "chao_phraya_2022"
+# ── event-parameterized (Item 4 groundwork): เลือกเหตุการณ์ด้วย env EVENT_ID ──
+#   ไฟล์ข้อมูลรายเหตุการณ์ตั้งชื่อลงท้ายด้วยปี: ground_truth_{year}.json, river_gauges_{year}.json,
+#   และ dam_specs.json → observed_{year}. เพิ่มเหตุการณ์ใหม่ = วางไฟล์ชุดนี้ + ตั้ง EVENT_ID.
+EVENT_ID = os.environ.get("EVENT_ID", "chao_phraya_2022")
+_YEAR = EVENT_ID.rsplit("_", 1)[-1]          # "2022"
 EVENT_PERIOD = "2022-09-25/2022-10-15"
 LAYER_DATE = "2022-10-10"
 
@@ -76,10 +81,11 @@ def _spillway_level(specs: dict, rid: str) -> float:
 
 def _is_active(specs: dict, rid: str) -> bool:
     """เขื่อน active = ล้นสปิลเวย์จริง (storage dam) หรือส่งน้ำเกิน flood threshold (barrage)."""
-    obs = specs.get(rid, {}).get("observed_2022")
+    obs = specs.get(rid, {}).get(f"observed_{_YEAR}", specs.get(rid, {}).get("observed_2022"))
     if obs is None:
         return _FALLBACK_ACTIVE[rid]
-    return bool(obs.get("spilled_via_spillway_2022") or obs.get("passed_flood_flow_2022"))
+    return bool(obs.get(f"spilled_via_spillway_{_YEAR}") or obs.get("spilled_via_spillway_2022")
+                or obs.get(f"passed_flood_flow_{_YEAR}") or obs.get("passed_flood_flow_2022"))
 
 
 _SPECS = _load_dam_specs()
@@ -89,13 +95,31 @@ RESERVOIR_ACTIVE = {rid: _is_active(_SPECS, rid) for rid in _FALLBACK_ACTIVE}
 #   เขื่อนเจ้าพระยา (barrage) ส่งน้ำ 3,048 ≥ 2,800 → active True. ดู dam_specs.json.
 
 REACH_LEVEL = {"RR-PING": 5.0, "RR-NAN": 6.0, "RR-CP-UPPER": 9.5, "RR-CP-LOWER": 8.5}
-# ⚠️ REACH_LEVEL + INUNDATES threshold ยัง tuned อยู่ (ต้องใช้ river-gauge จริงจึงจะ de-circularize
-#    ครบ — ดู README Limitations). Item 1 นี้แก้เฉพาะ spillway + active ให้มาจากสเปกจริง.
+# ⚠️ REACH_LEVEL + INUNDATES per-province threshold ยัง tuned (= ตัวแทน "ระดับการป้องกัน" ของแต่ละจังหวัด
+#    เช่น กทม./นนทบุรี มีคันกั้นน้ำ King's Dyke จึง threshold สูง) — ยังไม่ de-circularize เต็ม.
+
+# ── river-gauge จริง (RID 9 ต.ค. 65) → reach.overflow = ลำน้ำหลักล้นความจุจริงไหม ──────
+#   de-circularize "reach ล้นไหม" ด้วยข้อมูลจริง: C.2 นครสวรรค์ 3,099≥2,840 → RR-CP-UPPER ล้น;
+#   C.13 3,048≥2,800 → RR-CP-LOWER ล้น; Ping P.7A 409<585 → RR-PING ไม่ล้น (ตากท่วมจากฝนท้องถิ่น).
+_GAUGES_PATH = settings.data_processed_dir / f"river_gauges_{_YEAR}.json"
+
+
+def _load_reach_overflow() -> dict:
+    if _GAUGES_PATH.exists():
+        g = json.loads(_GAUGES_PATH.read_text("utf-8")).get("reach_gauge", {})
+        return {rid: bool(g.get(rid, {}).get("overflow", False)) for rid in REACH_LEVEL}
+    # fallback: ก่อนมี gauge จริง ถือว่า reach ที่ระดับ ≥ 7 ถือว่าล้น (ค่าเดิมโดยประมาณ)
+    return {rid: REACH_LEVEL[rid] >= 7.0 for rid in REACH_LEVEL}
+
+
+REACH_OVERFLOW = _load_reach_overflow()
+# ฝนกระจายทั้งลุ่ม (พายุโนรู 2565) → rain station active = ต้นเหตุ runoff (bypass เขื่อนที่ไม่ล้น)
+RAIN_ACTIVE = {"RS-PING": True, "RS-NAN": True}
 
 # ── ground truth (gold) — จาก GISTDA จริง (Item 3) ผ่าน ground_truth_2022.json ──────
 #   fallback = ชุด fixture เดิม เพื่อคง reproducibility ถ้าไฟล์หาย
 _FALLBACK_GOLD = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"]
-_GROUND_TRUTH_PATH = settings.data_processed_dir / "ground_truth_2022.json"
+_GROUND_TRUTH_PATH = settings.data_processed_dir / f"ground_truth_{_YEAR}.json"
 
 
 def _load_gold() -> list[str]:
@@ -144,9 +168,9 @@ def build_nodes() -> list[dict]:
     # RainStation (ต้นน้ำ)
     nodes += [
         {"label": "RainStation", "id": "RS-PING", "name": "สถานีฝนปิงตอนบน (Ping upper)",
-         "lat": 18.79, "lon": 98.98, "basin": "Ping"},
+         "active": RAIN_ACTIVE["RS-PING"], "lat": 18.79, "lon": 98.98, "basin": "Ping"},
         {"label": "RainStation", "id": "RS-NAN", "name": "สถานีฝนน่านตอนบน (Nan upper)",
-         "lat": 19.19, "lon": 100.78, "basin": "Nan"},
+         "active": RAIN_ACTIVE["RS-NAN"], "lat": 19.19, "lon": 100.78, "basin": "Nan"},
     ]
     # Reservoir
     nodes += [
@@ -168,7 +192,8 @@ def build_nodes() -> list[dict]:
         "RR-CP-LOWER": ("เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)", "ChaoPhraya", 7),
     }.items():
         nodes.append({"label": "RiverReach", "id": rid, "name": name, "basin": basin,
-                      "order": order, "level": REACH_LEVEL[rid]})
+                      "order": order, "level": REACH_LEVEL[rid],
+                      "overflow": REACH_OVERFLOW[rid]})  # ล้นจริงไหม (จาก river-gauge)
     # Confluence (จุดบรรจบข้ามลุ่มน้ำ)
     nodes.append({"label": "Confluence", "id": "CONF-PAKNAMPHO",
                   "name": "ปากน้ำโพ (Pak Nam Pho)", "lat": 15.70, "lon": 100.12})
@@ -188,6 +213,13 @@ def build_causal_edges() -> list[dict]:
          "evidence": _ev("RS-PING", "D1/data.go.th telemetry")},
         {"type": "FEEDS", "src": "RS-NAN", "dst": "RES-SIRIKIT", "lag_hours": 48,
          "evidence": _ev("RS-NAN", "D1/data.go.th telemetry")},
+    ]
+    # RUNOFF_TO (ฝน → น้ำท่าลงลำน้ำโดยตรง, bypass เขื่อน) — เหตุจริงของน้ำท่วม 2565
+    edges += [
+        {"type": "RUNOFF_TO", "src": "RS-PING", "dst": "RR-PING", "lag_hours": 24,
+         "evidence": _ev("RS-PING", "D1/data.go.th rain→runoff")},
+        {"type": "RUNOFF_TO", "src": "RS-NAN", "dst": "RR-NAN", "lag_hours": 24,
+         "evidence": _ev("RS-NAN", "D1/data.go.th rain→runoff")},
     ]
     # OVERFLOWS_TO (เขื่อน → ลำน้ำ) — spillway ดึงจาก dam_specs.json (สเปกจริง)
     edges += [

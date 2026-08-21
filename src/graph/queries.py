@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-CAUSAL_RELS = "FEEDS|OVERFLOWS_TO|FLOWS_TO|INUNDATES"
+CAUSAL_RELS = "FEEDS|OVERFLOWS_TO|FLOWS_TO|INUNDATES|RUNOFF_TO"
 
 # ── constraints ────────────────────────────────────────────────
 CONSTRAINTS = [
@@ -29,17 +29,20 @@ RETURN hops, chain, evidences
 ORDER BY hops
 """
 
-# ── ทำนายชุดจังหวัดที่ท่วม: จากเขื่อนที่ active เดินตาม chain + กรองด้วย threshold ──
-#   last_reach.level >= INUNDATES.threshold → จังหวัดนั้นท่วมจริง (ใช้ evidence เชิงกายภาพ)
+# ── ทำนายชุดจังหวัดที่ท่วม: จาก "ต้นเหตุ active" (เขื่อนที่ล้น/บาร์ราจ *หรือ* ฝนที่ทำ runoff) ──
+#   gate 2 ชั้นด้วยข้อมูลจริง: (1) last_reach.overflow = true (ลำน้ำหลักล้นความจุจริง จาก river-gauge)
+#   (2) last_reach.level >= INUNDATES.threshold (ระดับการป้องกันรายจังหวัด). ดู river_gauges_2022.json.
 CAUSAL_FLOOD_PREDICT = f"""
-MATCH path = (src:Reservoir {{active:true}})-[rels:{CAUSAL_RELS}*2..4]->(p:Province)
+MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province)
+WHERE src.active = true
 WITH p, path, length(path) AS hops, nodes(path) AS ns, relationships(path) AS rs
 WITH p, hops,
      ns[size(ns)-2] AS last_reach,
      last(rs) AS inun,
      [r IN rs | r.evidence] AS evidences,
      [n IN ns | coalesce(n.name, n.name_en)] AS chain
-WHERE inun.threshold IS NULL OR last_reach.level >= inun.threshold
+WHERE last_reach.overflow = true
+  AND (inun.threshold IS NULL OR last_reach.level >= inun.threshold)
 RETURN p.id AS pid, p.name_en AS province,
        min(hops) AS hops,
        head(collect(chain)) AS chain,

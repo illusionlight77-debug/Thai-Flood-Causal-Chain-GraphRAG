@@ -33,21 +33,21 @@ def test_vector_rag_is_a_retriever_and_no_evidence():
 
 
 @pytest.mark.integration
-def test_causal_traceable_for_2hop_but_misses_confluence_after_spec_active():
-    # หลังแก้ threshold circularity (2026-07-27): causal อธิบายจังหวัด 2-hop (บาร์ราจเจ้าพระยา)
-    # ได้พร้อม evidence แต่ *พลาด* จังหวัดจุดบรรจบ 4-hop เพราะเขื่อนเหนือ retaining ปี 2565.
+def test_causal_recovers_confluence_via_runoff_path():
+    # หลังเติม runoff path (ฝน→น้ำท่า) + gate ด้วย river-gauge จริง: causal อธิบายจังหวัดจุดบรรจบ
+    # (นครสวรรค์ 4-hop) ได้พร้อม chain ที่เริ่มจาก "สถานีฝน" และ evidence ครบ → traceable.
     from src.rag.causal_graphrag import CausalGraphRAG
     c = _graph_or_skip()
-    lower_2hop = {"Sing Buri", "Ang Thong", "Ayutthaya", "Pathum Thani"}
-    # 2-hop province: traceable + ทำนายชุดที่ราบลุ่มล่าง, hop=2
+    # 2-hop province: traceable
     a2 = CausalGraphRAG(c).answer("ทำไมจังหวัดพระนครศรีอยุธยาถึงน้ำท่วม", province="Ayutthaya")
-    assert a2.is_traceable
-    assert a2.provinces == lower_2hop
-    assert a2.hops == 2
-    # 4-hop province (นครสวรรค์): พลาด → ไม่มี chain/evidence → ไม่ traceable (สะท้อน limitation)
+    assert a2.is_traceable and "Ayutthaya" in a2.provinces and a2.hops == 2
+    # 4-hop confluence (นครสวรรค์): กู้คืนได้ + chain เริ่มจากฝน (runoff) ไม่ใช่เขื่อนล้น
     a4 = CausalGraphRAG(c).answer("ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วม", province="Nakhon Sawan")
-    assert "Nakhon Sawan" not in a4.provinces
-    assert not a4.is_traceable
+    assert "Nakhon Sawan" in a4.provinces and a4.is_traceable and a4.hops == 4
+    assert "ฝน" in a4.chain[0]                                   # ต้นสายเป็นสถานีฝน (runoff)
+    # ยังพลาดต้นน้ำที่ท่วมจากฝนท้องถิ่น (ลำน้ำหลักไม่ล้น) — honest limitation
+    aT = CausalGraphRAG(c).answer("ทำไมจังหวัดตากถึงน้ำท่วม", province="Tak")
+    assert "Tak" not in aT.provinces
 
 
 @pytest.mark.integration

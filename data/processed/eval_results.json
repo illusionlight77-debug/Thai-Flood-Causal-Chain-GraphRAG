@@ -1,12 +1,12 @@
 {
   "causal-graphrag": {
     "f1_by_hop": {
-      "2": 0.5455,
-      "4": 0.5455
+      "2": 0.7692,
+      "4": 0.7692
     },
-    "f1_overall": 0.5455,
-    "traceability": 0.4286,
-    "avg_latency_ms": 4.6
+    "f1_overall": 0.7692,
+    "traceability": 0.7143,
+    "avg_latency_ms": 8.52
   },
   "entity-graphrag": {
     "f1_by_hop": {
@@ -15,7 +15,7 @@
     },
     "f1_overall": 0.7288,
     "traceability": 0.0,
-    "avg_latency_ms": 5.02
+    "avg_latency_ms": 9.08
   },
   "vector-rag": {
     "f1_by_hop": {
@@ -24,6 +24,6 @@
     },
     "f1_overall": 0.2961,
     "traceability": 0.0,
-    "avg_latency_ms": 1.03
+    "avg_latency_ms": 1.28
   }
 }
