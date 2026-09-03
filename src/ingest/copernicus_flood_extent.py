@@ -30,15 +30,17 @@ AOI = {"west": 98.5, "south": 13.4, "east": 101.0, "north": 19.5}   # ลุ่�
 BEFORE = ["2022-08-15", "2022-09-10"]     # ก่อนเหตุการณ์ (แล้งกว่า)
 AFTER = ["2022-09-28", "2022-10-14"]      # ช่วง NORU 2565 (ตรงกับ ground_truth_2022)
 DIFF_THRESHOLD = 1.25                      # after/before ratio ที่ถือว่าน้ำท่วม
-S1_PIXEL_M = 10.0                          # Sentinel-1 GRD ~10 m
+RESAMPLE_M = 100.0                          # ลดความละเอียดเป็น 100 m → เบา ไม่ค้าง (จาก ~10 m)
 RAI_PER_SQM = 1 / 1600.0
 PROVINCES = settings.data_processed_dir / "provinces.geojson"   # GADM จริง (มี prov_id)
 OUT = settings.data_processed_dir / "copernicus_flood_2022.json"
+RAW = settings.data_processed_dir / "copernicus_flood_raw.json"
 
 
 def run() -> dict:
     import openeo
 
+    print("[1/4] เชื่อม openEO + ล็อกอิน (device flow)…")
     conn = openeo.connect(OPENEO_URL)
     conn.authenticate_oidc()   # device flow — เปิด browser ล็อกอิน (ไม่ขอบัตร)
 
@@ -47,31 +49,42 @@ def run() -> dict:
                     "SENTINEL1_GRD", spatial_extent=AOI, temporal_extent=temporal,
                     bands=["VH"])
                 .sar_backscatter(coefficient="sigma0-ellipsoid")
+                .resample_spatial(resolution=RESAMPLE_M)   # ลด pixel ~100 เท่า → ไม่ค้าง
                 .mean_time())
 
+    print("[2/4] สร้าง process graph (before/after ratio + threshold)…")
     before = s1_mean(BEFORE)
     after = s1_mean(AFTER)
     flood = (after / before) > DIFF_THRESHOLD          # boolean mask (1 = น้ำท่วมใหม่)
 
     provinces = json.loads(PROVINCES.read_text("utf-8"))
-    # sum ของ mask ต่อ polygon = จำนวน pixel ที่ท่วม
-    agg = flood.aggregate_spatial(geometries=provinces, reducer="sum")
-    raw = agg.execute()      # คืน dict/vector-cube
+    agg = flood.aggregate_spatial(geometries=provinces, reducer="sum")  # นับ pixel ท่วม/จังหวัด
 
-    # จับคู่ค่ากับ prov_id ตามลำดับ feature
+    print("[3/4] ส่ง batch job แล้วรอ (จะมี progress % — ไม่ค้าง)…")
+    #  execute_batch = submit + poll (พิมพ์สถานะเป็นระยะ) + ดาวน์โหลดผล → ไม่ค้างเงียบ
+    agg.execute_batch(str(RAW), out_format="JSON", title="chao-phraya-flood-2022")
+
+    print("[4/4] อ่านผล + แปลงเป็นไร่…")
+    raw = json.loads(RAW.read_text("utf-8"))
     ids = [f["properties"]["prov_id"] for f in provinces["features"]]
     values = _extract_values(raw, len(ids))
-    px_area = S1_PIXEL_M * S1_PIXEL_M
+    px_area = RESAMPLE_M * RESAMPLE_M
     return {pid: round((v or 0) * px_area * RAI_PER_SQM) for pid, v in zip(ids, values)}
 
 
 def _extract_values(raw, n: int) -> list:
-    """ดึงตัวเลขต่อ feature จากผล aggregate_spatial (โครงสร้างต่างกันได้ตามเวอร์ชัน)."""
+    """ดึงตัวเลขต่อ feature จากผล aggregate_spatial (โครงสร้างต่างกันได้ตามเวอร์ชัน).
+    openEO มักคืน {"<timestamp>": [[v_feat0], [v_feat1], ...]} — เอา list ของ timestamp แรก."""
     if isinstance(raw, dict):
+        picked = None
         for key in ("data", "values", "features"):
             if key in raw:
-                raw = raw[key]
+                picked = raw[key]
                 break
+        if picked is None:                      # ไม่มี key มาตรฐาน → น่าจะ keyed by timestamp
+            vals = list(raw.values())
+            picked = vals[0] if vals else []
+        raw = picked
     out = []
     for item in (raw if isinstance(raw, (list, tuple)) else [raw]):
         while isinstance(item, (list, tuple)) and item:
