@@ -1,0 +1,78 @@
+{
+  "entity-graphrag": {
+    "comparison": "causal-graphrag vs entity-graphrag",
+    "per_event": {
+      "2022": {
+        "n": 23,
+        "both_correct": 15,
+        "both_wrong": 1,
+        "causal_only_correct": 5,
+        "other_only_correct": 2,
+        "p_two_sided": 0.4531,
+        "p_one_sided": 0.2266,
+        "significant_two_sided_0.05": false,
+        "significant_one_sided_0.05": false
+      },
+      "2021": {
+        "n": 23,
+        "both_correct": 15,
+        "both_wrong": 1,
+        "causal_only_correct": 6,
+        "other_only_correct": 1,
+        "p_two_sided": 0.125,
+        "p_one_sided": 0.0625,
+        "significant_two_sided_0.05": false,
+        "significant_one_sided_0.05": false
+      }
+    },
+    "pooled": {
+      "n": 46,
+      "both_correct": 30,
+      "both_wrong": 2,
+      "causal_only_correct": 11,
+      "other_only_correct": 3,
+      "p_two_sided": 0.0574,
+      "p_one_sided": 0.0287,
+      "significant_two_sided_0.05": false,
+      "significant_one_sided_0.05": true
+    }
+  },
+  "vector-rag": {
+    "comparison": "causal-graphrag vs vector-rag",
+    "per_event": {
+      "2022": {
+        "n": 23,
+        "both_correct": 3,
+        "both_wrong": 2,
+        "causal_only_correct": 17,
+        "other_only_correct": 1,
+        "p_two_sided": 0.0001,
+        "p_one_sided": 0.0001,
+        "significant_two_sided_0.05": true,
+        "significant_one_sided_0.05": true
+      },
+      "2021": {
+        "n": 23,
+        "both_correct": 3,
+        "both_wrong": 2,
+        "causal_only_correct": 18,
+        "other_only_correct": 0,
+        "p_two_sided": 0.0,
+        "p_one_sided": 0.0,
+        "significant_two_sided_0.05": true,
+        "significant_one_sided_0.05": true
+      }
+    },
+    "pooled": {
+      "n": 46,
+      "both_correct": 6,
+      "both_wrong": 4,
+      "causal_only_correct": 35,
+      "other_only_correct": 1,
+      "p_two_sided": 0.0,
+      "p_one_sided": 0.0,
+      "significant_two_sided_0.05": true,
+      "significant_one_sided_0.05": true
+    }
+  }
+}

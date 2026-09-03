@@ -82,7 +82,7 @@ async function boot(){CFG=await j("/api/config");const t=document.getElementById
 
 function renderProvenance(){const items=[["Ground truth","GISTDA satellite (53 จว.)","real"],["Geometry","GADM4.1","real"],
   ["Dam specs+status","EGAT/RID","real"],["reach.overflow","RID SWOC gauge (8 สาขา, อิสระ)","real"],["Vector corpus","194 ข่าวจริง","real"],
-  ["Universe","ลุ่มเจ้าพระยา 23 จังหวัด","real"],["คำอธิบาย","LLM (grounded)","real"],["โครงกราฟ node/edge","hand-built จาก topology จริง","fixture"]];
+  ["Universe","ลุ่มเจ้าพระยา 23 จังหวัด","real"],["คำอธิบาย","LLM (grounded)","real"],["โครงกราฟ (flow)","DEM-validated (Copernicus)","real"]];
   document.getElementById("prov").innerHTML=items.map(([a,b,s])=>`<div class="border rounded-xl p-3 ${s=='real'?'border-green-200 bg-green-50':'border-amber-200 bg-amber-50'}">
     <div class="font-semibold">${a}</div><div class="text-xs text-slate-500">${b}</div>
     <div class="text-xs mt-1 ${s=='real'?'text-green-700':'text-amber-700'}">${s=='real'?'✅ จริง':'⚙️ fixture'}</div></div>`).join("");}

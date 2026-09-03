@@ -1,0 +1,59 @@
+{
+  "n": 8,
+  "spearman_rho": 0.021,
+  "rows": [
+    {
+      "province": "Nakhon Sawan",
+      "model_lead_h": 12,
+      "observed_day": 35
+    },
+    {
+      "province": "Chai Nat",
+      "model_lead_h": 12,
+      "observed_day": 34
+    },
+    {
+      "province": "Nakhon Pathom",
+      "model_lead_h": 24,
+      "observed_day": 62
+    },
+    {
+      "province": "Ang Thong",
+      "model_lead_h": 36,
+      "observed_day": 33
+    },
+    {
+      "province": "Ayutthaya",
+      "model_lead_h": 36,
+      "observed_day": 34
+    },
+    {
+      "province": "Pathum Thani",
+      "model_lead_h": 36,
+      "observed_day": 47
+    },
+    {
+      "province": "Nonthaburi",
+      "model_lead_h": 36,
+      "observed_day": 50
+    },
+    {
+      "province": "Bangkok",
+      "model_lead_h": 36,
+      "observed_day": 61
+    }
+  ],
+  "directional_checks": {
+    "nakhonsawan_before_bangkok": {
+      "model_predicts_first": true,
+      "observed_first": true,
+      "observed_gap_days": 26
+    },
+    "upstream_vs_metropolis_mean_day": {
+      "upstream_mean": 34.5,
+      "metropolis_mean": 52.7,
+      "model_orders_correctly": true
+    }
+  },
+  "note": "main-stem lead (hrs from Pak Nam Pho) vs observed 2011 arrival day. Province-level rho is ~0 because the main stem has only 2 stations (cannot resolve the lower plain) and Tha Chin (Nakhon Pathom) is a slow distributary the equal lags mis-order — reported honestly, not tuned. The COARSE upstream→metropolis ordering the model does get right."
+}

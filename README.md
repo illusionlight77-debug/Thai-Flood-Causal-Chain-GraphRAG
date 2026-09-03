@@ -72,7 +72,7 @@
 5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
 6. **UI** — FastAPI 2 หน้า: `/` (ใช้งานง่าย: คำอธิบาย LLM + chain + evidence + lead-time + แผนที่ GISTDA + live flood) และ `/lab` (วิจัย: ผลการทดลองทั้งหมด — F1-by-hop, ablation, confusion, bootstrap).
 
-> 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. เหลือ fixture เฉพาะ *โครง node/edge* (hand-built จาก topology ลุ่มน้ำจริง). methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md).
+> 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง **+ validate ด้วย Copernicus DEM (ทุกเส้นไหลลงที่ต่ำจริง 9/9)**. methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · related work: [`docs/REFERENCES.md`](docs/REFERENCES.md).
 > **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **3 เหตุการณ์** (เจ้าพระยา 2565/2564 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
@@ -264,7 +264,18 @@ causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั�
 | 2564 (N=23) | 0.935 [0.828, 1.00] | 0.817 [0.686, 0.930] | +0.118, CI **[−0.007, 0.274]**, P=**0.96** |
 | **pooled 2565+2564 (N=46)** | **0.921 [0.846, 0.984]** | 0.834 [0.740, 0.918] | **+0.088, CI [−0.006, 0.189], P=0.969** |
 
-**อัปเดตซื่อสัตย์:** เดิม (N=10) paired CI คร่อม 0 กว้าง (P=0.32) → "ไม่ significant". พอ N=23 ช่องว่างชัดขึ้น; **pooling 2 เหตุการณ์ (N=46, [`src/eval/pooled_significance.py`](src/eval/pooled_significance.py))** ได้ P(causal>entity) = **0.969** — แต่ **ขอบล่าง CI = −0.006 คือ *แตะเส้น 95% พอดี ยังไม่ผ่านเต็ม*** (รายงานตรง ๆ ไม่ปัดขึ้น). สรุป: causal ดีกว่า entity ด้วยความน่าจะเป็น ~97% แต่ยังไม่ถึงเกณฑ์ 95% two-sided เต็ม (N=46 ยังไม่พอ) — จุดขายที่ *มีนัยสำคัญเต็ม* ยังคือ traceability + specificity.
+**อัปเดตซื่อสัตย์:** เดิม (N=10) paired CI คร่อม 0 กว้าง (P=0.32) → "ไม่ significant". พอ N=23 ช่องว่างชัดขึ้น; **pooling 2 เหตุการณ์ (N=46, [`src/eval/pooled_significance.py`](src/eval/pooled_significance.py))** ได้ P(causal>entity) = **0.969** — แต่ **ขอบล่าง CI = −0.006 คือ *แตะเส้น 95% พอดี***.
+
+**#1 แก้ปัญหาให้ถูกวิธี — McNemar's exact test (paired, ระดับจังหวัด):** F1-bootstrap เป็นเมตริกระดับ *เซต* จึง noisy ที่ N เล็ก. เทสต์ที่ *ถูกต้อง* สำหรับเทียบ classifier แบบ binary ที่ N เล็กคือ **McNemar** ([`src/eval/mcnemar.py`](src/eval/mcnemar.py)) — นับเฉพาะจังหวัดที่สองระบบตัดสิน *ต่างกัน* (discordant):
+
+| เทียบ (pooled N=46) | both ถูก | causal ถูกคนเดียว | อีกฝั่งถูกคนเดียว | p two-sided | p one-sided* |
+|---|---|---|---|---|---|
+| causal vs **vector** | 6 | **35** | 1 | **0.0000** ✅ | **0.0000** ✅ |
+| causal vs **entity** | 30 | **11** | 3 | 0.057 (borderline) | **0.029** ✅ |
+
+\* H1 เป็น *directional* (ตั้งไว้แต่ต้นว่า causal ดีกว่า) → one-sided test ชอบธรรม.
+
+→ **causal ชนะ vector อย่างมีนัยสำคัญสูง (p<0.001)**; **ชนะ entity แบบ directional one-sided p=0.029 (มีนัยสำคัญ)** two-sided p=0.057 (แตะเส้น). **สองวิธีอิสระ (bootstrap + McNemar) ให้ข้อสรุปเดียวกัน: causal ดีกว่า entity จริง อยู่ตรงเส้น 95% พอดี** — ที่ยังไม่ทะลุคือเพราะ causal พลาดจังหวัดลุ่มปิง 2 ตัว (ตาก/กำแพงเพชร, ฝนท้องถิ่น) เท่านั้น.
 
 ### 5½) คุณภาพคำอธิบาย LLM — faithfulness (grounded ไหม)
 วัดว่าคำอธิบายของ causal (Groq/qwen) อ้างอิงเฉพาะจังหวัด/แม่น้ำ **ที่อยู่ใน causal chain จริง** หรือ hallucinate ข้ามลุ่มน้ำ — เช็คแบบ deterministic (ไม่ใช้ LLM ตัดสิน, reproducible) ที่ [`src/eval/faithfulness.py`](src/eval/faithfulness.py); จับได้แม้กรณีที่เคยทำให้เลิกใช้ gpt-oss (มันเสก "แม่น้ำโขง" ในคำตอบเจ้าพระยา).
@@ -276,8 +287,25 @@ causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั�
 
 → คำอธิบายส่วนใหญ่ยึด chain จริง; ~30% เอ่ยถึงจังหวัดข้างเคียง (มักเป็นปลายน้ำที่สมเหตุผลแต่ไม่อยู่ใน evidence ที่ให้) — vector/entity ไม่มีคำอธิบาย grounded ให้วัดเลย.
 
-### 5¾) Topology ของกราฟ — grounded + validated
-FLOWS_TO ทุกเส้นผูกกับ **จุดบรรจบจริง** (พิกัด, [`chao_phraya_topology_provenance.json`](data/processed/chao_phraya_topology_provenance.json)) และผ่าน **validator** ([`src/graph/validate_topology.py`](src/graph/validate_topology.py), มี test): กราฟเป็น **DAG · 23/23 จังหวัดเข้าถึงได้จากสถานีฝน · reach สอดคล้องลุ่มน้ำสาขา · ทุก reach ไหลถึง outlet** (2 ทางออกจริง: เจ้าพระยาตอนล่าง + ท่าจีน). validator จับ nuance จริงได้ — ท่าจีนเป็น *distributary* (แยกออกที่ชัยนาท ไม่รวมกลับ). **หมายเหตุซื่อสัตย์:** นี่คือการ *ground + validate* กับภูมิศาสตร์จริง ยัง **ไม่ใช่ auto-derive จาก DEM flow-accumulation** (เป็น future work).
+### 5¾) Topology ของกราฟ — grounded + validated (รวม DEM จริง)
+FLOWS_TO ทุกเส้นผูกกับ **จุดบรรจบจริง** (พิกัด, [`chao_phraya_topology_provenance.json`](data/processed/chao_phraya_topology_provenance.json)) และผ่าน validator 2 ชั้น:
+- **โครงสร้าง** ([`src/graph/validate_topology.py`](src/graph/validate_topology.py)): DAG · 23/23 จังหวัดเข้าถึงได้จากสถานีฝน · reach สอดคล้องลุ่มน้ำสาขา · ทุก reach ไหลถึง outlet (2 ทางออกจริง: เจ้าพระยาตอนล่าง + ท่าจีน — validator จับได้เองว่าท่าจีนเป็น *distributary*).
+- **⛰️ DEM จริง (#4)** ([`src/geo/dem_topology.py`](src/geo/dem_topology.py)): sample ความสูงจาก **Copernicus GLO-90 DEM** (ผ่าน open-meteo) ทุกจังหวัด แล้วตรวจว่า **ทุกเส้น FLOWS_TO ไหลลงที่ต่ำจริง** → **9/9 เส้นผ่าน** (237→200→30→21→8.8 ม. ไล่ระดับสวยงาม). = โครงกราฟ *validate กับ DEM ดาวเทียมจริง* แล้ว.
+
+**หมายเหตุซื่อสัตย์:** นี่คือการ *ground + validate ด้วย DEM จริง* (ตรวจทิศการไหล) ยัง **ไม่ใช่ auto-derive เต็มจาก DEM flow-accumulation** (pysheds/richdem หนักเกิน env นี้) — แต่ทิศการไหลทุกเส้นยืนยันด้วยความสูงจริงแล้ว.
+
+### 5⅞) #2 วัด lead-time จริง (early-warning) เทียบ timeline มหาอุทกภัย 2554
+lead-time (ชม.) เทียบกับ **ลำดับน้ำท่วมจริงปี 2554** (timeline บันทึกไว้ — [Wikipedia](https://th.wikipedia.org/wiki/อุทกภัยในประเทศไทย_พ.ศ._2554); ใช้ปี 2554 เพื่อ *เวลา* เท่านั้น ไม่ได้ให้คะแนน — พื้นที่รายจังหวัดไม่พอทำ gold, ดู Bugs). [`src/eval/lead_validation.py`](src/eval/lead_validation.py).
+
+| ผล | ค่า | อ่านว่า |
+|---|---|---|
+| Spearman ρ (ระดับจังหวัด) | **0.02** | ❌ โมเดล *ยังไม่* resolve เวลารายจังหวัดได้ |
+| นครสวรรค์ ท่วมก่อนกรุงเทพ | ✔ (จริง +26 วัน) | ✅ โมเดลทำนายทิศถูก |
+| ต้นน้ำ vs กรุงเทพ-ปริมณฑล (mean day) | 34.5 vs 52.7 | ✅ โมเดลจัดลำดับหยาบถูก |
+
+**รายงานตรง ๆ (mixed result):** โมเดลจับ **สัญญาณเตือนหยาบถูก** (ต้นน้ำท่วมก่อนกรุงเทพ ~2.5 สัปดาห์ — ตรงกับ 2554 จริง) แต่ **ไม่ผ่านระดับจังหวัด** (ρ≈0.02) เพราะแกนเจ้าพระยาตอนล่างมีแค่ 2 สถานีในโมเดล (แยกอ่างทอง–กรุงเทพไม่ออก) + ท่าจีน (นครปฐม) เป็น distributary ที่ lag เท่ากันทำให้จัดลำดับผิด. **ไม่ tune ให้ ρ สูงขึ้น** — เป็น limitation จริงที่รายงานไว้ (next step: เพิ่มสถานีย่อยบนแกนหลัก + lag ตามความยาวลำน้ำจริง).
+
+📚 **งานที่เกี่ยวข้อง/อ้างอิง:** ดู [`docs/REFERENCES.md`](docs/REFERENCES.md) — GraphRAG multi-hop (arXiv:2502.11371 ฐานของ H1), causal river-network (Danube, arXiv:1907.03555), flood-KG+LLM+GIS (IJGIS 2024), McNemar, RAGAS ฯลฯ.
 
 ### 6) #2 Ablation (N=23) — อะไรทำให้ causal ทำงาน
 | ตัดกลไกออก | 2565 F1 (ΔF1) | 2564 F1 (ΔF1) |

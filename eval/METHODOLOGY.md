@@ -21,14 +21,21 @@ Measure whether a retriever that traverses a **real causal chain**
 - **Specificity** (negative control) = ability to correctly say a province did NOT flood.
 - **Bootstrap 95% CI** on F1 and on the paired causal−entity difference, per event and
   **pooled across events** (`src/eval/pooled_significance.py`, N=46 (event,province) cases).
-  N is small → CI wide → reported honestly, including when the lower bound sits at the boundary.
+- **McNemar's exact paired test** (`src/eval/mcnemar.py`) — the appropriate small-N test for
+  two classifiers on the same provinces; reported two-sided AND one-sided (H1 is directional:
+  causal ≥ entity). Pooled across events.
 - **Explanation faithfulness** (`src/eval/faithfulness.py`) — deterministic grounding check
   that the causal LLM explanation names only geography in its own chain (no cross-basin
   hallucination). Reproducible; no second LLM as judge.
-- **Topology validity** (`src/graph/validate_topology.py`) — the flow graph must be a DAG,
-  every province reachable from a rain station, sub-basin-consistent, draining to a real
-  outlet. The topology is grounded in real confluence coordinates
-  (`chao_phraya_topology_provenance.json`); it is validated, not DEM-derived (future work).
+- **Topology validity** (`src/graph/validate_topology.py` + `src/geo/dem_topology.py`) — the
+  flow graph must be a DAG, every province reachable from a rain station, sub-basin-consistent,
+  draining to a real outlet, AND every FLOWS_TO edge must go downhill on a real satellite DEM
+  (Copernicus GLO-90). Grounded in real confluence coordinates + DEM-validated; not yet a full
+  DEM flow-accumulation derivation (future work).
+- **Lead-time validation** (`src/eval/lead_validation.py`) — the predicted main-stem lead is
+  checked against the observed 2011 mega-flood progression (documented timeline; used for
+  timing only, not scored). Reported with its honest limitation (province-level ρ≈0, coarse
+  2-station main stem) — never tuned to raise the correlation.
 
 ## 2. Ground truth (never the model's own graph)
 Gold = **GISTDA satellite (Sentinel-1) flood-area** per province, published via thaiwater,

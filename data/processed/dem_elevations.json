@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "source": "Copernicus GLO-90 DEM via open-meteo elevation API",
+    "url": "https://api.open-meteo.com/v1/elevation",
+    "unit": "meters"
+  },
+  "elevation_m": {
+    "TAK": 112.0,
+    "KAMPHAENGPHET": 82.0,
+    "SUKHOTHAI": 54.0,
+    "UTTARADIT": 65.0,
+    "PHITSANULOK": 50.0,
+    "PHICHIT": 41.0,
+    "NAKHONSAWAN": 20.0,
+    "UTHAITHANI": 45.0,
+    "CHAINAT": 22.0,
+    "SINGBURI": 15.0,
+    "ANGTHONG": 11.0,
+    "AYUTTHAYA": 7.0,
+    "LOPBURI": 19.0,
+    "SARABURI": 20.0,
+    "PHETCHABUN": 118.0,
+    "SUPHANBURI": 11.0,
+    "NAKHONPATHOM": 8.0,
+    "PATHUMTHANI": 4.0,
+    "NONTHABURI": 8.0,
+    "BANGKOK": 8.0,
+    "CHIANGMAI": 312.0,
+    "LAMPANG": 237.0,
+    "LAMPHUN": 294.0,
+    "CONF-PAKNAMPHO": 30.0
+  }
+}
