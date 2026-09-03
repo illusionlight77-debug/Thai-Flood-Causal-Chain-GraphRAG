@@ -70,7 +70,8 @@
 5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
 6. **UI** — Streamlit ถามตอบ + chain viewer + evidence panel + แผนที่ overlay.
 
-> 📈 **สถานะข้อมูลปัจจุบัน:** สเปกเขื่อน ✅จริง · vector corpus ✅194 ข่าวจริง · ground truth ✅GISTDA satellite จริง · geometry ✅GADM จริง · river-gauge ✅จริง(2565+2564) · INUNDATES threshold ✅**de-circularized แล้ว** (gauge จริง + คันกั้นน้ำ King's Dyke แทนค่าตั้งเอง). เหลือ fixture เฉพาะ *โครง node/edge ของกราฟ* (hand-built).
+> 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite · geometry ✅GADM · river-gauge ✅ · INUNDATES threshold ✅de-circularized (gauge+คันกั้นน้ำ). เหลือ fixture เฉพาะ *โครง node/edge* (hand-built).
+> **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **3 เหตุการณ์** (เจ้าพระยา 2565/2564 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
 
@@ -187,19 +188,74 @@ API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (pr
 
 ---
 
-## 📊 Results (ผลลัพธ์)
+## 📊 รายงานผลการทดลอง (Experiment Report)
 
-> ตัวเลข **คำนวณจริง** จาก `python -m src.eval.run` (ไม่ hardcode). retriever มี config เดียว (**TF-IDF**; ยังไม่มี semantic/hybrid).
-> **ผลปัจจุบัน (ล่าสุด) = Item 4: 2 เหตุการณ์จริง** (2565 + 2564) ด้วย ground truth จริงจาก GISTDA + geometry GADM จริง + runoff path + river-gauge จริง.
+> ตัวเลขทั้งหมด **คำนวณจริง** (ไม่ hardcode) จาก `python -m src.eval.run` / `build_ui_data` / `ablation`.
+> ดูสดได้ที่หน้า **[/lab](http://localhost:8501/lab)**. ข้อมูล: ground truth = GISTDA satellite จริง · geometry = GADM4.1 ·
+> dam specs = EGAT/RID · river-gauge = RID · vector corpus = 194 ข่าวจริง · คำอธิบาย = LLM (Groq/qwen, grounded).
 
-### ⭐ ผลปัจจุบัน (สรุปบนสุด) — causal-graphrag นำทั้ง 2 เหตุการณ์จริง
-| System | 2565 NORU (gold 7) | 2564 Dianmu (gold 6) | Traceability |
-|---|---|---|---|
-| **causal-graphrag (ของเรา)** | **F1 0.769** | **F1 0.833** | **71% / 83%** |
-| entity-graphrag | 0.729 | 0.707 | 0% |
-| vector-rag | 0.296 | 0.141 | 0% |
+### 1) Setup
+- **3 เหตุการณ์จริง:** เจ้าพระยา 2565 (NORU), เจ้าพระยา 2564 (Dianmu), **โขง/อีสาน 2569 (live GISTDA)**.
+- **3 ระบบ** อินเทอร์เฟซเดียวกัน: `causal-graphrag` (ของเรา), `entity-graphrag` (baseline relational), `vector-rag` (baseline, 194 ข่าวจริง).
+- **Metric:** F1 (แยก 2-hop/4-hop), Traceability (สัดส่วนคำตอบที่มี evidence ครบ), + negative-control (precision/recall/specificity), + bootstrap 95% CI.
 
-**เส้นทาง F1 ของ causal (ซื่อสัตย์ทุกก้าว):** `1.000 (fixture)` → `0.800 (I1)` → `0.545 (I3 ground truth จริง)` → `0.769 (I3½ runoff+gauge)` → `0.833 (I4 เหตุการณ์ 2564)`
+### 2) ผลหลัก — F1, Traceability, Specificity (3 เหตุการณ์)
+| System | 2565 F1 | 2564 F1 | อีสาน F1 | **Traceability** | **Specificity** |
+|---|---|---|---|---|---|
+| **causal-graphrag** | **0.769** | **0.833** | 0.667 | **0.71 / 0.83 / 1.00** | **0.67 / 0.75 / 0.67** |
+| entity-graphrag | 0.729 | 0.707 | **0.824** | 0 / 0 / 0 | 0 / 0 / 0 |
+| vector-rag | 0.296 | 0.141 | 0.0 (N/A) | 0 / 0 / 0 | 0 / 0 / 0 |
+
+**อ่านผลแบบซื่อสัตย์:**
+- **causal นำ F1 บนเจ้าพระยา 2 เหตุการณ์** แต่ **แพ้ entity บนอีสาน** (entity เดาว่าท่วมเกือบทุกจังหวัด → บังเอิญ recall สูง).
+- **สิ่งที่ causal นำ "ทุกเหตุการณ์อย่างเด็ดขาด" คือ Traceability (0.71–1.0 vs 0) และ Specificity (0.67–0.75 vs 0)** — entity/vector มี specificity = 0 เพราะทำนายว่าท่วมแทบทุกจังหวัด จึง **ระบุ "ไม่ท่วม" ไม่ได้เลย** และ **ตรวจย้อนกลับหลักฐานไม่ได้เลย**.
+
+### 3) F1 แยกตาม hop (2565 / 2564)
+| System | 2565 2-hop / 4-hop | 2564 2-hop / 4-hop |
+|---|---|---|
+| causal | 0.769 / 0.769 (ΔF1 0) | 0.833 / 0.833 (ΔF1 0) |
+| entity | 0.691 / 0.824 | 0.686 / 0.750 |
+| vector | 0.262 / 0.382 | 0.106 / 0.211 |
+
+causal **ΔF1 = 0** (ทน hop) ทุกเหตุการณ์; baseline ไม่คงที่.
+
+### 4) #3 Negative control (confusion — gold=ท่วม, non-gold=ไม่ท่วม)
+| System (2565) | TP | FP | FN | TN | Precision | Recall | Specificity |
+|---|---|---|---|---|---|---|---|
+| causal | 5 | 1 | 2 | 2 | **0.833** | 0.714 | **0.667** |
+| entity | 7 | 3 | 0 | 0 | 0.700 | 1.000 | **0.000** |
+| vector | 1 | 3 | 6 | 0 | 0.250 | 0.143 | 0.000 |
+
+→ **causal เป็นระบบเดียวที่ "รู้จักปฏิเสธ"** (TN>0). baseline ทำนายท่วมหมด → specificity 0.
+
+### 5) #4 Bootstrap significance (resample จังหวัด, N เล็ก)
+| 2565 | F1 mean | CI95 |
+|---|---|---|
+| causal | 0.759 | [0.44, 1.00] |
+| entity | 0.817 | [0.57, 1.00] |
+| vector | 0.170 | [0.00, 0.46] |
+
+paired **causal − entity:** mean diff −0.058, CI95 **[−0.35, +0.24]**, P(causal>entity) = **0.32**
+→ **finding สำคัญ: ด้วย N ~10 จังหวัด ความต่าง F1 ระหว่าง causal กับ entity "ไม่มีนัยสำคัญทางสถิติ"** (CI คร่อม 0).
+**จุดแข็งของ causal ที่มีนัยสำคัญจริงคือ traceability + specificity ไม่ใช่ F1.**
+
+### 6) #2 Ablation (2565) — อะไรทำให้ causal ทำงาน
+| ตัดกลไกออก | F1 | ΔF1 |
+|---|---|---|
+| full | 0.769 | — |
+| −runoff | 0.545 | **−0.224** (สำคัญสุด) |
+| −overflow gate | 0.933 | **+0.164** (gate เข้มไป) |
+| −protection (คันกั้นน้ำ) | 0.667 | −0.102 |
+| −direction (undirected) | 0.769 | 0.000 |
+
+### 7) Generalization ข้ามลุ่มน้ำ (#5 โขง/อีสาน)
+causal F1 0.667: **จับจังหวัดริมโขงถูก** (หนองคาย/บึงกาฬ/นครพนม/มุกดาหาร) แต่ **พลาดจังหวัดในแผ่นดิน**
+(สกลนคร/อุดรธานี/กาฬสินธุ์ = ฝนท้องถิ่น) — **ข้อจำกัดเดียวกับพลาดตาก/พิษณุโลกในเจ้าพระยา** → schema
+ทำงานสม่ำเสมอข้ามลุ่มน้ำ (จับ mainstem ได้, พลาด local-rain).
+
+### 8) เส้นทาง F1 ของ causal (ซื่อสัตย์ทุกก้าว)
+`1.000 (fixture+tuned)` → `0.800 (สเปกเขื่อนจริง)` → `0.545 (ground truth GISTDA จริง)` → `0.769 (runoff+gauge จริง)` → `0.833 (เหตุการณ์ 2564)`
+ทุกก้าวมาจากการเปลี่ยนไปใช้ข้อมูลจริง/แก้ schema — ไม่เคย hardcode; การตกที่ 0.545 คือความจริงที่ fixture เดิมปิดบัง.
 
 > ผลเขียนลง `data/processed/eval_results.json` (+ `eval_results_2022.json`, `eval_results_2021.json`).
 > **หัวข้อย่อยด้านล่างเก็บ "ประวัติการยกระดับ" ไว้ครบเพื่อความโปร่งใส** (Item 1 → 2 → 3 → 3½ → 4) — ตัวเลขในนั้นคือ *สถานะ ณ ขั้นนั้น*, ตัวเลขปัจจุบันคือตารางบนนี้.
@@ -378,20 +434,13 @@ C.13 ~2,700–2,800) ไม่ใช่การเดาล้วน แต่�
 
 **เดิมสรุปว่า causal ชนะทุกด้าน (F1 1.000). พอยกเป็นข้อมูลจริงทีละชั้น ข้อสรุปเปลี่ยน — และนี่คือผลที่ซื่อสัตย์กว่า:**
 
-- **H1 (traceability): สนับสนุน (แข็งแรง).** causal-graphrag = **71.4% (2565) / 83.3% (2564)** traceable เทียบ entity/vector = **0%**.
-  traceability เป็นคุณสมบัติเชิงโครงสร้าง (ทุก edge มี evidence) แยกจากความแม่น — causal นำเด็ดขาดในมิตินี้ทั้ง 2 เหตุการณ์.
-  (เคยลง 100%→66.7%→42.9% ตอน de-circularize/ใช้ ground truth จริง แล้ว **กลับขึ้น 71–83% หลังเติม runoff path** ที่อธิบายจังหวัดได้มากขึ้น — ทุกก้าวรายงานตรง.)
-- **H2 (ทน hop): causal ΔF1=0 ทั้ง 2 เหตุการณ์** (2565: 0.769/0.769; 2564: 0.833/0.833) ขณะ baseline ΔF1 ติดลบ.
-  causal ทน hop สม่ำเสมอข้ามเหตุการณ์.
-- **Generalization (Item 4, 2 เหตุการณ์จริง): causal นำทั้งคู่** (2565 F1 0.769, 2564 0.833) และนำ traceability เด็ดขาด
-  (71–83% vs 0%) → ไม่ใช่ fit เหตุการณ์เดียว. **vector ตกแรงข้ามเหตุการณ์** (0.296→0.141) เพราะคลังข่าวเอียง 2565 —
-  ตอกย้ำว่า baseline ที่อิงความถี่ข่าวไม่ทน cross-event.
-- **ผลหลัก (อัปเดตหลังเติม runoff + gauge จริง): causal F1 = 0.769 นำ entity (0.729) *อย่างชอบธรรม*.**
-  เส้นทาง `1.000→0.800→0.545→0.769`: ตอน 0.545 คือ schema ขาด path ฝน→น้ำท่า (เจอเพราะใช้ ground truth จริง);
-  พอเติม `RUNOFF_TO` + gate ด้วย river-gauge จริง (ไม่ tune ให้ตรง gold) causal กู้จังหวัดจุดบรรจบคืน → นำกลับ.
-  **จุดสำคัญ:** การนำครั้งนี้ยืนบน *ข้อมูลจริง + โครงสร้างถูก* (ต่างจาก 1.000 เดิมที่ยืนบน fixture). ยัง miss
-  ตาก/พิษณุโลก (ฝนท้องถิ่น, ลำน้ำหลักไม่ล้น) และ FP ปทุมธานี (พื้นที่จริง 3,190 ไร่ < เกณฑ์) — รายงานไว้ตรง ๆ.
-- **causal vs relational hop:** causal เป็นมิติที่ *ต่าง* จาก relational hop จริง — และหลังเติม runoff + gauge จริง **ข้อได้เปรียบ F1 กลับมายืนบนข้อมูลจริง** (ไม่ใช่ fixture): causal นำ entity ทั้ง 2 เหตุการณ์ (0.769 vs 0.729, 0.833 vs 0.707) พร้อม traceability ที่ baseline ทำไม่ได้.
+**ข้อสรุปหลัก (หลัง 3 เหตุการณ์ + ablation + negative-control + bootstrap):**
+- **H1 (traceability): สนับสนุนแข็งแรงและมีนัยสำคัญ.** causal = **0.71 / 0.83 / 1.00** traceable ทั้ง 3 เหตุการณ์ เทียบ baseline = **0** เสมอ. นี่คือข้อได้เปรียบที่เด็ดขาดที่สุด (เชิงโครงสร้าง แยกจากความแม่น).
+- **Specificity: causal เป็นระบบเดียวที่ "รู้จักปฏิเสธ".** specificity 0.67–0.75 ขณะ entity/vector = **0** (ทำนายท่วมแทบทุกจังหวัด) → causal ระบุ "ไม่ท่วม" ได้จริง.
+- **H2 (ทน hop): สนับสนุน.** causal ΔF1 = 0 ทั้งเจ้าพระยา 2 เหตุการณ์ (2-hop = 4-hop) ขณะ baseline ไม่คงที่.
+- **⚠️ F1 ล้วน ๆ: ไม่สรุปว่าใครชนะอย่างมีนัยสำคัญ.** causal นำ F1 บนเจ้าพระยา (0.769/0.833) แต่แพ้ entity บนอีสาน (0.667 vs 0.824 — entity เดาเกินจนบังเอิญ recall สูง). **bootstrap: paired causal−entity CI คร่อม 0 ทุกเหตุการณ์** (P(causal>entity) = 0.32/0.71/0.15) → **ด้วย N เล็ก ความต่าง F1 ไม่มีนัยสำคัญทางสถิติ**. รายงานตรง ๆ: **จุดขายของ causal คือ traceability + specificity + คำอธิบายที่ตรวจสอบได้ ไม่ใช่ F1 ที่ significant**.
+- **Generalization ข้ามลุ่มน้ำ:** causal จับจังหวัด mainstem/ริมน้ำถูกทั้งเจ้าพระยาและโขง แต่ **พลาดจังหวัด local-rain สม่ำเสมอ** (ตาก/พิษณุโลก ↔ สกลนคร/อุดร/กาฬสินธุ์) → schema ทำงานคงเส้นคงวา + ขอบเขตชัด.
+- **เส้นทาง F1 ซื่อสัตย์:** `1.000 (fixture) → 0.800 → 0.545 (ground truth จริง) → 0.769 → 0.833` — การตกที่ 0.545 คือความจริงที่ fixture เดิมปิดบัง; ทุกก้าวไม่เคย hardcode/tune ให้ตรง gold.
 - **Limitations (อัปเดต):**
   - ✅ ground truth = **จริง (GISTDA)** แล้ว; ✅ dam specs/สถานะ = จริง; ✅ vector corpus = จริง.
   - **schema gap (root cause หลัก):** ไม่มี node/edge *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน → causal อธิบายน้ำท่วมจาก runoff ไม่ได้. งานถัดไปสำคัญสุด.
