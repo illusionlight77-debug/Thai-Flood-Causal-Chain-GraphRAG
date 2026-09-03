@@ -76,5 +76,21 @@ WHERE last_reach.overflow = true AND coalesce(p.protected, false) = false
 RETURN min(lag) AS lead_hours
 """
 
+# ── #EW early-warning (what-if): กำหนดว่า "ลุ่มน้ำสาขาใดกำลังล้น" ($overflowing) แล้วให้กราฟ
+#   ทำนายจังหวัดปลายน้ำที่จะท่วม + เวลาอีกกี่ ชม. (lead) เรียงตามด่วนสุด. ไม่แตะ reach.overflow
+#   ที่เก็บไว้ (เป็น query-time parameter) → ใช้เป็น operator tool: "ต้นน้ำ X ล้น → เตือนใคร".
+EARLY_WARNING_PREDICT = f"""
+MATCH path = (src:RainStation)-[rels:{CAUSAL_RELS}*2..8]->(p:Province)
+WITH p, nodes(path) AS ns, rels
+WITH p, ns[size(ns)-2] AS last_reach,
+     reduce(s=0, r IN rels | s + coalesce(r.lag_hours,0)) AS lag,
+     [n IN ns | coalesce(n.name, n.name_en)] AS chain
+WHERE last_reach:RiverReach AND last_reach.subbasin IN $overflowing
+  AND coalesce(p.protected, false) = false
+RETURN p.name_en AS province, p.name_th AS province_th,
+       min(lag) AS lead_hours, head(collect(chain)) AS chain
+ORDER BY lead_hours, province
+"""
+
 # ── traceability guard: ต้องได้ 0 ─────────────────────────────
 COUNT_EDGES_WITHOUT_EVIDENCE = "MATCH ()-[e]->() WHERE e.evidence IS NULL RETURN count(e) AS n"

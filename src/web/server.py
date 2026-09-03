@@ -43,6 +43,38 @@ def lab():
     return FileResponse(str(f))
 
 
+@app.get("/warn")
+def warn():
+    """หน้า early-warning (what-if) — ตั้งว่าลุ่มน้ำสาขาใดกำลังล้น → กราฟเตือนจังหวัดปลายน้ำ + lead-time."""
+    f = WEB / "warn.html"
+    if not f.exists():
+        return JSONResponse({"error": "web/warn.html not found"}, status_code=404)
+    return FileResponse(str(f))
+
+
+_SUBBASINS = ["Ping", "Wang", "Yom", "Nan", "SakaeKrang", "Pasak", "ChaoPhraya", "ThaChin"]
+
+
+@app.get("/api/early-warning")
+def early_warning(overflowing: str = ""):
+    """รับ 'ลุ่มน้ำสาขาที่กำลังล้น' (comma-separated) → ทำนายจังหวัดที่จะท่วม + lead-time.
+    เป็น query-time (ไม่แตะ reach.overflow ที่เก็บไว้) → operator tool."""
+    subs = [s.strip() for s in overflowing.split(",") if s.strip()] or ["ChaoPhraya"]
+    try:
+        from src.graph.client import Neo4jClient
+        from src.graph import queries
+        c = Neo4jClient()
+        rows = c.run(queries.EARLY_WARNING_PREDICT, overflowing=subs)
+        c.close()
+        out = [{"province": r["province"], "province_th": r["province_th"],
+                "lead_hours": int(r["lead_hours"]) if r["lead_hours"] is not None else None,
+                "chain": r["chain"]} for r in rows]
+        return {"available": True, "overflowing": subs, "subbasins": _SUBBASINS,
+                "warnings": out, "count": len(out)}
+    except Exception as exc:  # noqa: BLE001
+        return {"available": False, "error": str(exc), "subbasins": _SUBBASINS, "warnings": []}
+
+
 @app.get("/api/config")
 def config():
     events = [{"year": y, "label": lbl} for y, lbl in EVENTS

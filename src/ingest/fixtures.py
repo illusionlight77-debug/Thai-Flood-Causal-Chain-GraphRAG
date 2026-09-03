@@ -227,7 +227,8 @@ def build_nodes() -> list[dict]:
                       "lat": lat, "lon": lon, "basin": basin})
     for rid, (name, basin, order) in REACH_META.items():
         nodes.append({"label": "RiverReach", "id": rid, "name": name, "basin": basin,
-                      "order": order, "level": REACH_LEVEL[rid], "overflow": REACH_OVERFLOW[rid]})
+                      "order": order, "level": REACH_LEVEL[rid], "overflow": REACH_OVERFLOW[rid],
+                      "subbasin": REACH_SUBBASIN[rid]})
     cid, cname, clat, clon = CONFLUENCE
     nodes.append({"label": "Confluence", "id": cid, "name": cname, "lat": clat, "lon": clon})
     for pid, (lon, lat, th, en) in PROVINCES.items():

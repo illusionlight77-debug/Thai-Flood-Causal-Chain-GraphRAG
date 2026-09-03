@@ -1,0 +1,51 @@
+{
+  "n_edges": 11,
+  "n_confirmed_by_routing": 8,
+  "checks": [
+    {
+      "edge": "RR-WANG->RR-PING",
+      "routed": false
+    },
+    {
+      "edge": "RR-PING->CONF-PAKNAMPHO",
+      "routed": true
+    },
+    {
+      "edge": "RR-YOM->CONF-PAKNAMPHO",
+      "routed": true
+    },
+    {
+      "edge": "RR-NAN->CONF-PAKNAMPHO",
+      "routed": true
+    },
+    {
+      "edge": "CONF-PAKNAMPHO->RR-CP-UPPER",
+      "routed": true
+    },
+    {
+      "edge": "RR-CP-UPPER->RR-CP-L1",
+      "routed": true
+    },
+    {
+      "edge": "RR-CP-L1->RR-CP-L2",
+      "routed": true
+    },
+    {
+      "edge": "RR-CP-L2->RR-CP-L3",
+      "routed": true
+    },
+    {
+      "edge": "RR-CP-UPPER->RR-THACHIN",
+      "routed": false
+    },
+    {
+      "edge": "RR-SAKAEKRANG->RR-CP-L1",
+      "routed": true
+    },
+    {
+      "edge": "RR-PASAK->RR-CP-L2",
+      "routed": false
+    }
+  ],
+  "note": "D8 flow routing on the coarse (~11km) Copernicus DEM reproduces the main-stem hand-built edges; small tributary/distributary edges may not route on a coarse grid (needs a 30m DEM) — reported honestly."
+}

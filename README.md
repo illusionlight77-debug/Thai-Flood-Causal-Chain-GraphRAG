@@ -103,6 +103,13 @@
 - **④ กราฟ F1-by-hop** (2/3/4/5-hop, 3 ระบบ) + **กราฟ Ablation** (ปิดกลไก → F1 เปลี่ยน).
 - **⑤ ตาราง eval 3 ระบบ** · **ablation** (−runoff = ตกมากสุด) · **confusion** (causal specificity 0.833, entity/vector = 0) · **ทุกจังหวัด × 3 ระบบ + lead-time**.
 
+#### หน้าที่ 3 — 🚨 เตือนภัยล่วงหน้า (`/warn`) — early-warning
+กลับด้านกราฟเหตุ-ผลมาใช้ **ทำนายล่วงหน้า**: ตั้งว่าลุ่มน้ำต้นน้ำใดกำลังล้น (จาก river-gauge) → ระบบเดินสายเหตุ-ผลไปเตือน **จังหวัดปลายน้ำที่จะท่วม + เวลาที่เหลือ (lead-time)** เรียงตามด่วนสุด พร้อม chain ที่ตรวจย้อนได้.
+
+![หน้าเตือนภัยล่วงหน้า](docs/ui-warn.png)
+
+ตัวอย่าง (สถานการณ์ NORU 2565): ล้น ยม/น่าน/ป่าสัก → เตือน สุโขทัย/พิจิตร/พิษณุโลก/ลพบุรี/เพชรบูรณ์ **ด่วนมาก (~24 ชม.)**, แล้ว อ่างทอง/อยุธยา **~42 ชม.**, กรุงเทพ-ปริมณฑล **~90 ชม.** — ลำดับตรงกับ timeline 2554 จริง (ρ≈0.76). API: `/api/early-warning?overflowing=Nan,Yom,Pasak`.
+
 > อีกหน้าต่างนอกแอป: **Neo4j Browser** `http://localhost:7476` (user `neo4j` / pass `floodgraph123`) —
 > รัน `MATCH p=(src {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|RUNOFF_TO|INUNDATES*2..4]->(:Province) RETURN p`
 > (src = เขื่อนที่ล้น *หรือ* สถานีฝน) เพื่อดูเส้นทาง 2-hop / 4-hop ดิบบนกราฟ.
@@ -184,16 +191,13 @@ UI ใหม่ = **FastAPI** ([`src/web/server.py`](src/web/server.py)) เส�
 (Tailwind + MapLibre GL + Chart.js). มากับ stack (`docker compose up`) ที่ **http://localhost:8501**.
 API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (proxy) ไม่หลุดไป client.
 
-**2 หน้า** (ภาพจริงอยู่ใน [System Tour](#-system-tour) ด้านบน — [docs/ui-friendly.png](docs/ui-friendly.png) · [docs/ui-lab.png](docs/ui-lab.png)):
+**3 หน้า** (ภาพจริงอยู่ใน [System Tour](#-system-tour) — [ui-friendly.png](docs/ui-friendly.png) · [ui-lab.png](docs/ui-lab.png) · [ui-warn.png](docs/ui-warn.png)):
 
-**หน้า `/` (ใช้งานง่าย):**
-- **แท็บ 3 เหตุการณ์** 2565 (โนรู) / 2564 (เตี้ยนหมู่) / โขง-อีสาน (live) — สลับ ground truth จริง.
-- **ชิปเลือกจังหวัด** (มาร์ก 🔵 ท่วมจริง) รวม negative control.
-- **การ์ดคำอธิบาย LLM (grounded)** + chain + evidence + lead-time + ป้ายสถานะ.
-- **แผนที่ GISTDA satellite จริง** (proxy) ระบายถูก(เขียว)/เกิน(แดง) + **🛰️ Live flood** real-time.
-- **เทียบ 3 ระบบ (ย่อ)** + ลิงก์ไปหน้าวัดผล.
+**หน้า `/` (ใช้งานง่าย):** แท็บ 3 เหตุการณ์ · ชิปเลือกจังหวัด (🔵 ท่วมจริง) · การ์ดคำอธิบาย LLM (grounded) + chain + evidence + lead-time · แผนที่ GISTDA satellite จริง + 🛰️ Live flood · เทียบ 3 ระบบ.
 
-**หน้า `/lab` (วิจัย/วัดผล):** สถานะข้อมูล · เส้นทาง F1 · KPI · กราฟ F1-by-hop + ablation · ตาราง eval/ablation/confusion/bootstrap + ทุกจังหวัด × 3 ระบบ + lead-time.
+**หน้า `/lab` (วิจัย/วัดผล):** สถานะข้อมูล · เส้นทาง F1 · KPI (รวม faithfulness) · กราฟ F1-by-hop + ablation · ตาราง eval/ablation/confusion/bootstrap + ทุกจังหวัด × 3 ระบบ + lead-time.
+
+**หน้า `/warn` (🚨 เตือนภัยล่วงหน้า):** ตั้งว่าลุ่มน้ำต้นน้ำใดล้น → เตือนจังหวัดปลายน้ำ + lead-time เรียงตามด่วนสุด (กลับด้านกราฟมาใช้ early-warning). API: `/api/early-warning`.
 
 > สร้างข้อมูล UI: `python -m src.eval.build_ui_data` (ต่อ event ตั้ง `EVENT_ID`) → `web/ui_data_{year}.json`;
 > ลุ่มน้ำที่ 2: `python -m src.ingest.mekong_ne`.
@@ -290,7 +294,10 @@ causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั�
 FLOWS_TO ทุกเส้นผูกกับ **จุดบรรจบจริง** (พิกัด, [`chao_phraya_topology_provenance.json`](data/processed/chao_phraya_topology_provenance.json)) และผ่าน validator 2 ชั้น:
 - **โครงสร้าง** ([`src/graph/validate_topology.py`](src/graph/validate_topology.py)): DAG · 23/23 จังหวัดเข้าถึงได้จากสถานีฝน · reach สอดคล้องลุ่มน้ำสาขา · ทุก reach ไหลถึง outlet (2 ทางออกจริง: เจ้าพระยาตอนล่าง + ท่าจีน — validator จับได้เองว่าท่าจีนเป็น *distributary*).
 - **⛰️ DEM ความสูงจริง** ([`src/geo/dem_topology.py`](src/geo/dem_topology.py)): sample **Copernicus GLO-90 DEM** (ผ่าน open-meteo) ทุกจังหวัด → **ทุกเส้น FLOWS_TO ไหลลงที่ต่ำจริง 11/11** (237→200→30→21→8.8 ม.).
-- **🌊 DEM flow-accumulation จริง (#2, pysheds)** ([`src/geo/dem_flow_accumulation.py`](src/geo/dem_flow_accumulation.py)): สร้าง DEM grid 55×30 จาก Copernicus จริง → รัน pysheds (fill→flowdir→accumulation) → **flow-accumulation เพิ่มตามน้ำไหลลงแกนหลัก** (88→442→614→655→772→926→946 เซลล์ = แม่น้ำเจ้าพระยาโผล่จาก DEM). **11/11 เส้นสอดคล้อง** — และ **ท่าจีน accumulation *ลดลง* (655→28) = ยืนยัน distributary ด้วยวิธีที่ 3** (โครงสร้าง + ความสูง + flow-accumulation).
+- **🌊 DEM flow-accumulation จริง (pysheds)** ([`src/geo/dem_flow_accumulation.py`](src/geo/dem_flow_accumulation.py)): สร้าง DEM grid 55×30 จาก Copernicus จริง → รัน pysheds (fill→flowdir→accumulation) → **flow-accumulation เพิ่มตามน้ำไหลลงแกนหลัก** (88→442→614→655→772→926→946 เซลล์ = แม่น้ำเจ้าพระยาโผล่จาก DEM). **11/11 เส้นสอดคล้อง** — และ **ท่าจีน accumulation *ลดลง* (655→28) = ยืนยัน distributary**.
+- **🧭 D8 flow-routing (auto-derive)** ([`src/geo/dem_route_check.py`](src/geo/dem_route_check.py)): เดินทิศการไหล D8 จาก DEM จริง → **reproduce เส้น FLOWS_TO ที่ hand-built ได้ 8/11** (ครบ **แกนหลัก 6/6**); 3 เส้นที่ไม่ผ่าน = ท่าจีน (distributary — D8 single-flow แทนไม่ได้) + จุดบรรจบสาขาที่เล็กกว่า grid 11 กม. → ยืนยันโครงกราฟด้วย *การ routing จริง* (วิธีที่ 4).
+
+**ยืนยัน topology 4 วิธี:** โครงสร้าง (DAG) · ความสูง DEM · flow-accumulation · flow-routing D8 — ทุกวิธีชี้ตรงกัน (รวมจับ Tha Chin เป็น distributary). ยังไม่ถึงขั้น auto-delineate ลำน้ำย่อยจาก grid 30 ม. (future work).
 
 **หมายเหตุซื่อสัตย์:** โครงกราฟ hand-built จาก topology จริง **แล้ว validate ด้วย DEM flow-accumulation จริง** (pysheds) — ยังไม่ถึงขั้น auto-delineate ลำน้ำย่อยทุกเส้นจาก grid ละเอียด (grid หยาบ ~11 กม.).
 
@@ -321,6 +328,20 @@ lead-time (ชม.) เทียบกับ **ลำดับน้ำท่ว
 ### 7) Generalization ข้ามลุ่มน้ำ
 - **ในลุ่มเจ้าพระยา:** causal พลาดเฉพาะจังหวัด **ลุ่มปิง** (ตาก/กำแพงเพชร) ที่ลำน้ำหลักไม่ล้น = ฝนท้องถิ่น (honest FN, ไม่ back-fill) + FP ปทุมธานี.
 - **ข้ามไปลุ่มโขง/อีสาน (#5):** causal จับจังหวัดริมโขงถูก แต่พลาดจังหวัดในแผ่นดิน — **ข้อจำกัดชนิดเดียวกัน** (จับ mainstem ได้, พลาด local-rain) → schema คงเส้นคงวาข้ามลุ่มน้ำ.
+
+### 7½) causal ได้เปรียบ *เมื่อไหร่* — discrimination analysis ([`src/eval/discrimination.py`](src/eval/discrimination.py))
+finding ที่ได้จากการพยายามเพิ่มมหาอุทกภัย 2554: **ข้อได้เปรียบของ causal ขึ้นกับว่าเหตุการณ์นั้นมี "จังหวัดไม่ท่วม" (negative) จริงไหม**
+
+| เหตุการณ์ | negative | causal−entity (F1) | causal spec | entity spec |
+|---|---|---|---|---|
+| เจ้าพระยา 2565 | 6/23 | **+0.31** | 0.83 | 0 |
+| เจ้าพระยา 2564 | 7/23 | **+0.35** | 0.86 | 0 |
+| โขง/อีสาน | 3/10 | −0.16* | 0.67 | 0 |
+| **มหาอุทกภัย 2554** | **0/23** | ≈0 (ท่วมหมด) | — | — |
+
+\* อีสาน causal แพ้ F1 เพราะ recall ต่ำ (โมเดลจับแค่ริมโขง) แต่ specificity ยังชนะ.
+
+→ (1) **causal specificity ชนะทุกเหตุการณ์ที่มี negative** (entity=0 เสมอ). (2) F1 ชนะเพิ่มเมื่อกราฟจับเส้นทางน้ำได้ดี. (3) **2554 ท่วมเกือบทุกจังหวัด (ERIA/GISTDA ยืนยัน — [gistda_flood_2011_eria.json](data/processed/gistda_flood_2011_eria.json)) → ไม่มีอะไรให้ปฏิเสธ → causal≈entity** — จึงไม่เพิ่มเป็น event ให้คะแนน (และจะทำ significance ไม่ได้ดีขึ้น). จุดขาย causal (specificity + traceability) มีค่าบน**เหตุการณ์น้ำท่วมบางส่วน** ซึ่งคือส่วนใหญ่ของเหตุการณ์จริง.
 
 ### 8) เส้นทาง F1 ของ causal (ซื่อสัตย์ทุกก้าว)
 `1.000 (fixture+tuned)` → `0.545 (ground truth GISTDA จริง, N=10)` → `0.769 (runoff+gauge จริง, N=10)` → `0.909 (ลุ่มน้ำเต็ม 8 สาขา, N=23)`

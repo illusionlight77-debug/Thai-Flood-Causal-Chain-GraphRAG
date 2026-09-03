@@ -27,11 +27,15 @@ Measure whether a retriever that traverses a **real causal chain**
 - **Explanation faithfulness** (`src/eval/faithfulness.py`) — deterministic grounding check
   that the causal LLM explanation names only geography in its own chain (no cross-basin
   hallucination). Reproducible; no second LLM as judge.
-- **Topology validity** (`src/graph/validate_topology.py` + `src/geo/dem_topology.py`) — the
-  flow graph must be a DAG, every province reachable from a rain station, sub-basin-consistent,
-  draining to a real outlet, AND every FLOWS_TO edge must go downhill on a real satellite DEM
-  (Copernicus GLO-90). Grounded in real confluence coordinates + DEM-validated; not yet a full
-  DEM flow-accumulation derivation (future work).
+- **Topology validity** (4 independent methods) — DAG + reachability + sub-basin consistency
+  (`validate_topology.py`); every FLOWS_TO edge downhill on a real DEM (`dem_topology.py`);
+  flow-accumulation grows downstream (`dem_flow_accumulation.py`, pysheds); D8 flow-routing
+  reproduces the main-stem edges (`dem_route_check.py`). All four agree, incl. flagging Tha
+  Chin as a distributary. Not yet a full 30 m auto-delineation (future work).
+- **Discrimination analysis** (`src/eval/discrimination.py`) — reports that causal's advantage
+  requires the event to have real negatives; a near-universal flood (2011) is non-discriminating.
+  Used to justify NOT adding 2011 as a scored event (would also break the total-flood-area
+  metric and the 23-province universe — see the 2011 artifact's note).
 - **Lead-time validation** (`src/eval/lead_validation.py`) — the predicted main-stem lead is
   checked against the observed 2011 mega-flood progression (documented timeline; used for
   timing only, not scored). Reported with its honest limitation (province-level ρ≈0, coarse

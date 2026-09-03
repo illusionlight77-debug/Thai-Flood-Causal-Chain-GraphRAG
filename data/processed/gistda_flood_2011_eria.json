@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "description": "2011 mega-flood per-province GISTDA flooded AGRICULTURAL area (hectares), from ERIA Discussion Paper 2013-34 'Impact of the 2011 Floods, and Flood Management in Thailand' Table 2 (MOAC/GISTDA/DDPM). Kept as a cited artifact and for the discrimination analysis — NOT used as a scored event.",
+    "source": "ERIA-DP-2013-34.pdf, Table 2 (column GISTDA2, flooded agricultural area, hectares)",
+    "unit": "hectares (flooded AGRICULTURAL area; 1 ha = 6.25 rai)",
+    "why_not_a_scored_event": [
+      "Metric mismatch: this is flooded *agricultural* area (a subset), not the total per-province flooded area used for the 2022/2021 gold — mixing them would violate METHODOLOGY.md.",
+      "Universe incomplete: the table lists selected provinces; upper-Chao-Phraya (Tak, Kamphaeng Phet, Sukhothai, Uttaradit, Phetchabun) are absent, so a full 23-province gold cannot be built.",
+      "Non-discriminating: every listed in-basin province flooded far above the 10,000-rai cutoff (see values) — 2011 has ~0 in-basin negatives, so specificity is undefined and a 'predict-everything' baseline (entity) is nearly correct. The causal advantage appears on DISCRIMINATING events (partial floods with real negatives, e.g. 2022/2021), not on a near-universal catastrophe.",
+      "Regime change: the King's Dyke that protected Bangkok/Nonthaburi in 2022 was OVERWHELMED in 2011 (both flooded), so the protection flag would have to be event-specific — a real modelling point, documented."
+    ]
+  },
+  "flooded_agri_area_ha_GISTDA": {
+    "Phitsanulok": 639469, "Phichit": 447234, "Nakhon Sawan": 789740, "Uthai Thani": 55583,
+    "Chai Nat": 345266, "Sing Buri": 284290, "Ang Thong": 352659, "Ayutthaya": 568393,
+    "Lop Buri": 402164, "Saraburi": 185483, "Suphan Buri": 294115, "Nakhon Pathom": 327997,
+    "Pathum Thani": 239034, "Nonthaburi": 120299, "Bangkok": 52536,
+    "Nakhon Nayok": 186411, "Chachoengsao": 94565, "Prachin Buri": 15556, "Samut Sakhon": 3728
+  },
+  "in_basin_all_above_cutoff": true,
+  "note": "Even Bangkok (52,536 ha = 328,350 rai) and Nonthaburi (120,299 ha) — negatives in 2022/2021 — are large positives in 2011. This is the concrete evidence that 2011 is non-discriminating for this benchmark."
+}

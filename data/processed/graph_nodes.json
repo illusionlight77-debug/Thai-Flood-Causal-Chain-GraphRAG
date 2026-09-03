@@ -104,7 +104,8 @@
     "basin": "Ping",
     "order": 4,
     "level": 8.0,
-    "overflow": false
+    "overflow": false,
+    "subbasin": "Ping"
   },
   {
     "label": "RiverReach",
@@ -113,7 +114,8 @@
     "basin": "Wang",
     "order": 4,
     "level": 8.0,
-    "overflow": false
+    "overflow": false,
+    "subbasin": "Wang"
   },
   {
     "label": "RiverReach",
@@ -122,7 +124,8 @@
     "basin": "Yom",
     "order": 4,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "Yom"
   },
   {
     "label": "RiverReach",
@@ -131,7 +134,8 @@
     "basin": "Nan",
     "order": 4,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "Nan"
   },
   {
     "label": "RiverReach",
@@ -140,7 +144,8 @@
     "basin": "SakaeKrang",
     "order": 4,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "SakaeKrang"
   },
   {
     "label": "RiverReach",
@@ -149,7 +154,8 @@
     "basin": "ChaoPhraya",
     "order": 6,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "ChaoPhraya"
   },
   {
     "label": "RiverReach",
@@ -158,7 +164,8 @@
     "basin": "ChaoPhraya",
     "order": 7,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "ChaoPhraya"
   },
   {
     "label": "RiverReach",
@@ -167,7 +174,8 @@
     "basin": "ChaoPhraya",
     "order": 7,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "ChaoPhraya"
   },
   {
     "label": "RiverReach",
@@ -176,7 +184,8 @@
     "basin": "ChaoPhraya",
     "order": 8,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "ChaoPhraya"
   },
   {
     "label": "RiverReach",
@@ -185,7 +194,8 @@
     "basin": "Pasak",
     "order": 5,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "Pasak"
   },
   {
     "label": "RiverReach",
@@ -194,7 +204,8 @@
     "basin": "ThaChin",
     "order": 6,
     "level": 8.0,
-    "overflow": true
+    "overflow": true,
+    "subbasin": "ThaChin"
   },
   {
     "label": "Confluence",

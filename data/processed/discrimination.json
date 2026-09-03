@@ -1,0 +1,50 @@
+{
+  "rows": [
+    {
+      "event": "เจ้าพระยา 2565",
+      "n_total": 23,
+      "n_neg": 6,
+      "neg_frac": 0.26,
+      "causal_f1": 0.9091,
+      "entity_f1": 0.6,
+      "causal_minus_entity": 0.309,
+      "causal_spec": 0.833,
+      "entity_spec": 0.0
+    },
+    {
+      "event": "เจ้าพระยา 2564",
+      "n_total": 23,
+      "n_neg": 7,
+      "neg_frac": 0.3,
+      "causal_f1": 0.9375,
+      "entity_f1": 0.5927,
+      "causal_minus_entity": 0.345,
+      "causal_spec": 0.857,
+      "entity_spec": 0.0
+    },
+    {
+      "event": "โขง/อีสาน",
+      "n_total": 10,
+      "n_neg": 3,
+      "neg_frac": 0.3,
+      "causal_f1": 0.667,
+      "entity_f1": 0.824,
+      "causal_minus_entity": -0.157,
+      "causal_spec": 0.667,
+      "entity_spec": 0.0
+    },
+    {
+      "event": "มหาอุทกภัย 2554 (ไม่ให้คะแนน)",
+      "n_total": 23,
+      "n_neg": 0,
+      "neg_frac": 0.0,
+      "causal_f1": null,
+      "entity_f1": null,
+      "causal_minus_entity": null,
+      "causal_spec": null,
+      "entity_spec": null,
+      "note": "GISTDA (ERIA) แสดงทุกจังหวัดในลุ่มท่วม > cutoff → 0 negative → predict-all เกือบถูก → causal≈entity (ไม่ discriminate)"
+    }
+  ],
+  "finding": "causal advantage (F1 และ specificity) ปรากฏบนเหตุการณ์ที่มี negative จริง (2565/2564 neg_frac 0.26–0.30). ยิ่ง negative เยอะ causal ยิ่งได้เปรียบเพราะ entity เดาท่วมหมด. เหตุการณ์ที่ท่วมเกือบทั้งลุ่ม (2554) causal≈entity — จุดขายของ causal คือ 'รู้จักปฏิเสธ' ซึ่งมีค่าเฉพาะเมื่อมีอะไรให้ปฏิเสธ."
+}
