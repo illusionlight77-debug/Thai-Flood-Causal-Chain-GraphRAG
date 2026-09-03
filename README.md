@@ -58,7 +58,9 @@
                      └───────────────────────┬───────────────────────┘
                                              ▼
                      ┌───────────────────────────────────────────────┐
-                     │  Streamlit UI (ui/)  "ทำไมจังหวัดนี้ถึงน้ำท่วม"  │
+                     │  FastAPI + MapLibre (2 หน้า)                    │
+                     │   /     = ใช้งานง่าย "ทำไมจังหวัดนี้ถึงน้ำท่วม"   │
+                     │   /lab  = วิจัย/วัดผล (ผลการทดลองทั้งหมด)        │
                      └───────────────────────────────────────────────┘
 ```
 
@@ -68,33 +70,44 @@
 3. **Graph** — โหลดเข้า Neo4j; schema มี **`RUNOFF_TO` (ฝน→น้ำท่า bypass เขื่อน)**; `reach.overflow` จาก river-gauge จริง; Cypher `*2..4` วัด hop.
 4. **Retrievers** — 3 ตัว, อินเทอร์เฟซเดียว, eval set เดียวกัน. causal เริ่มจาก "ต้นเหตุ active" (เขื่อนล้น *หรือ* ฝน→runoff).
 5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
-6. **UI** — Streamlit ถามตอบ + chain viewer + evidence panel + แผนที่ overlay.
+6. **UI** — FastAPI 2 หน้า: `/` (ใช้งานง่าย: คำอธิบาย LLM + chain + evidence + lead-time + แผนที่ GISTDA + live flood) และ `/lab` (วิจัย: ผลการทดลองทั้งหมด — F1-by-hop, ablation, confusion, bootstrap).
 
 > 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite · geometry ✅GADM · river-gauge ✅ · INUNDATES threshold ✅de-circularized (gauge+คันกั้นน้ำ). เหลือ fixture เฉพาะ *โครง node/edge* (hand-built).
 > **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **3 เหตุการณ์** (เจ้าพระยา 2565/2564 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
 
-**ภาพจริงจากหน้า `http://localhost:8501`** (แคปด้วย Chrome headless จากแอปที่รันจริง) — ทุกหน้าต่างอยู่ในภาพเดียว.
+**ภาพจริงจากหน้า `http://localhost:8501`** (แคปด้วย Chrome headless จากแอปที่รันจริง, อัปเดตล่าสุด 2026-09-03 — 3 เหตุการณ์).
+
+#### หน้าที่ 1 — ใช้งานง่าย (`/`)
 คำถาม: *"ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?"* (เคส **4-hop** ข้ามลุ่มน้ำ):
 
-![Test UI — ทุกหน้าต่าง (ผลจริง)](docs/ui-why-flood.png)
+![หน้าใช้งานง่าย — ผลจริง 3 เหตุการณ์](docs/ui-friendly.png)
 
-**อ่านภาพตามหน้าต่าง** (เคสตัวอย่าง = "ทำไมนครสวรรค์ท่วม?", ground truth จริง 2565):
-- **① Sidebar (⚙️ ตั้งค่า)** — เลือกจังหวัด (เฉพาะที่ท่วมจริงตาม GISTDA), แสดง gold set (7 จังหวัด) + Neo4j uri.
-- **② เทียบ 3 ระบบ side-by-side** — ตัวชี้วัดสด hop / F1 / traceability + latency + ลงสีจังหวัด **ถูก(เขียว)/เกิน(แดง)/ตกหล่น(เหลือง)** เทียบ ground truth:
-  - `causal-graphrag`: **F1 0.77 ✓ traceable** — ถูก 5 (Ang Thong, Ayutthaya, Chai Nat, Nakhon Sawan, Sing Buri), เกิน 1 (Pathum Thani), ตกหล่น 2 (Phitsanulok, Tak = ฝนท้องถิ่นที่ลำน้ำหลักไม่ล้น)
-  - `entity-graphrag`: F1 0.82 ✗ — ทำนาย 10 จังหวัด (เกิน Bangkok, Nonthaburi, Pathum Thani)
-  - `vector-rag`: F1 0.40 ✗ — ได้ {Nakhon Sawan, Tak} จากข่าว, ตกหล่น 5
-- **③ Causal chain viewer** — **สถานีฝนปิงตอนบน → ปิงท้ายเขื่อนภูมิพล → ปากน้ำโพ → เจ้าพระยาตอนบน → Nakhon Sawan** (4-hop, เริ่มจาก *ฝน→runoff* ไม่ใช่เขื่อนล้น — กลไกจริงปี 2565; chain มาจาก Cypher เท่านั้น).
-- **④ Evidence panel** — 4 source records (#1 `D1 rain→runoff`, #2/#3 `D1 river gauge`, #4 `D4/D3 GISTDA`) ✅ ครบ → traceable / H1.
-- **⑤ Overlay flood extent (GISTDA)** — แผนที่จริง (pydeck + GADM) 🔵 พื้นที่ท่วมจริง vs 🔴 จังหวัดที่ทำนาย (ม่วง = ทับกัน).
+**อ่านภาพตามส่วน:**
+- **① แท็บเหตุการณ์** — เจ้าพระยา 2565 / 2564 / โขง-อีสาน (live) + ปุ่มไป **หน้าวัดผล/วิจัย**.
+- **② ชิปเลือกจังหวัด** — วงกลม 🔵 = ท่วมจริงตาม GISTDA; เลือกได้ทุกจังหวัด (รวม negative control).
+- **③ การ์ดคำอธิบาย (HERO)** — **คำอธิบาย LLM (Groq/qwen, grounded)** ภาษาไทยที่ผูกกับ chain จริง + ป้าย `GISTDA: ท่วมจริง` · `ระบบอธิบายได้ ✓` · `เตือนล่วงหน้า ~72 ชม.` · `4-hop`.
+- **④ Causal chain** — สถานีฝนปิงตอนบน → ปิงท้ายเขื่อนภูมิพล → ปากน้ำโพ → เจ้าพระยาตอนบน → Nakhon Sawan (เริ่มจาก *ฝน→runoff*, มาจาก Cypher เท่านั้น) + หลักฐาน 4 จุดตรวจย้อนได้.
+- **⑤ แผนที่ GISTDA จริง** — basemap ดาวเทียม (proxy) 🔵 ท่วมจริง · 🟢 ทำนายถูก · 🔴 ทำนายเกิน.
+- **⑥ Live flood panel** — น้ำท่วม*ปัจจุบัน*รายจังหวัดจาก GISTDA disaster API (real-time Sentinel-1).
+- **⑦ เทียบ 3 ระบบ (ย่อ)** — causal 0.77 (prec 83% · trace ✓) · entity 0.82 (trace ✗) · vector 0.18 (trace ✗) + ลิงก์ไปผลเต็ม.
+
+#### หน้าที่ 2 — วิจัย/วัดผล (`/lab`) — 📊 รายงานผลการทดลองทั้งหมด
+![หน้าวิจัย/วัดผล — ผลการทดลองครบ](docs/ui-lab.png)
+
+**อ่านภาพตามส่วน:**
+- **① สถานะข้อมูล (จริง vs fixture)** — ground truth/geometry/dam-spec/river-gauge/vector/threshold/LLM = ✅จริง; เหลือ *โครง node/edge* = fixture.
+- **② เส้นทาง F1 ซื่อสัตย์** — `1.000 (fixture) → 0.800 → 0.545 (ground truth จริง) → 0.769 → 0.833` ทุกก้าวไม่เคย hardcode.
+- **③ KPI** — F1 causal 0.769 · Traceability 71% · Precision(neg-ctrl) 0.833 · **Specificity 0.667**.
+- **④ กราฟ F1-by-hop** (2-hop vs 4-hop, 3 ระบบ) + **กราฟ Ablation** (ปิดกลไก → F1 เปลี่ยน).
+- **⑤ ตาราง eval 3 ระบบ** · **ตาราง ablation** (−runoff = ตกมากสุด −0.224) · **confusion/negative-control** (causal specificity 0.667, entity/vector = 0) · **ตารางทุกจังหวัด × 3 ระบบ + lead-time**.
 
 > อีกหน้าต่างนอกแอป: **Neo4j Browser** `http://localhost:7476` (user `neo4j` / pass `floodgraph123`) —
 > รัน `MATCH p=(src {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|RUNOFF_TO|INUNDATES*2..4]->(:Province) RETURN p`
 > (src = เขื่อนที่ล้น *หรือ* สถานีฝน) เพื่อดูเส้นทาง 2-hop / 4-hop ดิบบนกราฟ.
 
-📄 ผลตัวเลขเต็ม ๆ: [docs/ui-sample-output.md](docs/ui-sample-output.md)
+📄 ผลตัวเลขเต็ม ๆ: [docs/ui-sample-output.md](docs/ui-sample-output.md) · ภาพเก่า (Streamlit, deprecated): [docs/ui-why-flood.png](docs/ui-why-flood.png)
 
 ---
 
@@ -125,7 +138,7 @@
 | Tool | Link |
 |---|---|
 | Neo4j (Docker) | http://localhost:7476 (Browser) · `bolt://localhost:7689` |
-| Streamlit UI | http://localhost:8501 |
+| Web UI (FastAPI) | http://localhost:8501 (`/` ใช้งานง่าย · `/lab` วิจัย/วัดผล) |
 
 > **พอร์ต host เลือกเลี่ยงการชนกับ container อื่นในเครื่องนี้** (สำรวจด้วย `docker ps` ตอนเฟส 0):
 > Neo4j default `7474/7475/7687/7688` ถูกจองแล้ว → โปรเจกต์นี้ใช้ **HTTP 7476 · Bolt 7689 · Streamlit 8501**.
@@ -172,19 +185,19 @@ UI ใหม่ = **FastAPI** ([`src/web/server.py`](src/web/server.py)) เส�
 (Tailwind + MapLibre GL + Chart.js). มากับ stack (`docker compose up`) ที่ **http://localhost:8501**.
 API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (proxy) ไม่หลุดไป client.
 
-![Test UI ใหม่](docs/ui-new.png)
+**2 หน้า** (ภาพจริงอยู่ใน [System Tour](#-system-tour) ด้านบน — [docs/ui-friendly.png](docs/ui-friendly.png) · [docs/ui-lab.png](docs/ui-lab.png)):
 
-องค์ประกอบ:
-- **แท็บเหตุการณ์** 2565 (โนรู) / 2564 (เตี้ยนหมู่) — สลับ ground truth จริง.
-- **เลือกจังหวัด** (พร้อม hop badge) + คลิกบนแผนที่ก็ได้.
-- **3 การ์ดละเอียด:** F1 + precision + recall + hop + traceability + latency + จังหวัด ถูก(เขียว)/เกิน(แดง)/ตกหล่น(เหลือง) + **chain** + **evidence** (คลิกดู source record).
-- **กราฟ:** F1 รวมต่อระบบ + F1 แยก 2-hop/4-hop (Chart.js).
-- **แผนที่:** **GISTDA satellite basemap จริง** (proxy) + ระบายสีจังหวัดตามคำตอบ.
-- **🛰️ Live flood panel:** น้ำท่วม*ปัจจุบัน*รายจังหวัดจาก GISTDA disaster API (real-time).
-- **ตารางทดสอบทุกจังหวัด:** F1 ของ 3 ระบบทุกจังหวัด gold.
+**หน้า `/` (ใช้งานง่าย):**
+- **แท็บ 3 เหตุการณ์** 2565 (โนรู) / 2564 (เตี้ยนหมู่) / โขง-อีสาน (live) — สลับ ground truth จริง.
+- **ชิปเลือกจังหวัด** (มาร์ก 🔵 ท่วมจริง) รวม negative control.
+- **การ์ดคำอธิบาย LLM (grounded)** + chain + evidence + lead-time + ป้ายสถานะ.
+- **แผนที่ GISTDA satellite จริง** (proxy) ระบายถูก(เขียว)/เกิน(แดง) + **🛰️ Live flood** real-time.
+- **เทียบ 3 ระบบ (ย่อ)** + ลิงก์ไปหน้าวัดผล.
 
-> สร้างข้อมูล UI: `python -m src.eval.build_ui_data` (ต่อ event ตั้ง `EVENT_ID`) → `web/ui_data_{year}.json`.
-> Streamlit เดิม (`ui/app.py`) ยังอยู่แต่ deprecated. ภาพเก่า: [docs/ui-why-flood.png](docs/ui-why-flood.png).
+**หน้า `/lab` (วิจัย/วัดผล):** สถานะข้อมูล · เส้นทาง F1 · KPI · กราฟ F1-by-hop + ablation · ตาราง eval/ablation/confusion/bootstrap + ทุกจังหวัด × 3 ระบบ + lead-time.
+
+> สร้างข้อมูล UI: `python -m src.eval.build_ui_data` (ต่อ event ตั้ง `EVENT_ID`) → `web/ui_data_{year}.json`;
+> ลุ่มน้ำที่ 2: `python -m src.ingest.mekong_ne`. Streamlit เดิม (`ui/app.py`) deprecated แล้ว.
 
 ---
 
