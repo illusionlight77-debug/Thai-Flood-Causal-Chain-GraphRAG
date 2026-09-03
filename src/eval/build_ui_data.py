@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 from src.config import settings
+from src.eval import faithfulness
 from src.eval.f1_by_hop import f1
 from src.graph import queries
 from src.graph.client import Neo4jClient
@@ -18,6 +19,7 @@ from src.rag import llm
 from src.rag.registry import build_retrievers
 
 WEB = Path(__file__).resolve().parent.parent.parent / "web"
+_ALL_PROV_TH = [fixtures.PROVINCES[p][2] for p in fixtures.PROVINCES]
 
 
 def _f1_multiset(sample, goldset, predicted):
@@ -103,6 +105,12 @@ def build() -> Path:
         ca["lead_hours"] = lead
         ca["explanation"] = llm.explain_flood(prov, ca["chain"], ca["evidence"],
                                                ca["hops"], ca["predicts_this"], lead)
+        # faithfulness ของคำอธิบาย LLM (grounded ตาม chain ไหม — จับ hallucination ข้ามลุ่มน้ำ)
+        asked_th = fixtures.PROVINCES[[p for p in fixtures.PROVINCES
+                                       if fixtures.PROVINCES[p][3] == prov][0]][2] \
+            if any(fixtures.PROVINCES[p][3] == prov for p in fixtures.PROVINCES) else prov
+        ca["faithfulness"] = faithfulness.score_explanation(
+            ca["explanation"], ca["chain"], asked_th, _ALL_PROV_TH)
         per_province[prov] = {"hop": hop_map.get(prov, 0), "question": q,
                               "is_gold": is_gold, "systems": systems}
 
@@ -134,11 +142,13 @@ def build() -> Path:
     abl_path = settings.data_processed_dir / f"ablation_{yr}.json"
     ablation = json.loads(abl_path.read_text("utf-8")) if abl_path.exists() else {}
 
+    faith_summary = faithfulness.aggregate(per_province)
+
     out = {"event_id": fixtures.EVENT_ID, "year": yr, "period": fixtures.EVENT_PERIOD,
            "llm_provider": settings.llm_provider if llm.available() else "none",
            "gold": gold, "negatives": negatives, "provinces": allprov,
            "per_province": per_province, "confusion": confusion,
-           "significance": significance,
+           "significance": significance, "faithfulness": faith_summary,
            "results": results, "ablation": ablation}
     WEB.mkdir(exist_ok=True)
     f = WEB / f"ui_data_{yr}.json"

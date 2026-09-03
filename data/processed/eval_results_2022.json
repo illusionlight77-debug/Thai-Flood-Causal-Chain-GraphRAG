@@ -8,7 +8,7 @@
     },
     "f1_overall": 0.9091,
     "traceability": 0.8824,
-    "avg_latency_ms": 36.82
+    "avg_latency_ms": 8.16
   },
   "entity-graphrag": {
     "f1_by_hop": {
@@ -19,7 +19,7 @@
     },
     "f1_overall": 0.6415,
     "traceability": 0.0,
-    "avg_latency_ms": 33.3
+    "avg_latency_ms": 6.84
   },
   "vector-rag": {
     "f1_by_hop": {
@@ -30,6 +30,6 @@
     },
     "f1_overall": 0.1396,
     "traceability": 0.0,
-    "avg_latency_ms": 1.83
+    "avg_latency_ms": 1.4
   }
 }

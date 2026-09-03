@@ -1,0 +1,40 @@
+{
+  "n_cases": 46,
+  "events": [
+    "2022",
+    "2021"
+  ],
+  "bootstrap_n": 5000,
+  "systems": {
+    "causal-graphrag": {
+      "f1_mean": 0.921,
+      "ci95": [
+        0.846,
+        0.984
+      ]
+    },
+    "entity-graphrag": {
+      "f1_mean": 0.834,
+      "ci95": [
+        0.74,
+        0.918
+      ]
+    },
+    "vector-rag": {
+      "f1_mean": 0.048,
+      "ci95": [
+        0.0,
+        0.15
+      ]
+    }
+  },
+  "paired_causal_vs_entity": {
+    "mean_diff": 0.088,
+    "ci95": [
+      -0.006,
+      0.189
+    ],
+    "prob_causal_better": 0.969,
+    "significant_95": false
+  }
+}

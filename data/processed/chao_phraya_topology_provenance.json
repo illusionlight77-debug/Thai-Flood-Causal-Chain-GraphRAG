@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "description": "Provenance for the Chao Phraya causal-graph FLOWS_TO topology. Each junction is a REAL confluence with coordinates, so the hand-built flow edges are grounded in actual hydrology (RID Chao Phraya basin structure) rather than asserted. NOTE (honest): this grounds + documents + validates the topology against real geography; it is NOT auto-derived from a DEM flow-accumulation pipeline — that remains future work (needs MERIT-Hydro/HydroSHEDS processing). What this buys: the topology is now traceable to named confluences and machine-validated for consistency (src/graph/validate_topology.py + tests).",
+    "reference": "RID Chao Phraya river basin (8 sub-basins: Ping, Wang, Yom, Nan, Sakae Krang, Pasak, Tha Chin, Chao Phraya); standard confluence geography.",
+    "created": "2026-09-04"
+  },
+  "junctions": {
+    "Wang->Ping":            {"where": "แม่น้ำวังบรรจบแม่น้ำปิง อ.บ้านตาก จ.ตาก", "lat": 17.03, "lon": 99.08},
+    "Ping->PakNamPho":       {"where": "ปิงถึงปากน้ำโพ นครสวรรค์", "lat": 15.70, "lon": 100.12},
+    "Yom->PakNamPho":        {"where": "ยมบรรจบน่านที่ชุมแสง แล้วถึงปากน้ำโพ", "lat": 15.70, "lon": 100.12},
+    "Nan->PakNamPho":        {"where": "น่านถึงปากน้ำโพ นครสวรรค์", "lat": 15.70, "lon": 100.12},
+    "PakNamPho->ChaoPhraya": {"where": "ปิง+น่าน รวมเป็นเจ้าพระยาที่ปากน้ำโพ นครสวรรค์", "lat": 15.67, "lon": 100.11},
+    "SakaeKrang->ChaoPhraya":{"where": "สะแกกรังบรรจบเจ้าพระยา อ.มโนรมย์ จ.ชัยนาท (เหนือเขื่อนเจ้าพระยา)", "lat": 15.28, "lon": 100.15},
+    "ChaoPhraya->ThaChin":   {"where": "ท่าจีน (มะขามเฒ่า) แยกจากเจ้าพระยาที่ อ.วัดสิงห์ จ.ชัยนาท", "lat": 15.19, "lon": 100.03},
+    "Pasak->ChaoPhraya":     {"where": "ป่าสักบรรจบเจ้าพระยาที่ อ.พระนครศรีอยุธยา (ป้อมเพชร)", "lat": 14.35, "lon": 100.58}
+  },
+  "outlet_reach": "RR-CP-LOWER",
+  "note_ping_wang": "Wang joins Ping upstream (Tak); Ping+Nan(+Yom via Nan) meet at Pak Nam Pho to form the Chao Phraya. Sakae Krang and Pasak are tributaries entering the main stem; Tha Chin is a distributary leaving it at Chai Nat."
+}

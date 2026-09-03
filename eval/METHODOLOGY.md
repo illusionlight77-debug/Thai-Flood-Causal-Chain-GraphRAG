@@ -19,7 +19,16 @@ Measure whether a retriever that traverses a **real causal chain**
 - **F1 by causal-hop length** (buckets 2/3/4/5) — the H2 (hop-robustness) test.
 - **Traceability** = fraction of answers whose every edge carries source `evidence`.
 - **Specificity** (negative control) = ability to correctly say a province did NOT flood.
-- **Bootstrap 95% CI** on F1 and on the paired causal−entity difference (N is small → CI wide → reported honestly).
+- **Bootstrap 95% CI** on F1 and on the paired causal−entity difference, per event and
+  **pooled across events** (`src/eval/pooled_significance.py`, N=46 (event,province) cases).
+  N is small → CI wide → reported honestly, including when the lower bound sits at the boundary.
+- **Explanation faithfulness** (`src/eval/faithfulness.py`) — deterministic grounding check
+  that the causal LLM explanation names only geography in its own chain (no cross-basin
+  hallucination). Reproducible; no second LLM as judge.
+- **Topology validity** (`src/graph/validate_topology.py`) — the flow graph must be a DAG,
+  every province reachable from a rain station, sub-basin-consistent, draining to a real
+  outlet. The topology is grounded in real confluence coordinates
+  (`chao_phraya_topology_provenance.json`); it is validated, not DEM-derived (future work).
 
 ## 2. Ground truth (never the model's own graph)
 Gold = **GISTDA satellite (Sentinel-1) flood-area** per province, published via thaiwater,

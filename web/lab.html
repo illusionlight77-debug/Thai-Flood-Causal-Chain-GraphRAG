@@ -45,7 +45,7 @@
   </div>
 
   <!-- KPI -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="kpi"></div>
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="kpi"></div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="card"><div class="font-bold mb-2">F1-by-hop (เหตุการณ์นี้)</div><canvas id="chHop" height="150"></canvas></div>
@@ -95,8 +95,10 @@ async function load(y){DATA=await j("/api/data/"+y);document.getElementById("llm
 
 function renderKPI(){const r=DATA.results||{},c=DATA.confusion||{};
   const cg=r["causal-graphrag"]||{},cc=c["causal-graphrag"]||{};
+  const fa=DATA.faithfulness||{};
   const k=[["F1 causal",f(cg.f1_overall),"#0ea5e9"],["Traceability",((cg.traceability||0)*100|0)+"%","#0ea5e9"],
-    ["Precision (neg-ctrl)",f(cc.precision),"#16a34a"],["Specificity",f(cc.specificity),"#16a34a"]];
+    ["Precision (neg-ctrl)",f(cc.precision),"#16a34a"],["Specificity",f(cc.specificity),"#16a34a"],
+    ["คำอธิบาย faithful",(fa.pct_fully_faithful!=null?fa.pct_fully_faithful+"%":"–"),"#9333ea"]];
   document.getElementById("kpi").innerHTML=k.map(x=>`<div class="kpi"><div class="text-2xl font-bold" style="color:${x[2]}">${x[1]}</div><div class="text-xs text-slate-500">${x[0]}</div></div>`).join("");}
 
 function renderRes(){const r=DATA.results||{};let h="<thead><tr><th>ระบบ</th><th>F1@2</th><th>F1@3</th><th>F1@4</th><th>F1@5</th><th>F1 รวม</th><th>Traceability</th><th>latency</th></tr></thead><tbody>";
