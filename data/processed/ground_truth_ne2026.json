@@ -1,0 +1,14 @@
+{
+  "event_id": "mekong_ne_2026",
+  "source": "GISTDA live flood API (Sentinel-1)",
+  "frozen_at": "2026-09-03T18:46:58",
+  "gold_flooded": [
+    "Bueng Kan",
+    "Nakhon Phanom",
+    "Sakon Nakhon",
+    "Udon Thani",
+    "Nong Khai",
+    "Kalasin",
+    "Mukdahan"
+  ]
+}

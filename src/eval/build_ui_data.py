@@ -20,6 +20,43 @@ from src.rag.registry import build_retrievers
 WEB = Path(__file__).resolve().parent.parent.parent / "web"
 
 
+def _f1_multiset(sample, goldset, predicted):
+    tp = sum(1 for p in sample if p in goldset and p in predicted)
+    pc = sum(1 for p in sample if p in predicted)
+    gc = sum(1 for p in sample if p in goldset)
+    prec = tp / pc if pc else 0.0
+    rec = tp / gc if gc else 0.0
+    return 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+
+
+def _bootstrap(allprov, goldset, predicted_by, n=3000, seed=0):
+    """#4 bootstrap CI ของ F1 ต่อระบบ (resample จังหวัด) + paired diff causal−entity.
+    N จังหวัดน้อย → CI กว้าง = รายงานตรง ๆ ว่านัยสำคัญยังจำกัด."""
+    import random
+    rng = random.Random(seed)
+    N = len(allprov)
+    samples = [[allprov[rng.randrange(N)] for _ in range(N)] for _ in range(n)]
+    out = {}
+    dist = {s: [] for s in predicted_by}
+    for smp in samples:
+        for s, pred in predicted_by.items():
+            dist[s].append(_f1_multiset(smp, goldset, pred))
+    for s, xs in dist.items():
+        xs2 = sorted(xs)
+        out[s] = {"f1_mean": round(sum(xs) / len(xs), 3),
+                  "ci95": [round(xs2[int(0.025 * n)], 3), round(xs2[int(0.975 * n)], 3)]}
+    # paired: causal − entity
+    if "causal-graphrag" in dist and "entity-graphrag" in dist:
+        diffs = [dist["causal-graphrag"][i] - dist["entity-graphrag"][i] for i in range(n)]
+        wins = sum(1 for d in diffs if d > 0) / n
+        ds = sorted(diffs)
+        out["_paired_causal_vs_entity"] = {
+            "mean_diff": round(sum(diffs) / n, 3),
+            "ci95": [round(ds[int(0.025 * n)], 3), round(ds[int(0.975 * n)], 3)],
+            "prob_causal_better": round(wins, 3)}
+    return out
+
+
 def _hop_map(c: Neo4jClient) -> dict:
     return {r["province"]: r["hops"] for r in c.run(queries.HOP_PER_PROVINCE)}
 
@@ -69,14 +106,13 @@ def build() -> Path:
         per_province[prov] = {"hop": hop_map.get(prov, 0), "question": q,
                               "is_gold": is_gold, "systems": systems}
 
-    # #3 confusion ต่อระบบ (gold=positive, negatives=negative)
+    # #3 confusion + predicted set ต่อระบบ (gold=positive, negatives=negative)
     negset = set(negatives)
+    predicted_by = {s: {p for p in allprov if per_province[p]["systems"][s]["predicts_this"]}
+                    for s in rs}
     confusion: dict = {}
     for sysname in rs:
-        # pred ระดับ event = union ของสิ่งที่ระบบทำนายว่าท่วม (ใช้ pred จากคำถามใดก็ได้ของระบบนั้น)
-        pred = set(per_province[gold[0]]["systems"][sysname]["provinces"]) if gold else set()
-        # entity/vector pred ต่างตามจังหวัดที่ถาม → ใช้ predicts_this รวม
-        predicted = {p for p in allprov if per_province[p]["systems"][sysname]["predicts_this"]}
+        predicted = predicted_by[sysname]
         tp = len(predicted & goldset); fp = len(predicted & negset)
         fn = len(goldset - predicted); tn = len(negset - predicted)
         prec = tp / (tp + fp) if (tp + fp) else 0.0
@@ -86,6 +122,9 @@ def build() -> Path:
         confusion[sysname] = {"tp": tp, "fp": fp, "fn": fn, "tn": tn,
                               "precision": round(prec, 3), "recall": round(rec, 3),
                               "specificity": round(spec, 3), "accuracy": round(acc, 3)}
+
+    # #4 bootstrap significance — resample province universe (N เล็ก → CI กว้าง = ความจริง)
+    significance = _bootstrap(allprov, goldset, predicted_by, n=3000)
 
     yr = fixtures._YEAR
     results_path = settings.data_processed_dir / f"eval_results_{yr}.json"
@@ -99,6 +138,7 @@ def build() -> Path:
            "llm_provider": settings.llm_provider if llm.available() else "none",
            "gold": gold, "negatives": negatives, "provinces": allprov,
            "per_province": per_province, "confusion": confusion,
+           "significance": significance,
            "results": results, "ablation": ablation}
     WEB.mkdir(exist_ok=True)
     f = WEB / f"ui_data_{yr}.json"
