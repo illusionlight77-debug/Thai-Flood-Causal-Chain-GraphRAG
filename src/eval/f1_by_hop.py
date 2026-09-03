@@ -23,7 +23,7 @@ def f1(pred: set[str], gold: set[str]) -> float:
 
 def f1_by_hop(
     predictions: Sequence[tuple[int, set[str], set[str]]],
-    hop_buckets: Iterable[int] = (2, 3, 4, 5),
+    hop_buckets: Iterable[int] = (2, 3, 4, 5, 6, 7),
 ) -> dict[int, float]:
     """group ผลตามความยาว chain แล้วเฉลี่ย F1.
 

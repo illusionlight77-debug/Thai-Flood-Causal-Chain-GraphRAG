@@ -1,6 +1,6 @@
 {
-  "n_edges": 9,
-  "n_downhill": 9,
+  "n_edges": 11,
+  "n_downhill": 11,
   "all_consistent": true,
   "violations": [],
   "reach_elev_m": {
@@ -10,7 +10,9 @@
     "RR-NAN": 52.0,
     "RR-SAKAEKRANG": 45.0,
     "RR-CP-UPPER": 21.0,
-    "RR-CP-LOWER": 8.8,
+    "RR-CP-L1": 13.0,
+    "RR-CP-L2": 7.0,
+    "RR-CP-L3": 6.7,
     "RR-PASAK": 52.3,
     "RR-THACHIN": 9.5
   },
@@ -47,9 +49,21 @@
       "downhill": true
     },
     {
-      "edge": "RR-CP-UPPER->RR-CP-LOWER",
+      "edge": "RR-CP-UPPER->RR-CP-L1",
       "src_m": 21.0,
-      "dst_m": 8.8,
+      "dst_m": 13.0,
+      "downhill": true
+    },
+    {
+      "edge": "RR-CP-L1->RR-CP-L2",
+      "src_m": 13.0,
+      "dst_m": 7.0,
+      "downhill": true
+    },
+    {
+      "edge": "RR-CP-L2->RR-CP-L3",
+      "src_m": 7.0,
+      "dst_m": 6.7,
       "downhill": true
     },
     {
@@ -59,15 +73,15 @@
       "downhill": true
     },
     {
-      "edge": "RR-SAKAEKRANG->RR-CP-LOWER",
+      "edge": "RR-SAKAEKRANG->RR-CP-L1",
       "src_m": 45.0,
-      "dst_m": 8.8,
+      "dst_m": 13.0,
       "downhill": true
     },
     {
-      "edge": "RR-PASAK->RR-CP-LOWER",
+      "edge": "RR-PASAK->RR-CP-L2",
       "src_m": 52.3,
-      "dst_m": 8.8,
+      "dst_m": 7.0,
       "downhill": true
     }
   ]

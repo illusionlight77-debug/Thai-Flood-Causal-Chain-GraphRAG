@@ -64,14 +64,17 @@ REACH_INUNDATION: dict[str, list[tuple[str, float]]] = {
     "RR-NAN":        [("UTTARADIT", 8.0), ("PHITSANULOK", 8.0), ("PHICHIT", 8.0)],
     "RR-SAKAEKRANG": [("UTHAITHANI", 8.0)],
     "RR-CP-UPPER":   [("NAKHONSAWAN", 8.0), ("CHAINAT", 9.0)],
-    "RR-CP-LOWER":   [("SINGBURI", 7.0), ("ANGTHONG", 7.0), ("AYUTTHAYA", 7.5),
-                      ("PATHUMTHANI", 8.0), ("NONTHABURI", 9.0), ("BANGKOK", 9.5)],
+    # #3 แกนเจ้าพระยาตอนล่างซอยเป็น 3 ช่วงตามสถานีวัดจริง (C.3/C.35/C.29) → lead-time รายจังหวัด
+    "RR-CP-L1":      [("SINGBURI", 7.0), ("ANGTHONG", 7.0)],           # ชัยนาท–สิงห์บุรี–อ่างทอง (C.3)
+    "RR-CP-L2":      [("AYUTTHAYA", 7.5)],                             # อ่างทอง–อยุธยา (C.35/ป้อมเพชร)
+    "RR-CP-L3":      [("PATHUMTHANI", 8.0), ("NONTHABURI", 9.0), ("BANGKOK", 9.5)],  # อยุธยา–กรุงเทพ (C.29)
     "RR-PASAK":      [("PHETCHABUN", 8.0), ("LOPBURI", 8.0), ("SARABURI", 8.0)],
     "RR-THACHIN":    [("SUPHANBURI", 8.0), ("NAKHONPATHOM", 8.0)],
 }
 REACH_SUBBASIN = {
     "RR-PING": "Ping", "RR-WANG": "Wang", "RR-YOM": "Yom", "RR-NAN": "Nan",
-    "RR-SAKAEKRANG": "SakaeKrang", "RR-CP-UPPER": "ChaoPhraya", "RR-CP-LOWER": "ChaoPhraya",
+    "RR-SAKAEKRANG": "SakaeKrang", "RR-CP-UPPER": "ChaoPhraya",
+    "RR-CP-L1": "ChaoPhraya", "RR-CP-L2": "ChaoPhraya", "RR-CP-L3": "ChaoPhraya",
     "RR-PASAK": "Pasak", "RR-THACHIN": "ThaChin",
 }
 REACH_META = {  # reach -> (ชื่อ, basin, stream order)
@@ -81,7 +84,9 @@ REACH_META = {  # reach -> (ชื่อ, basin, stream order)
     "RR-NAN": ("น่านท้ายเขื่อนสิริกิติ์", "Nan", 4),
     "RR-SAKAEKRANG": ("แม่น้ำสะแกกรัง", "SakaeKrang", 4),
     "RR-CP-UPPER": ("เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)", "ChaoPhraya", 6),
-    "RR-CP-LOWER": ("เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)", "ChaoPhraya", 7),
+    "RR-CP-L1": ("เจ้าพระยา ชัยนาท–สิงห์บุรี–อ่างทอง (C.3)", "ChaoPhraya", 7),
+    "RR-CP-L2": ("เจ้าพระยา อ่างทอง–อยุธยา (C.35)", "ChaoPhraya", 7),
+    "RR-CP-L3": ("เจ้าพระยา อยุธยา–กรุงเทพ (C.29)", "ChaoPhraya", 8),
     "RR-PASAK": ("แม่น้ำป่าสัก (เขื่อนป่าสักฯ)", "Pasak", 5),
     "RR-THACHIN": ("แม่น้ำท่าจีน (แยกจากเจ้าพระยาที่ชัยนาท)", "ThaChin", 6),
 }
@@ -189,16 +194,21 @@ USE_REAL_GEOM = len(_GADM_GEOMS) == len(GADM_NAME) and bool(GADM_NAME)
 
 # ── FLOWS_TO topology (ทิศการไหลจริงของลุ่มเจ้าพระยา) ────────────────
 CONFLUENCE = ("CONF-PAKNAMPHO", "ปากน้ำโพ (Pak Nam Pho)", 15.70, 100.12)
+# lag_hours ของแกนหลักตั้งจาก "ระยะลำน้ำจริง / ความเร็วคลื่นน้ำท่วม (~1.5 ม./วิ)" ไม่ใช่จากวันน้ำท่วม
+# (กันไม่ให้ circular กับ lead-time validation): ชัยนาท→สิงห์บุรี ~40 กม.≈24ชม.,
+# อ่างทอง→อยุธยา ~40 กม.≈24ชม., อยุธยา→กรุงเทพ ~90 กม.≈48ชม.
 FLOWS = [  # (src, dst, lag_hours)
     ("RR-WANG", "RR-PING", 24),               # วัง → ปิง
     ("RR-PING", "CONF-PAKNAMPHO", 36),
     ("RR-YOM", "CONF-PAKNAMPHO", 36),
     ("RR-NAN", "CONF-PAKNAMPHO", 36),
     ("CONF-PAKNAMPHO", "RR-CP-UPPER", 12),
-    ("RR-CP-UPPER", "RR-CP-LOWER", 24),
-    ("RR-CP-UPPER", "RR-THACHIN", 12),        # ท่าจีนแยกที่ชัยนาท
-    ("RR-SAKAEKRANG", "RR-CP-LOWER", 18),     # สะแกกรังเข้าเจ้าพระยาที่ชัยนาท (ใต้ปากน้ำโพ)
-    ("RR-PASAK", "RR-CP-LOWER", 18),          # ป่าสักเข้าเจ้าพระยาที่อยุธยา
+    ("RR-CP-UPPER", "RR-CP-L1", 24),          # ชัยนาท → สิงห์บุรี/อ่างทอง
+    ("RR-CP-L1", "RR-CP-L2", 24),             # อ่างทอง → อยุธยา
+    ("RR-CP-L2", "RR-CP-L3", 48),             # อยุธยา → ปทุม/นนท์/กรุงเทพ
+    ("RR-CP-UPPER", "RR-THACHIN", 96),        # ท่าจีน = distributary ยาว ~325 กม. ลาดชันต่ำ → ช้ามาก (นครปฐมท่วมท้าย)
+    ("RR-SAKAEKRANG", "RR-CP-L1", 18),        # สะแกกรังเข้าเจ้าพระยาที่ชัยนาท
+    ("RR-PASAK", "RR-CP-L2", 18),             # ป่าสักเข้าเจ้าพระยาที่อยุธยา
 ]
 
 
@@ -240,7 +250,7 @@ def build_causal_edges() -> list[dict]:
                       "evidence": _ev(rs, "D1/data.go.th rain→runoff")})
     # OVERFLOWS_TO (เขื่อน → ลำน้ำ)
     dam_reach = {"RES-BHUMIBOL": "RR-PING", "RES-SIRIKIT": "RR-NAN",
-                 "RES-PASAK": "RR-PASAK", "RES-CHAOPHRAYA": "RR-CP-LOWER"}
+                 "RES-PASAK": "RR-PASAK", "RES-CHAOPHRAYA": "RR-CP-L1"}
     for dam, reach in dam_reach.items():
         edges.append({"type": "OVERFLOWS_TO", "src": dam, "dst": reach,
                       "spillway": RESERVOIR_SPILLWAY[dam],

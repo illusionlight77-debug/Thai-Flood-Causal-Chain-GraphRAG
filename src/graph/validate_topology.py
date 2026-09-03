@@ -19,7 +19,7 @@ from src.graph.client import Neo4jClient
 from src.ingest import fixtures
 
 REACH_SUBBASIN = fixtures.REACH_SUBBASIN
-OUTLET = "RR-CP-LOWER"
+OUTLET = "RR-CP-L3"  # ปลายแกนเจ้าพระยา (อยุธยา–กรุงเทพ); ท่าจีนเป็น outlet ที่ 2 (distributary)
 
 _FLOW = "FEEDS|RUNOFF_TO|OVERFLOWS_TO|FLOWS_TO"
 

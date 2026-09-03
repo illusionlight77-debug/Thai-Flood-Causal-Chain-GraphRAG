@@ -22,7 +22,7 @@ RELS_NO_RUNOFF = "FEEDS|OVERFLOWS_TO|FLOWS_TO|INUNDATES"
 
 
 def _q(rels: str, directed: bool, gate_overflow: bool, gate_protect: bool) -> str:
-    arrow = f"-[rels:{rels}*2..6]->" if directed else f"-[rels:{rels}*2..6]-"
+    arrow = f"-[rels:{rels}*2..8]->" if directed else f"-[rels:{rels}*2..8]-"
     conds = ["last_reach:RiverReach"]
     if gate_overflow:
         conds.append("last_reach.overflow = true")

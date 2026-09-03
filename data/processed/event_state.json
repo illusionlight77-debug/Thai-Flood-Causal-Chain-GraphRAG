@@ -15,7 +15,9 @@
     "RR-NAN": true,
     "RR-SAKAEKRANG": true,
     "RR-CP-UPPER": true,
-    "RR-CP-LOWER": true,
+    "RR-CP-L1": true,
+    "RR-CP-L2": true,
+    "RR-CP-L3": true,
     "RR-PASAK": true,
     "RR-THACHIN": true
   },

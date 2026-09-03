@@ -134,7 +134,7 @@
   {
     "type": "OVERFLOWS_TO",
     "src": "RES-CHAOPHRAYA",
-    "dst": "RR-CP-LOWER",
+    "dst": "RR-CP-L1",
     "spillway": 16.5,
     "evidence": {
       "station_id": "RES-CHAOPHRAYA",
@@ -200,7 +200,7 @@
   {
     "type": "FLOWS_TO",
     "src": "RR-CP-UPPER",
-    "dst": "RR-CP-LOWER",
+    "dst": "RR-CP-L1",
     "lag_hours": 24,
     "evidence": {
       "station_id": "RR-CP-UPPER",
@@ -210,9 +210,31 @@
   },
   {
     "type": "FLOWS_TO",
+    "src": "RR-CP-L1",
+    "dst": "RR-CP-L2",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RR-CP-L1",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-CP-L2",
+    "dst": "RR-CP-L3",
+    "lag_hours": 48,
+    "evidence": {
+      "station_id": "RR-CP-L2",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
     "src": "RR-CP-UPPER",
     "dst": "RR-THACHIN",
-    "lag_hours": 12,
+    "lag_hours": 96,
     "evidence": {
       "station_id": "RR-CP-UPPER",
       "timestamp": "2022-10-10",
@@ -222,7 +244,7 @@
   {
     "type": "FLOWS_TO",
     "src": "RR-SAKAEKRANG",
-    "dst": "RR-CP-LOWER",
+    "dst": "RR-CP-L1",
     "lag_hours": 18,
     "evidence": {
       "station_id": "RR-SAKAEKRANG",
@@ -233,7 +255,7 @@
   {
     "type": "FLOWS_TO",
     "src": "RR-PASAK",
-    "dst": "RR-CP-LOWER",
+    "dst": "RR-CP-L2",
     "lag_hours": 18,
     "evidence": {
       "station_id": "RR-PASAK",

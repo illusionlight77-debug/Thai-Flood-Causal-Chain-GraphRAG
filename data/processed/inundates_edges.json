@@ -144,66 +144,66 @@
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L1",
     "dst": "SINGBURI",
     "threshold": 7.0,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L1",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L1",
     "dst": "ANGTHONG",
     "threshold": 7.0,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L1",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L2",
     "dst": "AYUTTHAYA",
     "threshold": 7.5,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L2",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L3",
     "dst": "PATHUMTHANI",
     "threshold": 8.0,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L3",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L3",
     "dst": "NONTHABURI",
     "threshold": 9.0,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L3",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
   {
     "type": "INUNDATES",
-    "src": "RR-CP-LOWER",
+    "src": "RR-CP-L3",
     "dst": "BANGKOK",
     "threshold": 9.5,
     "evidence": {
-      "station_id": "RR-CP-LOWER",
+      "station_id": "RR-CP-L3",
       "timestamp": "2022-10-10 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }

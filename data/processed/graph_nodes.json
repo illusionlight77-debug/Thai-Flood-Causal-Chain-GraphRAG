@@ -153,10 +153,28 @@
   },
   {
     "label": "RiverReach",
-    "id": "RR-CP-LOWER",
-    "name": "เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)",
+    "id": "RR-CP-L1",
+    "name": "เจ้าพระยา ชัยนาท–สิงห์บุรี–อ่างทอง (C.3)",
     "basin": "ChaoPhraya",
     "order": 7,
+    "level": 8.0,
+    "overflow": true
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-CP-L2",
+    "name": "เจ้าพระยา อ่างทอง–อยุธยา (C.35)",
+    "basin": "ChaoPhraya",
+    "order": 7,
+    "level": 8.0,
+    "overflow": true
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-CP-L3",
+    "name": "เจ้าพระยา อยุธยา–กรุงเทพ (C.29)",
+    "basin": "ChaoPhraya",
+    "order": 8,
     "level": 8.0,
     "overflow": true
   },

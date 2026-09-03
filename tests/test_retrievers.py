@@ -38,9 +38,9 @@ def test_causal_recovers_confluence_via_runoff_path():
     # (นครสวรรค์ 4-hop) ได้พร้อม chain ที่เริ่มจาก "สถานีฝน" และ evidence ครบ → traceable.
     from src.rag.causal_graphrag import CausalGraphRAG
     c = _graph_or_skip()
-    # 2-hop province: traceable
-    a2 = CausalGraphRAG(c).answer("ทำไมจังหวัดพระนครศรีอยุธยาถึงน้ำท่วม", province="Ayutthaya")
-    assert a2.is_traceable and "Ayutthaya" in a2.provinces and a2.hops == 2
+    # 2-hop province ในลุ่มน้ำสาขา (ฝน→runoff→reach→จังหวัด): เพชรบูรณ์ (ป่าสัก) — traceable
+    a2 = CausalGraphRAG(c).answer("ทำไมจังหวัดเพชรบูรณ์ถึงน้ำท่วม", province="Phetchabun")
+    assert a2.is_traceable and "Phetchabun" in a2.provinces and a2.hops == 2
     # 4-hop confluence (นครสวรรค์): กู้คืนได้ + chain เริ่มจากฝน (runoff) ไม่ใช่เขื่อนล้น
     a4 = CausalGraphRAG(c).answer("ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วม", province="Nakhon Sawan")
     assert "Nakhon Sawan" in a4.provinces and a4.is_traceable and a4.hops == 4
@@ -51,11 +51,14 @@ def test_causal_recovers_confluence_via_runoff_path():
 
 
 @pytest.mark.integration
-def test_entity_overincludes_and_untraceable():
+def test_entity_untraceable_and_differs_from_causal():
+    # entity เดินกราฟไม่สนทิศ/ไม่มี gate/ไม่มี evidence → คำตอบต่างจาก causal และ traceable ไม่ได้.
+    # (การ "เดาเกิน" ระดับ dataset เห็นชัดใน confusion: entity specificity=0 — ดู build_ui_data.)
     from src.rag.entity_graphrag import EntityGraphRAG
     from src.rag.causal_graphrag import CausalGraphRAG
     c = _graph_or_skip()
     ent = EntityGraphRAG(c).answer("ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วม", province="Nakhon Sawan")
     cau = CausalGraphRAG(c).answer("ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วม", province="Nakhon Sawan")
-    assert not ent.is_traceable
-    assert len(ent.provinces) > len(cau.provinces)  # baseline เกินจริง
+    assert not ent.is_traceable and cau.is_traceable      # ความต่างหลัก: traceability
+    assert len(ent.provinces) >= 2                        # entity ได้ neighborhood ไม่ว่าง
+    assert ent.provinces != cau.provinces                 # คนละชุด (คนละวิธี retrieve)

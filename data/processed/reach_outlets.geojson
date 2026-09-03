@@ -212,7 +212,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L1",
         "threshold": 7.0,
         "expected_prov": "SINGBURI",
         "layer_date": "2022-10-10"
@@ -228,7 +228,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L1",
         "threshold": 7.0,
         "expected_prov": "ANGTHONG",
         "layer_date": "2022-10-10"
@@ -244,7 +244,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L2",
         "threshold": 7.5,
         "expected_prov": "AYUTTHAYA",
         "layer_date": "2022-10-10"
@@ -260,7 +260,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L3",
         "threshold": 8.0,
         "expected_prov": "PATHUMTHANI",
         "layer_date": "2022-10-10"
@@ -276,7 +276,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L3",
         "threshold": 9.0,
         "expected_prov": "NONTHABURI",
         "layer_date": "2022-10-10"
@@ -292,7 +292,7 @@
     {
       "type": "Feature",
       "properties": {
-        "reach_id": "RR-CP-LOWER",
+        "reach_id": "RR-CP-L3",
         "threshold": 9.5,
         "expected_prov": "BANGKOK",
         "layer_date": "2022-10-10"

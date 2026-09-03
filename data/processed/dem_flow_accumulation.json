@@ -1,0 +1,102 @@
+{
+  "grid": "55x30 @ 0.1 deg",
+  "max_accumulation": 1188.0,
+  "n_edges": 11,
+  "n_ok": 11,
+  "consistent_with_flow_accumulation": true,
+  "violations": [],
+  "distributary_confirmed": true,
+  "reach_accumulation": {
+    "RR-PING": 88.0,
+    "RR-WANG": 13.0,
+    "RR-YOM": 442.0,
+    "RR-NAN": 442.0,
+    "RR-SAKAEKRANG": 26.0,
+    "RR-CP-UPPER": 655.0,
+    "RR-CP-L1": 772.0,
+    "RR-CP-L2": 926.0,
+    "RR-CP-L3": 946.0,
+    "RR-PASAK": 156.0,
+    "RR-THACHIN": 28.0,
+    "CONF-PAKNAMPHO": 614.0
+  },
+  "checks": [
+    {
+      "edge": "RR-WANG->RR-PING",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 13.0,
+      "acc_dst": 88.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-PING->CONF-PAKNAMPHO",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 88.0,
+      "acc_dst": 614.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-YOM->CONF-PAKNAMPHO",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 442.0,
+      "acc_dst": 614.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-NAN->CONF-PAKNAMPHO",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 442.0,
+      "acc_dst": 614.0,
+      "ok": true
+    },
+    {
+      "edge": "CONF-PAKNAMPHO->RR-CP-UPPER",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 614.0,
+      "acc_dst": 655.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-CP-UPPER->RR-CP-L1",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 655.0,
+      "acc_dst": 772.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-CP-L1->RR-CP-L2",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 772.0,
+      "acc_dst": 926.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-CP-L2->RR-CP-L3",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 926.0,
+      "acc_dst": 946.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-CP-UPPER->RR-THACHIN",
+      "kind": "distributary (expect ↓)",
+      "acc_src": 655.0,
+      "acc_dst": 28.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-SAKAEKRANG->RR-CP-L1",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 26.0,
+      "acc_dst": 772.0,
+      "ok": true
+    },
+    {
+      "edge": "RR-PASAK->RR-CP-L2",
+      "kind": "confluence (expect ↑)",
+      "acc_src": 156.0,
+      "acc_dst": 926.0,
+      "ok": true
+    }
+  ]
+}
