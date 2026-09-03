@@ -32,6 +32,15 @@ def index():
     return FileResponse(str(f))
 
 
+@app.get("/lab")
+def lab():
+    """หน้า research/measurement — แสดงทุกอย่างที่ทำ + ผลการทดลองทั้งหมด."""
+    f = WEB / "lab.html"
+    if not f.exists():
+        return JSONResponse({"error": "web/lab.html not found"}, status_code=404)
+    return FileResponse(str(f))
+
+
 @app.get("/api/config")
 def config():
     events = [{"year": y, "label": lbl} for y, lbl in EVENTS

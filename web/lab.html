@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Research / วัดผล — Thai Flood Causal-Chain GraphRAG</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Sarabun',system-ui,sans-serif;background:#f1f5f9;color:#0f172a;margin:0}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:7px 10px;text-align:left;border-bottom:1px solid #e2e8f0}
+  th{color:#64748b;font-weight:600}
+  .pill{padding:2px 8px;border-radius:6px;font-weight:600}
+  .tab{padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+  .tab.active{background:#4f46e5;color:#fff}.tab:not(.active){background:#e2e8f0;color:#334155}
+  .card{background:#fff;border-radius:16px;box-shadow:0 1px 3px #0001;padding:18px}
+  .kpi{background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 1px 3px #0001}
+</style>
+</head>
+<body>
+<header style="background:linear-gradient(120deg,#312e81,#4f46e5)" class="text-white">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-2">
+    <div><h1 class="text-2xl font-bold">🔬 Research / วัดผล</h1>
+      <p class="text-indigo-100 text-sm">Thai Flood Causal-Chain GraphRAG — ผลการทดลองทั้งหมด + วิธีการ + ablation</p></div>
+    <div class="flex items-center gap-3"><div id="tabs" class="flex gap-2"></div>
+      <a href="/" class="bg-white/90 text-indigo-800 px-3 py-2 rounded-lg font-semibold text-sm">← หน้าใช้งาน</a></div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-6 space-y-6">
+  <!-- data provenance -->
+  <div class="card">
+    <div class="font-bold mb-3">🧪 สิ่งที่ทำ / สถานะข้อมูล (จริง vs fixture)</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm" id="prov"></div>
+  </div>
+
+  <!-- F1 journey -->
+  <div class="card">
+    <div class="font-bold mb-2">📈 เส้นทาง F1 ของ causal-graphrag (ทุกก้าว ซื่อสัตย์)</div>
+    <div class="flex flex-wrap items-center gap-2 text-sm" id="journey"></div>
+    <div class="text-xs text-slate-500 mt-2">แต่ละก้าว = การเปลี่ยนไปใช้ข้อมูลจริง/แก้ schema — ตัวเลขไม่เคย hardcode</div>
+  </div>
+
+  <!-- KPI -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="kpi"></div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card"><div class="font-bold mb-2">F1-by-hop (เหตุการณ์นี้)</div><canvas id="chHop" height="150"></canvas></div>
+    <div class="card"><div class="font-bold mb-2">#2 Ablation — ปิดกลไก → F1 เปลี่ยน</div><canvas id="chAbl" height="150"></canvas></div>
+  </div>
+
+  <!-- results table -->
+  <div class="card"><div class="font-bold mb-3">📊 ผล eval (3 ระบบ)</div><table id="tRes"></table></div>
+
+  <!-- ablation table -->
+  <div class="card"><div class="font-bold mb-3">🔬 #2 Ablation (quantify กลไก)</div><table id="tAbl"></table>
+    <div class="text-xs text-slate-500 mt-2" id="ablNote"></div></div>
+
+  <!-- confusion / negative control -->
+  <div class="card"><div class="font-bold mb-3">🎯 #3 Negative control — confusion (gold=positive, non-gold=negative)</div><table id="tConf"></table></div>
+
+  <!-- province matrix -->
+  <div class="card overflow-x-auto"><div class="font-bold mb-3">🗂️ ทุกจังหวัด × 3 ระบบ (F1) + lead-time</div><table id="tMat"></table></div>
+</main>
+<footer class="max-w-6xl mx-auto px-6 py-6 text-xs text-slate-400">ground truth = GISTDA satellite · geometry = GADM4.1 · river-gauge = RID · LLM = <span id="llmp">-</span></footer>
+
+<script>
+const SYS=[{k:"causal-graphrag",n:"causal",c:"#0ea5e9"},{k:"entity-graphrag",n:"entity",c:"#f59e0b"},{k:"vector-rag",n:"vector",c:"#a855f7"}];
+let CFG,DATA,chHop,chAbl;
+const j=async u=>{const r=await fetch(u);if(!r.ok)throw new Error(u);return r.json();};
+const f=v=>(v==null?"–":Number(v).toFixed(3));
+const bg=x=>x>=.7?'#dcfce7':x>=.4?'#fef9c3':'#fee2e2';
+
+async function boot(){CFG=await j("/api/config");const t=document.getElementById("tabs");
+  CFG.events.forEach((e,i)=>{const b=document.createElement("div");b.className="tab"+(i?"":" active");b.textContent=e.label.split("(")[0];
+    b.onclick=()=>{[...t.children].forEach(c=>c.classList.remove("active"));b.classList.add("active");load(e.year);};t.appendChild(b);});
+  renderProvenance();renderJourney();
+  if(CFG.events.length)load(CFG.events[0].year);}
+
+function renderProvenance(){const items=[["Ground truth","GISTDA satellite","real"],["Geometry","GADM4.1","real"],
+  ["Dam specs+status","EGAT/RID","real"],["River gauge","RID (C.2/C.13)","real"],["Vector corpus","194 ข่าวจริง","real"],
+  ["INUNDATES threshold","gauge+คันกั้นน้ำ","real"],["คำอธิบาย","LLM (grounded)","real"],["โครงกราฟ node/edge","hand-built","fixture"]];
+  document.getElementById("prov").innerHTML=items.map(([a,b,s])=>`<div class="border rounded-xl p-3 ${s=='real'?'border-green-200 bg-green-50':'border-amber-200 bg-amber-50'}">
+    <div class="font-semibold">${a}</div><div class="text-xs text-slate-500">${b}</div>
+    <div class="text-xs mt-1 ${s=='real'?'text-green-700':'text-amber-700'}">${s=='real'?'✅ จริง':'⚙️ fixture'}</div></div>`).join("");}
+
+function renderJourney(){const steps=[["1.000","fixture (tuned)"],["0.800","สเปกเขื่อนจริง"],["0.545","ground truth จริง"],["0.769","+runoff+gauge"],["0.833","เหตุการณ์ 2564"]];
+  document.getElementById("journey").innerHTML=steps.map((s,i)=>`<span class="pill" style="background:#e0e7ff;color:#3730a3">${s[0]}<span class="text-xs text-slate-500"> ${s[1]}</span></span>${i<steps.length-1?'<span class="text-slate-400">→</span>':''}`).join("");}
+
+async function load(y){DATA=await j("/api/data/"+y);document.getElementById("llmp").textContent=DATA.llm_provider;
+  renderKPI();renderRes();renderAbl();renderConf();renderMat();renderCharts();}
+
+function renderKPI(){const r=DATA.results||{},c=DATA.confusion||{};
+  const cg=r["causal-graphrag"]||{},cc=c["causal-graphrag"]||{};
+  const k=[["F1 causal",f(cg.f1_overall),"#0ea5e9"],["Traceability",((cg.traceability||0)*100|0)+"%","#0ea5e9"],
+    ["Precision (neg-ctrl)",f(cc.precision),"#16a34a"],["Specificity",f(cc.specificity),"#16a34a"]];
+  document.getElementById("kpi").innerHTML=k.map(x=>`<div class="kpi"><div class="text-2xl font-bold" style="color:${x[2]}">${x[1]}</div><div class="text-xs text-slate-500">${x[0]}</div></div>`).join("");}
+
+function renderRes(){const r=DATA.results||{};let h="<thead><tr><th>ระบบ</th><th>F1@2-hop</th><th>F1@4-hop</th><th>F1 รวม</th><th>Traceability</th><th>latency</th></tr></thead><tbody>";
+  SYS.forEach(s=>{const d=r[s.k]||{};const hb=d.f1_by_hop||{};h+=`<tr><td class="font-semibold" style="color:${s.c}">${s.n}</td><td>${f(hb["2"])}</td><td>${f(hb["4"])}</td><td><b>${f(d.f1_overall)}</b></td><td>${((d.traceability||0)*100|0)}%</td><td class="text-slate-400">${d.avg_latency_ms||'-'} ms</td></tr>`;});
+  document.getElementById("tRes").innerHTML=h+"</tbody>";}
+
+function renderAbl(){const a=(DATA.ablation||{}).variants||{};let h="<thead><tr><th>variant</th><th>F1</th><th>ΔF1 vs full</th><th>#ทำนาย</th></tr></thead><tbody>";
+  const base=(a["full (ครบทุกกลไก)"]||{}).f1||0;
+  Object.entries(a).forEach(([n,v])=>{const d=v.f1-base;const col=Math.abs(d)<1e-9?'#64748b':d<0?'#dc2626':'#16a34a';
+    h+=`<tr><td>${n}</td><td><b>${f(v.f1)}</b></td><td style="color:${col};font-weight:600">${n.startsWith('full')?'—':(d>=0?'+':'')+d.toFixed(3)}</td><td>${v.n_pred}</td></tr>`;});
+  document.getElementById("tAbl").innerHTML=h+"</tbody>";
+  document.getElementById("ablNote").textContent="ตัด runoff = F1 ตกมากสุด (กลไกสำคัญ); ตัด overflow-gate = F1 ขึ้น (gate เข้มไป — ชี้ว่าควรใช้ gauge ละเอียดขึ้น)";}
+
+function renderConf(){const c=DATA.confusion||{};let h="<thead><tr><th>ระบบ</th><th>TP</th><th>FP</th><th>FN</th><th>TN</th><th>Precision</th><th>Recall</th><th>Specificity</th><th>Accuracy</th></tr></thead><tbody>";
+  SYS.forEach(s=>{const d=c[s.k]||{};h+=`<tr><td class="font-semibold" style="color:${s.c}">${s.n}</td><td>${d.tp}</td><td>${d.fp}</td><td>${d.fn}</td><td>${d.tn}</td><td><b>${f(d.precision)}</b></td><td>${f(d.recall)}</td><td>${f(d.specificity)}</td><td>${f(d.accuracy)}</td></tr>`;});
+  document.getElementById("tConf").innerHTML=h+"</tbody>";}
+
+function renderMat(){const pp=DATA.per_province;let h="<thead><tr><th>จังหวัด</th><th>gold?</th><th>hop</th>"+SYS.map(s=>`<th>${s.n}</th>`).join("")+"<th>lead(ชม.)</th></tr></thead><tbody>";
+  DATA.provinces.forEach(p=>{const x=pp[p];const lead=(x.systems["causal-graphrag"]||{}).lead_hours;
+    h+=`<tr><td class="font-medium">${p}</td><td>${x.is_gold?'🔵':'—'}</td><td>${x.hop}</td>`+
+      SYS.map(s=>{const v=(x.systems[s.k]||{}).f1||0;return `<td><span class="pill" style="background:${bg(v)}">${v.toFixed(2)}</span></td>`;}).join("")+
+      `<td>${lead!=null?lead:'–'}</td></tr>`;});
+  document.getElementById("tMat").innerHTML=h+"</tbody>";}
+
+function renderCharts(){const r=DATA.results||{},a=(DATA.ablation||{}).variants||{};
+  const labels=SYS.map(s=>s.n);
+  if(chHop)chHop.destroy();chHop=new Chart(document.getElementById("chHop"),{type:"bar",
+    data:{labels,datasets:[{label:"2-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["2"]||0),backgroundColor:"#38bdf8"},
+      {label:"4-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["4"]||0),backgroundColor:"#fb7185"}]},
+    options:{scales:{y:{max:1,beginAtZero:true}}}});
+  const an=Object.keys(a),av=an.map(k=>a[k].f1);
+  if(chAbl)chAbl.destroy();chAbl=new Chart(document.getElementById("chAbl"),{type:"bar",
+    data:{labels:an.map(x=>x.replace(' (ครบทุกกลไก)','')),datasets:[{label:"F1",data:av,backgroundColor:an.map(x=>x.startsWith('full')?'#4f46e5':'#94a3b8')}]},
+    options:{indexAxis:"y",scales:{x:{max:1,beginAtZero:true}},plugins:{legend:{display:false}}}});}
+boot();
+</script>
+</body>
+</html>

@@ -3,239 +3,148 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Thai Flood Causal-Chain GraphRAG</title>
+<title>ทำไมจังหวัดนี้ถึงน้ำท่วม?</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0f172a;--card:#ffffff;}
-  body{font-family:'Sarabun',system-ui,sans-serif;background:#eef2f7;color:#0f172a;margin:0}
-  .sys-causal{--c:#0ea5e9} .sys-entity{--c:#f59e0b} .sys-vector{--c:#a855f7}
-  .bar{height:8px;border-radius:6px;background:#e2e8f0;overflow:hidden}
-  .bar>span{display:block;height:100%;border-radius:6px}
-  .chip{font-size:12px;padding:2px 8px;border-radius:999px;display:inline-block;margin:2px 2px 0 0}
-  .tp{background:#dcfce7;color:#166534}.fp{background:#fee2e2;color:#991b1b}.fn{background:#fef9c3;color:#854d0e}
+  body{font-family:'Sarabun',system-ui,sans-serif;background:#eff6ff;color:#0f172a;margin:0}
+  #map{height:420px;border-radius:16px}
+  .chip{padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;border:1.5px solid #cbd5e1;background:#fff;white-space:nowrap}
+  .chip.active{background:#0284c7;color:#fff;border-color:#0284c7}
+  .chip.gold{border-color:#0284c7} .chip.neg{opacity:.7}
+  .tab{padding:8px 18px;border-radius:10px;cursor:pointer;font-weight:600}
+  .tab.active{background:#fff;color:#0369a1}.tab:not(.active){background:#ffffff33;color:#fff}
+  .flow span{display:inline-block;background:#e0f2fe;color:#075985;padding:6px 12px;border-radius:10px;margin:3px;font-weight:600}
+  .flow b{color:#0284c7;margin:0 2px}
+  .mini{font-size:12px} .tp{color:#166534}.fp{color:#991b1b}
   details>summary{cursor:pointer;list-style:none}
-  #map{height:440px;border-radius:14px}
-  .maplibregl-popup-content{font-family:'Sarabun',sans-serif;font-size:13px}
-  .tab{padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600}
-  .tab.active{background:#0ea5e9;color:#fff}.tab:not(.active){background:#e2e8f0;color:#334155}
-  .provbtn{width:100%;text-align:left;padding:9px 12px;border-radius:10px;cursor:pointer;border:1px solid #e2e8f0;background:#fff;margin-bottom:6px;transition:.15s}
-  .provbtn:hover{border-color:#0ea5e9}.provbtn.active{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
 </style>
 </head>
 <body>
-<header style="background:linear-gradient(120deg,#0f172a,#0e7490)" class="text-white">
-  <div class="max-w-7xl mx-auto px-6 py-5">
-    <div class="flex items-center justify-between flex-wrap gap-3">
-      <div>
-        <h1 class="text-2xl font-bold">🌊 ทำไมจังหวัดนี้ถึงน้ำท่วม?</h1>
-        <p class="text-sky-200 text-sm">Thai Flood Causal-Chain GraphRAG — เทียบ 3 ระบบ (causal / entity / vector) บน ground truth จริงจาก GISTDA</p>
-      </div>
-      <div id="eventTabs" class="flex gap-2"></div>
+<header style="background:linear-gradient(120deg,#0c4a6e,#0891b2)" class="text-white">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+    <div><h1 class="text-2xl font-bold">🌊 ทำไมจังหวัดนี้ถึงน้ำท่วม?</h1>
+      <p class="text-sky-100 text-sm">อธิบายเหตุน้ำท่วมตามสายเหตุ-ผลจริง + เตือนล่วงหน้า — ข้อมูลจริงจาก GISTDA</p></div>
+    <div class="flex items-center gap-3">
+      <div id="tabs" class="flex gap-2"></div>
+      <a href="/lab" class="bg-white/90 text-sky-800 px-3 py-2 rounded-lg font-semibold text-sm">🔬 หน้าวัดผล/วิจัย</a>
     </div>
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-  <!-- Sidebar -->
-  <aside class="space-y-4">
-    <div class="bg-white rounded-2xl shadow p-4">
-      <div class="text-xs font-semibold text-slate-500 mb-2">เลือกจังหวัด (gold ตาม GISTDA)</div>
-      <div id="provList"></div>
-    </div>
-    <div class="bg-white rounded-2xl shadow p-4">
-      <div class="text-xs font-semibold text-slate-500 mb-2">🛰️ น้ำท่วมปัจจุบัน (GISTDA real-time)</div>
-      <div id="liveFlood" class="text-sm text-slate-600">กำลังโหลด…</div>
-    </div>
-    <div class="bg-white rounded-2xl shadow p-4 text-xs text-slate-500 leading-relaxed" id="eventMeta"></div>
-  </aside>
+<main class="max-w-6xl mx-auto px-6 py-6 space-y-5">
+  <div>
+    <div class="text-xs font-semibold text-slate-500 mb-2">เลือกจังหวัด (🔵 = ท่วมจริงตาม GISTDA)</div>
+    <div id="chips" class="flex gap-2 flex-wrap"></div>
+  </div>
 
-  <!-- Content -->
-  <section class="space-y-6">
-    <div id="questionBar" class="bg-sky-50 border border-sky-200 rounded-xl px-4 py-3 text-sky-900 font-semibold"></div>
+  <!-- HERO explanation -->
+  <div id="hero" class="bg-white rounded-2xl shadow-lg p-6"></div>
 
-    <!-- 3 system cards -->
-    <div id="cards" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-
-    <!-- charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white rounded-2xl shadow p-4">
-        <div class="font-semibold mb-2">F1 รวมต่อระบบ (เหตุการณ์นี้)</div>
-        <canvas id="chartOverall" height="150"></canvas>
-      </div>
-      <div class="bg-white rounded-2xl shadow p-4">
-        <div class="font-semibold mb-2">F1 แยกตาม hop (2-hop เขื่อนเดียว / 4-hop ข้ามลุ่มน้ำ)</div>
-        <canvas id="chartHop" height="150"></canvas>
-      </div>
-    </div>
-
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
     <!-- map -->
     <div class="bg-white rounded-2xl shadow p-4">
-      <div class="font-semibold mb-2">🗺️ แผนที่ — 🟦 gold (ท่วมจริง GISTDA) · 🟩 ทำนายถูก · 🟥 ทำนายเกิน</div>
+      <div class="font-semibold mb-2">🗺️ แผนที่ · 🟦 ท่วมจริง · 🟩 ระบบทำนายถูก · 🟥 ทำนายเกิน</div>
       <div id="map"></div>
-      <div id="mapNote" class="text-xs text-slate-500 mt-2"></div>
     </div>
+    <!-- live flood -->
+    <div class="bg-white rounded-2xl shadow p-4">
+      <div class="font-semibold mb-1">🛰️ น้ำท่วมตอนนี้ (GISTDA real-time)</div>
+      <div class="text-xs text-slate-400 mb-2">จาก Sentinel-1 · อัปเดตอัตโนมัติ</div>
+      <div id="live" class="text-sm">กำลังโหลด…</div>
+    </div>
+  </div>
 
-    <!-- matrix -->
-    <div class="bg-white rounded-2xl shadow p-4 overflow-x-auto">
-      <div class="font-semibold mb-3">📊 ทดสอบทุกจังหวัด — F1 ต่อระบบ (ตาราง)</div>
-      <table class="w-full text-sm" id="matrix"></table>
+  <!-- compact compare -->
+  <div class="bg-white rounded-2xl shadow p-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-semibold">🤖 เทียบ 3 ระบบ (ย่อ)</div>
+      <a href="/lab" class="text-sky-600 text-sm font-semibold">ดูผลการทดลองละเอียด →</a>
     </div>
-  </section>
+    <div id="compare" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+  </div>
 </main>
-<footer class="max-w-7xl mx-auto px-6 py-8 text-xs text-slate-400">
-  ground truth = GISTDA satellite · geometry = GADM4.1 · river-gauge = RID · basemap = GISTDA sphere
+<footer class="max-w-6xl mx-auto px-6 py-6 text-xs text-slate-400">
+  ground truth = GISTDA satellite · geometry = GADM · river-gauge = RID · basemap = GISTDA sphere · คำอธิบาย = <span id="llmp">-</span>
 </footer>
 
 <script>
-const SYS = [
-  {key:"causal-graphrag", label:"causal-graphrag", cls:"sys-causal", note:"ของเรา — เดินสายเหตุ-ผล + evidence"},
-  {key:"entity-graphrag", label:"entity-graphrag", cls:"sys-entity", note:"baseline — entity-relation"},
-  {key:"vector-rag",      label:"vector-rag",      cls:"sys-vector", note:"baseline — ค้นข่าว 194 ชิ้น"},
-];
-let CFG=null, DATA=null, curYear=null, curProv=null, PROVGJ=null, map=null, chO=null, chH=null;
-
-async function j(u){const r=await fetch(u); if(!r.ok) throw new Error(u+" "+r.status); return r.json();}
-const pct = v => (v*100).toFixed(0)+"%";
+const SYS=[{k:"causal-graphrag",n:"causal (ของเรา)",c:"#0ea5e9"},{k:"entity-graphrag",n:"entity",c:"#f59e0b"},{k:"vector-rag",n:"vector",c:"#a855f7"}];
+let CFG,DATA,PROVGJ,map,curProv;
+const j=async u=>{const r=await fetch(u);if(!r.ok)throw new Error(u);return r.json();};
 
 async function boot(){
-  CFG = await j("/api/config");
-  const tabs = document.getElementById("eventTabs");
-  CFG.events.forEach((e,i)=>{
-    const b=document.createElement("div"); b.className="tab"+(i===0?" active":""); b.textContent=e.label;
-    b.onclick=()=>{[...tabs.children].forEach(c=>c.classList.remove("active")); b.classList.add("active"); loadYear(e.year);};
-    tabs.appendChild(b);
-  });
-  try{PROVGJ = await j("/api/geo/provinces");}catch(e){PROVGJ=null;}
-  loadLiveFlood();
-  if(CFG.events.length) loadYear(CFG.events[0].year);
+  CFG=await j("/api/config");
+  const tabs=document.getElementById("tabs");
+  CFG.events.forEach((e,i)=>{const b=document.createElement("div");b.className="tab"+(i?"":" active");b.textContent=e.label.split("(")[0];
+    b.onclick=()=>{[...tabs.children].forEach(c=>c.classList.remove("active"));b.classList.add("active");load(e.year);};tabs.appendChild(b);});
+  try{PROVGJ=await j("/api/geo/provinces");}catch(e){}
+  live();
+  if(CFG.events.length)load(CFG.events[0].year);
+}
+async function load(y){DATA=await j("/api/data/"+y);document.getElementById("llmp").textContent=DATA.llm_provider;
+  renderChips();curProv=DATA.gold.includes("Nakhon Sawan")?"Nakhon Sawan":DATA.gold[0];select(curProv);ensureMap();}
+
+function renderChips(){const el=document.getElementById("chips");el.innerHTML="";
+  DATA.provinces.forEach(p=>{const g=DATA.gold.includes(p);const b=document.createElement("div");
+    b.className="chip "+(g?"gold":"neg")+(p===curProv?" active":"");b.textContent=(g?"🔵 ":"")+p;
+    b.onclick=()=>select(p);el.appendChild(b);});}
+
+function select(p){curProv=p;renderChips();renderHero(p);renderCompare(p);updateMap(p);}
+
+function renderHero(p){
+  const pp=DATA.per_province[p], ca=pp.systems["causal-graphrag"];
+  const flooded=ca.predicts_this;
+  const chain=ca.chain.length?`<div class="flow mt-3">${ca.chain.map((c,i)=>`<span>${c}</span>${i<ca.chain.length-1?'<b>→</b>':''}`).join("")}</div>`:"";
+  const ev=ca.evidence.length?`<details class="mt-3"><summary class="text-sm font-semibold text-slate-500">🧾 หลักฐาน ${ca.evidence.length} จุด (ตรวจย้อนกลับได้)</summary>${ca.evidence.map((e,i)=>`<div class="mini py-1 border-b border-slate-100">✅ ${e.dataset} · <span class="text-slate-400">${e.station_id||''} ${e.timestamp||''}</span></div>`).join("")}</details>`:"";
+  const lead=ca.lead_hours?`<span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-semibold">⏱ เตือนล่วงหน้า ~${ca.lead_hours} ชม.</span>`:"";
+  const gold=DATA.gold.includes(p);
+  const badge=flooded?'<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">ระบบอธิบายได้ ✓</span>'
+    :'<span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-semibold">ระบบไม่ทำนายว่าท่วม</span>';
+  const truth=gold?'<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">GISTDA: ท่วมจริง</span>'
+    :'<span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-sm font-semibold">GISTDA: ไม่ท่วม (นัยสำคัญ)</span>';
+  document.getElementById("hero").innerHTML=`
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-2xl font-bold text-sky-900">🌊 ทำไม “${p}” ถึงน้ำท่วม?</h2>
+      <div class="flex gap-2 flex-wrap">${truth}${badge}${lead}<span class="bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm font-semibold">${pp.hop}-hop</span></div>
+    </div>
+    <p class="text-lg leading-8 mt-4 text-slate-800">${ca.explanation||ca.text||"—"}</p>
+    ${chain}${ev}`;
 }
 
-async function loadYear(year){
-  curYear=year; DATA = await j("/api/data/"+year);
-  document.getElementById("eventMeta").innerHTML =
-    `เหตุการณ์: <b>${DATA.event_id}</b><br>ช่วง: ${DATA.period}<br>gold: ${DATA.gold.length} จังหวัด<br><span class="text-slate-400">${DATA.gold.join(", ")}</span>`;
-  renderProvList(); renderCharts(); renderMatrix();
-  curProv = DATA.provinces[0]; selectProv(curProv);
-  ensureMap();
+function renderCompare(p){const el=document.getElementById("compare");el.innerHTML="";
+  const s=DATA.per_province[p].systems;
+  SYS.forEach(x=>{const d=s[x.k];el.innerHTML+=`
+    <div class="border border-slate-200 rounded-xl p-3">
+      <div class="font-semibold" style="color:${x.c}">${x.n}</div>
+      <div class="text-2xl font-bold" style="color:${x.c}">${d.f1.toFixed(2)}<span class="text-xs text-slate-400 font-normal"> F1</span></div>
+      <div class="mini text-slate-500">prec ${(d.precision*100)|0}% · recall ${(d.recall*100)|0}% · trace ${d.traceable?'✓':'✗'}</div>
+      <div class="mini mt-1"><span class="tp">ถูก ${d.tp.length}</span> · <span class="fp">เกิน ${d.fp.length}</span> · ตกหล่น ${d.fn.length}</div>
+    </div>`;});
 }
 
-function renderProvList(){
-  const el=document.getElementById("provList"); el.innerHTML="";
-  DATA.provinces.forEach(p=>{
-    const hop=DATA.per_province[p].hop;
-    const b=document.createElement("button"); b.className="provbtn"+(p===curProv?" active":"");
-    b.innerHTML=`${p} <span style="float:right;opacity:.7">${hop}-hop</span>`;
-    b.onclick=()=>selectProv(p); el.appendChild(b);
-  });
-}
+async function live(){const el=document.getElementById("live");try{const d=await j("/api/gistda/live-flood");
+  if(!d.available||!d.provinces.length){el.innerHTML="<span class='text-slate-400'>ไม่พบน้ำท่วมขณะนี้</span>";return;}
+  el.innerHTML=`<div class="text-xs text-slate-400 mb-1">${d.count} จังหวัด (${d.window})</div>`+
+    d.provinces.slice(0,10).map(x=>`<div class="flex justify-between border-b border-slate-100 py-1"><span>${x.pv}</span><span class="text-slate-400">${Math.round(x.area_rai).toLocaleString()}</span></div>`).join("");
+}catch(e){el.innerHTML="<span class='text-slate-400'>โหลดไม่ได้</span>";}}
 
-function selectProv(p){
-  curProv=p; renderProvList();
-  document.getElementById("questionBar").textContent = DATA.per_province[p].question;
-  renderCards(p); updateMap(p);
-}
-
-function renderCards(prov){
-  const wrap=document.getElementById("cards"); wrap.innerHTML="";
-  const sysData=DATA.per_province[prov].systems;
-  SYS.forEach(s=>{
-    const d=sysData[s.key]; if(!d) return;
-    const chips = arr => arr.map(x=>`<span class="chip ${arr===d.tp?'tp':arr===d.fp?'fp':'fn'}">${x}</span>`).join("");
-    const ev = d.evidence.length ? d.evidence.map((e,i)=>`<div class="text-xs py-1 border-b border-slate-100">✅ #${i+1} <b>${e.dataset}</b><br><span class="text-slate-400">${e.station_id||'-'} · ${e.timestamp||'-'}</span></div>`).join("") : '<div class="text-xs text-slate-400">— ไม่มี evidence เชิงโครงสร้าง —</div>';
-    const chain = d.chain.length ? d.chain.map(c=>`<span class="chip" style="background:#f1f5f9">${c}</span>`).join(" → ") : '<span class="text-slate-400 text-xs">ไม่พบ chain</span>';
-    const card=document.createElement("div"); card.className=s.cls+" bg-white rounded-2xl shadow p-4";
-    card.innerHTML=`
-      <div class="flex items-center justify-between">
-        <div><div class="font-bold" style="color:var(--c)">${s.label}</div><div class="text-xs text-slate-400">${s.note}</div></div>
-        <div class="text-right"><div class="text-3xl font-bold" style="color:var(--c)">${d.f1.toFixed(2)}</div><div class="text-[10px] text-slate-400 -mt-1">F1</div></div>
-      </div>
-      <div class="bar my-2"><span style="width:${d.f1*100}%;background:var(--c)"></span></div>
-      <div class="grid grid-cols-4 gap-1 text-center text-xs my-2">
-        <div><div class="font-semibold">${pct(d.precision)}</div><div class="text-slate-400">prec</div></div>
-        <div><div class="font-semibold">${pct(d.recall)}</div><div class="text-slate-400">recall</div></div>
-        <div><div class="font-semibold">${d.hops}</div><div class="text-slate-400">hop</div></div>
-        <div><div class="font-semibold">${d.traceable?'✓':'✗'}</div><div class="text-slate-400">trace</div></div>
-      </div>
-      <div class="text-xs text-slate-600 my-2">${d.text||''}</div>
-      <div class="mb-1">${chips(d.tp)}${chips(d.fp)}${chips(d.fn)}</div>
-      <details class="mt-2"><summary class="text-xs font-semibold text-slate-500">🔗 causal chain</summary><div class="mt-1 text-sm leading-7">${chain}</div></details>
-      <details class="mt-1"><summary class="text-xs font-semibold text-slate-500">🧾 evidence (${d.evidence.length})</summary><div class="mt-1">${ev}</div></details>
-      <div class="text-[10px] text-slate-400 mt-2">⏱ ${d.latency_ms} ms · ทำนาย ${d.provinces.length} จังหวัด</div>`;
-    wrap.appendChild(card);
-  });
-}
-
-function renderCharts(){
-  const r=DATA.results||{};
-  const colors=["#0ea5e9","#f59e0b","#a855f7"];
-  const labels=SYS.map(s=>s.label);
-  const overall=SYS.map(s=>(r[s.key]||{}).f1_overall||0);
-  const h2=SYS.map(s=>((r[s.key]||{}).f1_by_hop||{})["2"]||0);
-  const h4=SYS.map(s=>((r[s.key]||{}).f1_by_hop||{})["4"]||0);
-  if(chO)chO.destroy(); if(chH)chH.destroy();
-  chO=new Chart(document.getElementById("chartOverall"),{type:"bar",
-    data:{labels,datasets:[{label:"F1 รวม",data:overall,backgroundColor:colors}]},
-    options:{scales:{y:{max:1,beginAtZero:true}},plugins:{legend:{display:false}}}});
-  chH=new Chart(document.getElementById("chartHop"),{type:"bar",
-    data:{labels,datasets:[{label:"2-hop",data:h2,backgroundColor:"#38bdf8"},{label:"4-hop",data:h4,backgroundColor:"#fb7185"}]},
-    options:{scales:{y:{max:1,beginAtZero:true}}}});
-}
-
-function renderMatrix(){
-  const t=document.getElementById("matrix");
-  let h="<thead><tr class='text-left text-slate-500'><th class='py-2'>จังหวัด</th><th>hop</th>"+SYS.map(s=>`<th class='px-2'>${s.label}</th>`).join("")+"</tr></thead><tbody>";
-  DATA.provinces.forEach(p=>{
-    const pp=DATA.per_province[p];
-    h+=`<tr class='border-t border-slate-100'><td class='py-2 font-medium'>${p}</td><td>${pp.hop}</td>`+
-      SYS.map(s=>{const f=(pp.systems[s.key]||{}).f1||0; const bg=f>=0.7?'#dcfce7':f>=0.4?'#fef9c3':'#fee2e2';
-        return `<td class='px-2'><span style="background:${bg};padding:2px 8px;border-radius:6px">${f.toFixed(2)}</span></td>`;}).join("")+"</tr>";
-  });
-  t.innerHTML=h+"</tbody>";
-}
-
-function ensureMap(){
-  if(map||!window.maplibregl) return;
-  const style = CFG.has_basemap
-    ? {version:8,sources:{g:{type:"raster",tiles:[location.origin+"/api/gistda/basemap/{z}/{x}/{y}"],tileSize:256,attribution:"GISTDA sphere"}},layers:[{id:"g",type:"raster",source:"g"}]}
-    : {version:8,sources:{},layers:[{id:"bg",type:"background",paint:{"background-color":"#dbeafe"}}]};
+function ensureMap(){if(map||!window.maplibregl)return;
+  const style=CFG.has_basemap?{version:8,sources:{g:{type:"raster",tiles:[location.origin+"/api/gistda/basemap/{z}/{x}/{y}"],tileSize:256,attribution:"GISTDA"}},layers:[{id:"g",type:"raster",source:"g"}]}:{version:8,sources:{},layers:[{id:"bg",type:"background",paint:{"background-color":"#dbeafe"}}]};
   map=new maplibregl.Map({container:"map",style,center:[100.4,15.2],zoom:5.7});
-  map.on("load",()=>{
-    if(PROVGJ){
-      map.addSource("prov",{type:"geojson",data:PROVGJ});
-      map.addLayer({id:"prov-fill",type:"fill",source:"prov",paint:{"fill-color":"#94a3b8","fill-opacity":0.35}});
-      map.addLayer({id:"prov-line",type:"line",source:"prov",paint:{"line-color":"#334155","line-width":1}});
-      map.on("click","prov-fill",e=>{const n=e.features[0].properties.name_en; if(DATA.per_province[n]) selectProv(n);});
-    }
-    if(curProv) updateMap(curProv);
-  });
-}
-function updateMap(prov){
-  if(!map||!map.getLayer||!map.getLayer("prov-fill")) return;
-  const gold=new Set(DATA.gold);
-  const pred=new Set((DATA.per_province[prov].systems["causal-graphrag"]||{}).provinces||[]);
-  const expr=["match",["get","name_en"]];
-  PROVGJ.features.forEach(f=>{const n=f.properties.name_en;
-    let c="#cbd5e1"; if(pred.has(n)&&gold.has(n))c="#22c55e"; else if(pred.has(n))c="#ef4444"; else if(gold.has(n))c="#3b82f6";
-    expr.push(n,c);});
-  expr.push("#e5e7eb");
-  map.setPaintProperty("prov-fill","fill-color",expr);
-  document.getElementById("mapNote").textContent=`สีตามคำตอบ causal-graphrag ของจังหวัด ${prov} · 🟦 gold · 🟩 ทำนายถูก · 🟥 ทำนายเกิน`;
-}
-
-async function loadLiveFlood(){
-  const el=document.getElementById("liveFlood");
-  try{const d=await j("/api/gistda/live-flood");
-    if(!d.available){el.innerHTML="<span class='text-slate-400'>(ต้องมี GISTDA_DATA_KEY)</span>";return;}
-    if(!d.provinces.length){el.innerHTML="ขณะนี้ไม่พบน้ำท่วม";return;}
-    el.innerHTML=`<div class="text-xs text-slate-400 mb-1">${d.count} จังหวัด (${d.window})</div>`+
-      d.provinces.slice(0,8).map(p=>`<div class="flex justify-between border-b border-slate-100 py-1"><span>${p.pv}</span><span class="text-slate-400">${Math.round(p.area_rai).toLocaleString()}</span></div>`).join("");
-  }catch(e){el.innerHTML="<span class='text-slate-400'>โหลดไม่ได้</span>";}
-}
+  map.on("load",()=>{if(PROVGJ){map.addSource("prov",{type:"geojson",data:PROVGJ});
+    map.addLayer({id:"pf",type:"fill",source:"prov",paint:{"fill-color":"#94a3b8","fill-opacity":.4}});
+    map.addLayer({id:"pl",type:"line",source:"prov",paint:{"line-color":"#1e293b","line-width":1}});
+    map.on("click","pf",e=>{const n=e.features[0].properties.name_en;if(DATA.per_province[n])select(n);});}
+    if(curProv)updateMap(curProv);});}
+function updateMap(p){if(!map||!map.getLayer||!map.getLayer("pf"))return;
+  const gold=new Set(DATA.gold),pred=new Set(DATA.per_province[p].systems["causal-graphrag"].provinces);
+  const ex=["match",["get","name_en"]];PROVGJ.features.forEach(f=>{const n=f.properties.name_en;
+    let c="#cbd5e1";if(pred.has(n)&&gold.has(n))c="#22c55e";else if(pred.has(n))c="#ef4444";else if(gold.has(n))c="#3b82f6";ex.push(n,c);});
+  ex.push("#e5e7eb");map.setPaintProperty("pf","fill-color",ex);}
 boot();
 </script>
 </body>
