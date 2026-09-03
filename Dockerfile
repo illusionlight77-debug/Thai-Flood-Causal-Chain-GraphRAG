@@ -26,8 +26,8 @@ COPY . .
 
 EXPOSE 8501
 
-# healthcheck ของ Streamlit
+# healthcheck ของ FastAPI UI
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
-    CMD curl -fsS http://localhost:8501/_stcore/health || exit 1
+    CMD curl -fsS http://localhost:8501/api/config || exit 1
 
-CMD ["streamlit", "run", "ui/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["uvicorn", "src.web.server:app", "--host", "0.0.0.0", "--port", "8501"]

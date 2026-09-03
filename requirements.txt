@@ -19,9 +19,11 @@ scikit-learn>=1.4
 # LLM generation (optional ตอนรัน; retriever ปัจจุบันเป็น deterministic ไม่บังคับ key)
 anthropic>=0.40
 
-# UI
-streamlit>=1.36
-pydeck>=0.9        # overlay flood extent บนแผนที่
+# UI (ใหม่: FastAPI + หน้า HTML/MapLibre แทน Streamlit)
+fastapi>=0.110
+uvicorn[standard]>=0.29
+streamlit>=1.36   # (เก่า — ยังเก็บไว้ ไม่ได้ใช้เป็น default แล้ว)
+pydeck>=0.9
 
 # test
 pytest>=8.2

@@ -114,7 +114,8 @@
 | GISTDA STAC API | `https://disaster.gistda.or.th/api/stac/search` | ❌ **ต่อไม่ติด (000)** subdomain ถูกบล็อก → **ใช้ GISTDA satellite ผ่านหน้า NORU2022/DIANMU2021 แทน** (ข้อมูลตัวเดียวกัน) | ✅ ground truth ได้ครบแล้ว |
 | Sentinel-1 SAR — **Copernicus (ไม่ต้องใช้บัตร)** | `dataspace.copernicus.eu` (openEO) | ⬜ optional cross-check — โค้ดพร้อมที่ [`copernicus_flood_extent.py`](src/ingest/copernicus_flood_extent.py) (สมัครฟรี ไม่ผูกบัตร) | ยืนยัน GISTDA ด้วยแหล่ง 2 |
 | Sentinel-1 SAR — GEE (ทางเลือก) | earthengine.google.com | ⬜ ต้อง OAuth/บัญชี GCP — โค้ดพร้อมที่ [`sentinel1_flood_extent.py`](src/ingest/sentinel1_flood_extent.py) | เหมือนกัน (แต่ขอบัตร) |
-| **GISTDA sphere API (real-time, B2)** | `sphere.gistda.or.th` · `api.sphere.gistda.or.th` | ⬜ ต้องสมัคร+ขอ API key (ต่อยอด early-warning) | live disaster/flood data |
+| **GISTDA disaster API — flood (real-time)** | `api-gateway.gistda.or.th/api/2.0/resources/features/flood/{1day\|3days\|7days\|30days}` | ✅ **ใช้ได้จริง** (header `API-Key`) — คืน GeoJSON น้ำท่วมปัจจุบัน (Sentinel-1) | live flood (B2) — ดู [`gistda_flood_api.py`](src/ingest/gistda_flood_api.py) |
+| **GISTDA sphere basemap** | `basemap.sphere.gistda.or.th/tiles/...` | ✅ **ใช้ได้จริง** (query `key=`) — เป็น basemap ใน UI | แผนที่พื้นหลัง |
 
 > **สรุป 3 แถว ❌ = "ทางที่ปิด" ไม่ใช่ "ข้อมูลที่ขาด"** — ข้อมูลทุกอย่างที่ endpoint พวกนี้จะให้ ดึงมาครบแล้วจากประตูที่เปิดอยู่
 > (RID gauge + GISTDA-via-thaiwater + dam_specs). ถ้าจะต่อยอดเป็น **real-time early-warning** ค่อยขอ API key จาก สสน./GISTDA โดยตรง (future feature).
@@ -148,7 +149,11 @@
 | `src/graph/{queries,load,client}.py` | schema (มี `RUNOFF_TO`) + hop cypher + loader |
 | `src/rag/{base,causal_graphrag,entity_graphrag,vector_rag,registry}.py` | 3 retrievers อินเทอร์เฟซเดียว |
 | `src/eval/{build_eval_set,f1_by_hop,run}.py` | eval set + F1-by-hop + traceability |
-| `ui/app.py` | Streamlit UI เทียบ 3 ระบบ |
+| `src/eval/build_ui_data.py` | precompute ผล 3 ระบบทุกจังหวัด → `web/ui_data_{year}.json` |
+| **`src/web/server.py`** | **FastAPI** — เสิร์ฟ UI + API + proxy GISTDA (keys ฝั่ง server) |
+| **`web/index.html`** | **หน้า UI ใหม่** (Tailwind + MapLibre + Chart.js) |
+| `src/ingest/gistda_flood_api.py` | ดึง flood จริง real-time จาก GISTDA gateway (data key) |
+| `ui/app.py` | ~~Streamlit UI~~ (deprecated — แทนด้วย FastAPI แล้ว) |
 | **`data/processed/dam_specs.json`** | สเปกเขื่อนจริง + สถานะปี 2565 (มี source_url) |
 | **`data/processed/ground_truth_{2022,2021}.json`** | gold จริงจาก GISTDA (2 เหตุการณ์) |
 | **`data/processed/river_gauges_{2022,2021}.json`** | reach.overflow จาก RID gauge จริง |
@@ -160,21 +165,25 @@
 
 ---
 
-## 🖥️ Test UI (หน้าทดสอบใช้งาน)
+## 🖥️ Test UI (หน้าทดสอบใช้งาน) — FastAPI + MapLibre (ไม่ใช้ Streamlit แล้ว)
 
-**Streamlit** `ui/app.py` — มากับ stack (`docker compose up`) ที่ http://localhost:8501
-(หรือรันเอง: `streamlit run ui/app.py`).
+UI ใหม่ = **FastAPI** ([`src/web/server.py`](src/web/server.py)) เสิร์ฟหน้า [`web/index.html`](web/index.html)
+(Tailwind + MapLibre GL + Chart.js). มากับ stack (`docker compose up`) ที่ **http://localhost:8501**.
+API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (proxy) ไม่หลุดไป client.
 
-![Test UI — ทุกหน้าต่าง (ผลจริง)](docs/ui-why-flood.png)
+![Test UI ใหม่](docs/ui-new.png)
 
-> ภาพจริงจากแอปที่รัน (เคสนครสวรรค์ 4-hop). ผลตัวเลขเต็ม ๆ: [docs/ui-sample-output.md](docs/ui-sample-output.md).
+องค์ประกอบ:
+- **แท็บเหตุการณ์** 2565 (โนรู) / 2564 (เตี้ยนหมู่) — สลับ ground truth จริง.
+- **เลือกจังหวัด** (พร้อม hop badge) + คลิกบนแผนที่ก็ได้.
+- **3 การ์ดละเอียด:** F1 + precision + recall + hop + traceability + latency + จังหวัด ถูก(เขียว)/เกิน(แดง)/ตกหล่น(เหลือง) + **chain** + **evidence** (คลิกดู source record).
+- **กราฟ:** F1 รวมต่อระบบ + F1 แยก 2-hop/4-hop (Chart.js).
+- **แผนที่:** **GISTDA satellite basemap จริง** (proxy) + ระบายสีจังหวัดตามคำตอบ.
+- **🛰️ Live flood panel:** น้ำท่วม*ปัจจุบัน*รายจังหวัดจาก GISTDA disaster API (real-time).
+- **ตารางทดสอบทุกจังหวัด:** F1 ของ 3 ระบบทุกจังหวัด gold.
 
-องค์ประกอบหน้าจอ (ทำแล้ว):
-- **เลือกจังหวัด** (จากจังหวัดที่ท่วมจริงตาม GISTDA) — คำถามประกอบอัตโนมัติ.
-- **แผง 3 คอลัมน์เทียบกัน:** `causal-graphrag` / `entity-graphrag` / `vector-rag` — คำตอบ + ตัวชี้วัดสด (**hop / F1 / traceability ✓✗** + latency) + แยกสีจังหวัด ถูก/เกิน/ตกหล่น เทียบ gold.
-- **Causal chain viewer:** แสดง path เขื่อน→ลำน้ำ→(จุดบรรจบ)→จังหวัด พร้อม hop count (2-hop เขื่อนเดียว / 4-hop ข้ามลุ่มน้ำ).
-- **Evidence panel:** คลิก expander เห็น source record (station_id, timestamp, dataset) → พิสูจน์ traceability (H1).
-- **แผนที่ (pydeck):** overlay flood extent GISTDA (🔵) เทียบจังหวัดที่ causal ทำนาย (🔴).
+> สร้างข้อมูล UI: `python -m src.eval.build_ui_data` (ต่อ event ตั้ง `EVENT_ID`) → `web/ui_data_{year}.json`.
+> Streamlit เดิม (`ui/app.py`) ยังอยู่แต่ deprecated. ภาพเก่า: [docs/ui-why-flood.png](docs/ui-why-flood.png).
 
 ---
 
@@ -421,13 +430,19 @@ C.13 ~2,700–2,800) ไม่ใช่การเดาล้วน แต่�
 ## 🚀 Quickstart
 
 ```bash
-# 1) env (ตั้งพอร์ต + API keys; พอร์ต default เลี่ยงชนแล้ว)
+# 1) env (ตั้งพอร์ต + API keys; ใส่ GISTDA_API_KEY / GISTDA_DATA_KEY ถ้ามี — optional)
 cp .env.example .env
 
-# 2) ยกทั้ง stack (Neo4j + app/UI) ด้วยคำสั่งเดียว — app รอ Neo4j healthy เอง
+# 2) ยกทั้ง stack (Neo4j + FastAPI UI) ด้วยคำสั่งเดียว — app รอ Neo4j healthy เอง
 docker compose up -d --build
+#    UI (FastAPI)  → http://localhost:8501
 #    Neo4j Browser → http://localhost:7476   (bolt://localhost:7689)
-#    Streamlit UI  → http://localhost:8501
+
+# 3) สร้างข้อมูล UI (รันทั้ง 2 เหตุการณ์) — ต้องมี Neo4j ขึ้นแล้ว
+for EV in chao_phraya_2022 chao_phraya_2021; do
+  EVENT_ID=$EV python -m src.ingest.run && EVENT_ID=$EV python -m src.geo.basin_to_province \
+  && EVENT_ID=$EV python -m src.graph.load && EVENT_ID=$EV python -m src.eval.build_ui_data
+done
 ```
 
 รัน pipeline (บน Windows host เติม `PYTHONUTF8=1` กันปัญหา cp874; ใน Docker/Linux ไม่ต้อง):

@@ -37,3 +37,6 @@ Thumbs.db
 .vscode/
 .idea/
 .chrome-cap/
+
+# generated UI data (จาก build_ui_data — regen ได้, มี latency แกว่ง)
+web/ui_data_*.json

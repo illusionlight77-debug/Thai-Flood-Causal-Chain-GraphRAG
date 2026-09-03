@@ -49,11 +49,11 @@ services:
       # mount source เพื่อ dev ได้ทันที (แก้โค้ด → reload)
       - ./src:/app/src
       - ./ui:/app/ui
+      - ./web:/app/web
       - ./data:/app/data
     command: >
-      streamlit run ui/app.py
-      --server.port=8501
-      --server.address=0.0.0.0
+      uvicorn src.web.server:app
+      --host 0.0.0.0 --port 8501
     restart: unless-stopped
 
 volumes:
