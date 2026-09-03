@@ -11,3 +11,6 @@ chromadb>=0.5
 pystac-client>=0.7
 # eval framework เสริม
 ragas>=0.1
+
+# Sentinel-1 flood mapping (ไม่ต้องใช้บัตร) — Copernicus Data Space
+openeo>=0.30
