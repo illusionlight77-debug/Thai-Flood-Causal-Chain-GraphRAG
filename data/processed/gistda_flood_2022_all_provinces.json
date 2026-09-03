@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "description": "FULL 53-province GISTDA satellite flood-area table for the 2022 Chao Phraya (NORU) event, 28 Sep - 14 Oct 2022. Fetched from the same thaiwater-published GISTDA product already cited in ground_truth_2022.json, but the earlier file only recorded 10 Chao-Phraya-core provinces. This file records ALL 53 provinces so the eval province universe can be expanded within-basin (grows N for statistical power). Total = 8,067,730 rai.",
+    "event_id": "chao_phraya_2022",
+    "window": "2022-09-28/2022-10-14",
+    "source": "https://www.thaiwater.net/uploads/contents/current/2022/NORU2022/flood_area.html",
+    "source_type": "GISTDA satellite (Sentinel-1) flood-area analysis, published via thaiwater.net",
+    "retrieved_date": "2026-09-03",
+    "significance_cutoff_rai": 10000,
+    "note": "Values are the province total flooded rai over the window. Samut Prakan / Samut Sakhon not itemized in the source table (noted as affected in narrative). Use with basin_membership.json to restrict to the Chao Phraya basin scope of the causal graph."
+  },
+  "flooded_area_rai": {
+    "นครสวรรค์": 867239, "พระนครศรีอยุธยา": 523352, "พิจิตร": 522578, "นครราชสีมา": 483590,
+    "สุพรรณบุรี": 481803, "สุโขทัย": 408550, "พิษณุโลก": 360610, "ศรีสะเกษ": 358204,
+    "สุรินทร์": 344600, "ร้อยเอ็ด": 324123, "เพชรบูรณ์": 310371, "กำแพงเพชร": 264895,
+    "ชัยภูมิ": 243477, "อุบลราชธานี": 242083, "ขอนแก่น": 233778, "บุรีรัมย์": 217961,
+    "ลพบุรี": 207255, "มหาสารคาม": 177099, "ปราจีนบุรี": 146481, "สิงห์บุรี": 123201,
+    "อุทัยธานี": 121926, "ชัยนาท": 114212, "อ่างทอง": 102146, "ยโสธร": 99666,
+    "เชียงราย": 75704, "นครปฐม": 72085, "สระบุรี": 65698, "ตาก": 58598,
+    "กาฬสินธุ์": 54747, "อุตรดิตถ์": 51006, "หนองบัวลำภู": 39060, "เพชรบุรี": 37469,
+    "ราชบุรี": 37353, "พะเยา": 35371, "อุดรธานี": 35042, "อำนาจเจริญ": 33340,
+    "นครนายก": 31022, "หนองคาย": 30337, "กาญจนบุรี": 25889, "ชลบุรี": 25640,
+    "ฉะเชิงเทรา": 18129, "นครพนม": 10224, "สกลนคร": 9731, "เลย": 8196,
+    "เชียงใหม่": 7346, "ประจวบคีรีขันธ์": 6780, "ลำปาง": 6663, "ระยอง": 3270,
+    "บึงกาฬ": 3220, "ปทุมธานี": 3190, "ลำพูน": 2263, "สระแก้ว": 1119, "นนทบุรี": 38
+  },
+  "total_rai": 8067730,
+  "province_count": 53
+}

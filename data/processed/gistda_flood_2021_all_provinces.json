@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "description": "FULL province GISTDA satellite flood-area table for the 2021 Chao Phraya (DIANMU) event, 24 Sep - 12 Oct 2021. From thaiwater-published GISTDA product. Companion to gistda_flood_2022_all_provinces.json so both events share one expanded in-basin universe.",
+    "event_id": "chao_phraya_2021",
+    "window": "2021-09-24/2021-10-12",
+    "source": "https://www.thaiwater.net/uploads/contents/current/2021/DIANMU2021/flood_area.html",
+    "source_type": "GISTDA satellite (Sentinel-1) flood-area analysis, published via thaiwater.net",
+    "retrieved_date": "2026-09-03",
+    "significance_cutoff_rai": 10000,
+    "total_rai": 6653776,
+    "province_count": 43
+  },
+  "flooded_area_rai": {
+    "นครราชสีมา": 1051074, "นครสวรรค์": 925514, "ชัยภูมิ": 461138, "สุโขทัย": 418717,
+    "พระนครศรีอยุธยา": 408937, "พิจิตร": 360183, "พิษณุโลก": 324262, "สุพรรณบุรี": 312889,
+    "ขอนแก่น": 258488, "ศรีสะเกษ": 240237, "กำแพงเพชร": 226499, "เพชรบูรณ์": 204464,
+    "ปราจีนบุรี": 171721, "ลพบุรี": 169809, "บุรีรัมย์": 159751, "ชัยนาท": 126337,
+    "สุรินทร์": 94019, "อ่างทอง": 92875, "ฉะเชิงเทรา": 73052, "ร้อยเอ็ด": 72090,
+    "สิงห์บุรี": 68731, "อุทัยธานี": 66779, "ยโสธร": 65472, "สระบุรี": 60797,
+    "อุบลราชธานี": 57117, "อุตรดิตถ์": 38495, "อำนาจเจริญ": 31079, "ชลบุรี": 23420,
+    "หนองบัวลำภู": 19122, "นครปฐม": 15842, "นครพนม": 9044, "สกลนคร": 8337,
+    "สระแก้ว": 6188, "กาฬสินธุ์": 6178, "มหาสารคาม": 5235, "หนองคาย": 4769,
+    "อุดรธานี": 3980, "กาญจนบุรี": 3605, "จันทบุรี": 2346, "บึงกาฬ": 2249,
+    "ตาก": 2208, "นครนายก": 381, "เลย": 350
+  }
+}

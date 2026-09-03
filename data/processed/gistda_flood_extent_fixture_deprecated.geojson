@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "event": "chao_phraya_2022",
-        "source": "DEPRECATED fixture (box, tuned gold 6 จว.)",
+        "source": "DEPRECATED fixture (box, tuned gold)",
         "layer_date": "2022-10-10"
       },
       "geometry": {
@@ -128,30 +128,6 @@
               [
                 100.53,
                 14.299999999999999
-              ]
-            ]
-          ],
-          [
-            [
-              [
-                100.48,
-                13.969999999999999
-              ],
-              [
-                100.58,
-                13.969999999999999
-              ],
-              [
-                100.58,
-                14.07
-              ],
-              [
-                100.48,
-                14.07
-              ],
-              [
-                100.48,
-                13.969999999999999
               ]
             ]
           ]

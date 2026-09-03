@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "description": "Per-sub-basin over-bank status for the 2021 DIANMU event. MEDIUM confidence: unlike 2022 (high-confidence RID SWOC bulletin), no independent 2021 RID over-bank bulletin was fetched, so the SAME gate pattern as 2022 is applied (main-channel gauge logic: Ping/Wang below-bank; the lower Chao Phraya tributaries over-bank), inferred from the Dianmu mechanism + river_gauges_2021.json. Deliberately NOT flipped to true for Ping to 'catch' Kamphaeng Phet (which flooded 226k rai in 2021) — that would be back-filling from the flood outcome. Kamphaeng Phet is therefore an honest false-negative, consistent with the 2022 method.",
+    "source": "inferred from DIANMU2021 mechanism + river_gauges_2021.json (medium confidence)",
+    "retrieved_date": "2026-09-03",
+    "confidence": "medium"
+  },
+  "subbasin_overbank": {
+    "Ping":       {"overflow": false, "confidence": "medium"},
+    "Wang":       {"overflow": false, "confidence": "medium"},
+    "Yom":        {"overflow": true,  "confidence": "medium"},
+    "Nan":        {"overflow": true,  "confidence": "medium"},
+    "SakaeKrang": {"overflow": true,  "confidence": "medium"},
+    "ChaoPhraya": {"overflow": true,  "confidence": "medium"},
+    "ThaChin":    {"overflow": true,  "confidence": "medium"},
+    "Pasak":      {"overflow": true,  "confidence": "medium"}
+  }
+}

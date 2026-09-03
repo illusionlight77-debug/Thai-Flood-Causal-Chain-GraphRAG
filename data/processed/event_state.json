@@ -5,21 +5,38 @@
   "reservoir_active": {
     "RES-BHUMIBOL": false,
     "RES-SIRIKIT": false,
-    "RES-CHAOPHRAYA": true
+    "RES-CHAOPHRAYA": true,
+    "RES-PASAK": true
   },
-  "reach_level": {
-    "RR-PING": 5.0,
-    "RR-NAN": 6.0,
-    "RR-CP-UPPER": 9.5,
-    "RR-CP-LOWER": 8.5
+  "reach_overflow": {
+    "RR-PING": false,
+    "RR-WANG": false,
+    "RR-YOM": true,
+    "RR-NAN": true,
+    "RR-SAKAEKRANG": true,
+    "RR-CP-UPPER": true,
+    "RR-CP-LOWER": true,
+    "RR-PASAK": true,
+    "RR-THACHIN": true
   },
   "gold_flooded": [
-    "TAK",
-    "PHITSANULOK",
-    "NAKHONSAWAN",
-    "CHAINAT",
-    "SINGBURI",
     "ANGTHONG",
-    "AYUTTHAYA"
-  ]
+    "AYUTTHAYA",
+    "CHAINAT",
+    "KAMPHAENGPHET",
+    "LOPBURI",
+    "NAKHONPATHOM",
+    "NAKHONSAWAN",
+    "PHETCHABUN",
+    "PHICHIT",
+    "PHITSANULOK",
+    "SARABURI",
+    "SINGBURI",
+    "SUKHOTHAI",
+    "SUPHANBURI",
+    "TAK",
+    "UTHAITHANI",
+    "UTTARADIT"
+  ],
+  "n_provinces": 23
 }

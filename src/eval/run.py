@@ -22,15 +22,15 @@ def _fmt(v) -> str:
 
 
 def to_markdown(results: dict) -> str:
-    lines = ["### F1 by causal-hop length (on fixture: Chao Phraya 2022)", "",
-             "| System | F1 @ 2-hop | F1 @ 4-hop | ΔF1 (2→4) | F1 overall | Traceability | Latency (ms) |",
-             "|---|---|---|---|---|---|---|"]
+    lines = ["### F1 by causal-hop length (Chao Phraya basin, 23-province universe)", "",
+             "| System | F1@2 | F1@3 | F1@4 | F1@5 | ΔF1 (2→5) | F1 overall | Traceability | Latency (ms) |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for name in SYSTEMS:
         r = results[name]
-        f2 = r["f1_by_hop"].get("2", 0.0)
-        f4 = r["f1_by_hop"].get("4", 0.0)
-        d = f2 - f4
-        lines.append(f"| {name} | {_fmt(f2)} | {_fmt(f4)} | {_fmt(d)} | "
+        fb = r["f1_by_hop"]
+        f2, f3, f4, f5 = (fb.get(str(h), 0.0) for h in (2, 3, 4, 5))
+        d = f2 - f5
+        lines.append(f"| {name} | {_fmt(f2)} | {_fmt(f3)} | {_fmt(f4)} | {_fmt(f5)} | {_fmt(d)} | "
                      f"{_fmt(r['f1_overall'])} | {_fmt(r['traceability'])} | {_fmt(r['avg_latency_ms'])} |")
     return "\n".join(lines)
 

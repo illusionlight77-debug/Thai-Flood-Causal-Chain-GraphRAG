@@ -20,6 +20,118 @@
     {
       "type": "Feature",
       "properties": {
+        "reach_id": "RR-PING",
+        "threshold": 8.0,
+        "expected_prov": "KAMPHAENGPHET",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.51142586206896,
+          16.3818
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PING",
+        "threshold": 8.0,
+        "expected_prov": "CHIANGMAI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          98.7249480664488,
+          18.70865
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PING",
+        "threshold": 8.0,
+        "expected_prov": "LAMPHUN",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          98.94045769230769,
+          18.06425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-WANG",
+        "threshold": 8.0,
+        "expected_prov": "LAMPANG",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.52667494578313,
+          18.31065
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-YOM",
+        "threshold": 8.0,
+        "expected_prov": "SUKHOTHAI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.71053812676057,
+          17.25075
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-YOM",
+        "threshold": 8.0,
+        "expected_prov": "PHICHIT",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.3468173076923,
+          16.277299999999997
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-NAN",
+        "threshold": 8.0,
+        "expected_prov": "UTTARADIT",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.4582412363201,
+          17.76925
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "reach_id": "RR-NAN",
         "threshold": 8.0,
         "expected_prov": "PHITSANULOK",
@@ -30,6 +142,38 @@
         "coordinates": [
           100.54396773097827,
           17.02475
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-NAN",
+        "threshold": 8.0,
+        "expected_prov": "PHICHIT",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.3468173076923,
+          16.277299999999997
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-SAKAEKRANG",
+        "threshold": 8.0,
+        "expected_prov": "UTHAITHANI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          99.56234666666666,
+          15.3652
         ]
       }
     },
@@ -158,6 +302,86 @@
         "coordinates": [
           100.60324076314302,
           13.7231
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PASAK",
+        "threshold": 8.0,
+        "expected_prov": "PHETCHABUN",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.0363453125,
+          16.22465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PASAK",
+        "threshold": 8.0,
+        "expected_prov": "LOPBURI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.94268109375,
+          15.117750000000001
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-PASAK",
+        "threshold": 8.0,
+        "expected_prov": "SARABURI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.90282451320377,
+          14.648050000000001
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-THACHIN",
+        "threshold": 8.0,
+        "expected_prov": "SUPHANBURI",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.01233878923767,
+          14.5686
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "reach_id": "RR-THACHIN",
+        "threshold": 8.0,
+        "expected_prov": "NAKHONPATHOM",
+        "layer_date": "2022-10-10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.09661131284915,
+          13.9246
         ]
       }
     }

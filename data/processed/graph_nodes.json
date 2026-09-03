@@ -10,12 +10,48 @@
   },
   {
     "label": "RainStation",
+    "id": "RS-WANG",
+    "name": "สถานีฝนวังตอนบน (Wang upper)",
+    "active": true,
+    "lat": 18.29,
+    "lon": 99.49,
+    "basin": "Wang"
+  },
+  {
+    "label": "RainStation",
+    "id": "RS-YOM",
+    "name": "สถานีฝนยมตอนบน (Yom upper)",
+    "active": true,
+    "lat": 18.14,
+    "lon": 100.14,
+    "basin": "Yom"
+  },
+  {
+    "label": "RainStation",
     "id": "RS-NAN",
     "name": "สถานีฝนน่านตอนบน (Nan upper)",
     "active": true,
     "lat": 19.19,
     "lon": 100.78,
     "basin": "Nan"
+  },
+  {
+    "label": "RainStation",
+    "id": "RS-SAKAEKRANG",
+    "name": "สถานีฝนสะแกกรัง (Sakae Krang)",
+    "active": true,
+    "lat": 15.38,
+    "lon": 99.87,
+    "basin": "SakaeKrang"
+  },
+  {
+    "label": "RainStation",
+    "id": "RS-PASAK",
+    "name": "สถานีฝนป่าสักตอนบน (Pasak upper)",
+    "active": true,
+    "lat": 16.42,
+    "lon": 101.16,
+    "basin": "Pasak"
   },
   {
     "label": "Reservoir",
@@ -41,6 +77,17 @@
   },
   {
     "label": "Reservoir",
+    "id": "RES-PASAK",
+    "name": "เขื่อนป่าสักชลสิทธิ์ (Pasak Jolasid)",
+    "capacity_mcm": 960,
+    "spillway_level": 42.0,
+    "active": true,
+    "lat": 15.06,
+    "lon": 101.06,
+    "basin": "Pasak"
+  },
+  {
+    "label": "Reservoir",
     "id": "RES-CHAOPHRAYA",
     "name": "เขื่อนเจ้าพระยา (Chao Phraya Dam)",
     "capacity_mcm": 0,
@@ -56,8 +103,26 @@
     "name": "ปิงท้ายเขื่อนภูมิพล",
     "basin": "Ping",
     "order": 4,
-    "level": 5.0,
+    "level": 8.0,
     "overflow": false
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-WANG",
+    "name": "แม่น้ำวัง",
+    "basin": "Wang",
+    "order": 4,
+    "level": 8.0,
+    "overflow": false
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-YOM",
+    "name": "แม่น้ำยม (ไม่มีเขื่อนใหญ่)",
+    "basin": "Yom",
+    "order": 4,
+    "level": 8.0,
+    "overflow": true
   },
   {
     "label": "RiverReach",
@@ -65,8 +130,17 @@
     "name": "น่านท้ายเขื่อนสิริกิติ์",
     "basin": "Nan",
     "order": 4,
-    "level": 6.0,
-    "overflow": false
+    "level": 8.0,
+    "overflow": true
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-SAKAEKRANG",
+    "name": "แม่น้ำสะแกกรัง",
+    "basin": "SakaeKrang",
+    "order": 4,
+    "level": 8.0,
+    "overflow": true
   },
   {
     "label": "RiverReach",
@@ -74,7 +148,7 @@
     "name": "เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)",
     "basin": "ChaoPhraya",
     "order": 6,
-    "level": 9.5,
+    "level": 8.0,
     "overflow": true
   },
   {
@@ -83,7 +157,25 @@
     "name": "เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)",
     "basin": "ChaoPhraya",
     "order": 7,
-    "level": 8.5,
+    "level": 8.0,
+    "overflow": true
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-PASAK",
+    "name": "แม่น้ำป่าสัก (เขื่อนป่าสักฯ)",
+    "basin": "Pasak",
+    "order": 5,
+    "level": 8.0,
+    "overflow": true
+  },
+  {
+    "label": "RiverReach",
+    "id": "RR-THACHIN",
+    "name": "แม่น้ำท่าจีน (แยกจากเจ้าพระยาที่ชัยนาท)",
+    "basin": "ThaChin",
+    "order": 6,
+    "level": 8.0,
     "overflow": true
   },
   {
@@ -104,6 +196,33 @@
   },
   {
     "label": "Province",
+    "id": "KAMPHAENGPHET",
+    "name_th": "กำแพงเพชร",
+    "name_en": "Kamphaeng Phet",
+    "lat": 16.48,
+    "lon": 99.53,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "SUKHOTHAI",
+    "name_th": "สุโขทัย",
+    "name_en": "Sukhothai",
+    "lat": 17.01,
+    "lon": 99.82,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "UTTARADIT",
+    "name_th": "อุตรดิตถ์",
+    "name_en": "Uttaradit",
+    "lat": 17.62,
+    "lon": 100.1,
+    "protected": false
+  },
+  {
+    "label": "Province",
     "id": "PHITSANULOK",
     "name_th": "พิษณุโลก",
     "name_en": "Phitsanulok",
@@ -113,11 +232,29 @@
   },
   {
     "label": "Province",
+    "id": "PHICHIT",
+    "name_th": "พิจิตร",
+    "name_en": "Phichit",
+    "lat": 16.44,
+    "lon": 100.35,
+    "protected": false
+  },
+  {
+    "label": "Province",
     "id": "NAKHONSAWAN",
     "name_th": "นครสวรรค์",
     "name_en": "Nakhon Sawan",
     "lat": 15.7,
     "lon": 100.14,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "UTHAITHANI",
+    "name_th": "อุทัยธานี",
+    "name_en": "Uthai Thani",
+    "lat": 15.38,
+    "lon": 99.87,
     "protected": false
   },
   {
@@ -158,6 +295,51 @@
   },
   {
     "label": "Province",
+    "id": "LOPBURI",
+    "name_th": "ลพบุรี",
+    "name_en": "Lopburi",
+    "lat": 15.05,
+    "lon": 100.65,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "SARABURI",
+    "name_th": "สระบุรี",
+    "name_en": "Saraburi",
+    "lat": 14.53,
+    "lon": 100.92,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "PHETCHABUN",
+    "name_th": "เพชรบูรณ์",
+    "name_en": "Phetchabun",
+    "lat": 16.42,
+    "lon": 101.16,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "SUPHANBURI",
+    "name_th": "สุพรรณบุรี",
+    "name_en": "Suphan Buri",
+    "lat": 14.47,
+    "lon": 100.12,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "NAKHONPATHOM",
+    "name_th": "นครปฐม",
+    "name_en": "Nakhon Pathom",
+    "lat": 13.82,
+    "lon": 100.06,
+    "protected": false
+  },
+  {
+    "label": "Province",
     "id": "PATHUMTHANI",
     "name_th": "ปทุมธานี",
     "name_en": "Pathum Thani",
@@ -182,5 +364,32 @@
     "lat": 13.75,
     "lon": 100.52,
     "protected": true
+  },
+  {
+    "label": "Province",
+    "id": "CHIANGMAI",
+    "name_th": "เชียงใหม่",
+    "name_en": "Chiang Mai",
+    "lat": 18.79,
+    "lon": 98.99,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "LAMPANG",
+    "name_th": "ลำปาง",
+    "name_en": "Lampang",
+    "lat": 18.29,
+    "lon": 99.49,
+    "protected": false
+  },
+  {
+    "label": "Province",
+    "id": "LAMPHUN",
+    "name_th": "ลำพูน",
+    "name_en": "Lamphun",
+    "lat": 18.58,
+    "lon": 99.01,
+    "protected": false
   }
 ]

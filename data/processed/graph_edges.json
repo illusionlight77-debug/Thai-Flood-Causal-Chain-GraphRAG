@@ -11,17 +11,6 @@
     }
   },
   {
-    "type": "FEEDS",
-    "src": "RS-NAN",
-    "dst": "RES-SIRIKIT",
-    "lag_hours": 48,
-    "evidence": {
-      "station_id": "RS-NAN",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th telemetry"
-    }
-  },
-  {
     "type": "RUNOFF_TO",
     "src": "RS-PING",
     "dst": "RR-PING",
@@ -34,11 +23,77 @@
   },
   {
     "type": "RUNOFF_TO",
+    "src": "RS-WANG",
+    "dst": "RR-WANG",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-WANG",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
+    "type": "RUNOFF_TO",
+    "src": "RS-YOM",
+    "dst": "RR-YOM",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-YOM",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
+    "type": "FEEDS",
+    "src": "RS-NAN",
+    "dst": "RES-SIRIKIT",
+    "lag_hours": 48,
+    "evidence": {
+      "station_id": "RS-NAN",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th telemetry"
+    }
+  },
+  {
+    "type": "RUNOFF_TO",
     "src": "RS-NAN",
     "dst": "RR-NAN",
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-NAN",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
+    "type": "RUNOFF_TO",
+    "src": "RS-SAKAEKRANG",
+    "dst": "RR-SAKAEKRANG",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-SAKAEKRANG",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th rain→runoff"
+    }
+  },
+  {
+    "type": "FEEDS",
+    "src": "RS-PASAK",
+    "dst": "RES-PASAK",
+    "lag_hours": 48,
+    "evidence": {
+      "station_id": "RS-PASAK",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/data.go.th telemetry"
+    }
+  },
+  {
+    "type": "RUNOFF_TO",
+    "src": "RS-PASAK",
+    "dst": "RR-PASAK",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RS-PASAK",
       "timestamp": "2022-10-10",
       "dataset": "D1/data.go.th rain→runoff"
     }
@@ -51,7 +106,7 @@
     "evidence": {
       "station_id": "RES-BHUMIBOL",
       "timestamp": "2022-10-10",
-      "dataset": "D2/dam_specs.json (EGAT/thaiwater 2565)"
+      "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
   {
@@ -62,7 +117,18 @@
     "evidence": {
       "station_id": "RES-SIRIKIT",
       "timestamp": "2022-10-10",
-      "dataset": "D2/dam_specs.json (EGAT/thaiwater 2565)"
+      "dataset": "D2/dam_specs.json (EGAT/RID)"
+    }
+  },
+  {
+    "type": "OVERFLOWS_TO",
+    "src": "RES-PASAK",
+    "dst": "RR-PASAK",
+    "spillway": 42.0,
+    "evidence": {
+      "station_id": "RES-PASAK",
+      "timestamp": "2022-10-10",
+      "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
   {
@@ -73,7 +139,18 @@
     "evidence": {
       "station_id": "RES-CHAOPHRAYA",
       "timestamp": "2022-10-10",
-      "dataset": "D2/dam_specs.json (RID C.13 9 ต.ค. 65)"
+      "dataset": "D2/dam_specs.json (EGAT/RID)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-WANG",
+    "dst": "RR-PING",
+    "lag_hours": 24,
+    "evidence": {
+      "station_id": "RR-WANG",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
     }
   },
   {
@@ -84,7 +161,18 @@
     "evidence": {
       "station_id": "RR-PING",
       "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th river gauge"
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-YOM",
+    "dst": "CONF-PAKNAMPHO",
+    "lag_hours": 36,
+    "evidence": {
+      "station_id": "RR-YOM",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
     }
   },
   {
@@ -95,7 +183,7 @@
     "evidence": {
       "station_id": "RR-NAN",
       "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th river gauge"
+      "dataset": "D1/RID river network (flow direction)"
     }
   },
   {
@@ -106,7 +194,7 @@
     "evidence": {
       "station_id": "CONF-PAKNAMPHO",
       "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th river gauge"
+      "dataset": "D1/RID river network (flow direction)"
     }
   },
   {
@@ -117,7 +205,40 @@
     "evidence": {
       "station_id": "RR-CP-UPPER",
       "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th river gauge"
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-CP-UPPER",
+    "dst": "RR-THACHIN",
+    "lag_hours": 12,
+    "evidence": {
+      "station_id": "RR-CP-UPPER",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-SAKAEKRANG",
+    "dst": "RR-CP-LOWER",
+    "lag_hours": 18,
+    "evidence": {
+      "station_id": "RR-SAKAEKRANG",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
+    }
+  },
+  {
+    "type": "FLOWS_TO",
+    "src": "RR-PASAK",
+    "dst": "RR-CP-LOWER",
+    "lag_hours": 18,
+    "evidence": {
+      "station_id": "RR-PASAK",
+      "timestamp": "2022-10-10",
+      "dataset": "D1/RID river network (flow direction)"
     }
   }
 ]

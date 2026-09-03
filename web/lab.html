@@ -80,14 +80,14 @@ async function boot(){CFG=await j("/api/config");const t=document.getElementById
   renderProvenance();renderJourney();
   if(CFG.events.length)load(CFG.events[0].year);}
 
-function renderProvenance(){const items=[["Ground truth","GISTDA satellite","real"],["Geometry","GADM4.1","real"],
-  ["Dam specs+status","EGAT/RID","real"],["River gauge","RID (C.2/C.13)","real"],["Vector corpus","194 ข่าวจริง","real"],
-  ["INUNDATES threshold","gauge+คันกั้นน้ำ","real"],["คำอธิบาย","LLM (grounded)","real"],["โครงกราฟ node/edge","hand-built","fixture"]];
+function renderProvenance(){const items=[["Ground truth","GISTDA satellite (53 จว.)","real"],["Geometry","GADM4.1","real"],
+  ["Dam specs+status","EGAT/RID","real"],["reach.overflow","RID SWOC gauge (8 สาขา, อิสระ)","real"],["Vector corpus","194 ข่าวจริง","real"],
+  ["Universe","ลุ่มเจ้าพระยา 23 จังหวัด","real"],["คำอธิบาย","LLM (grounded)","real"],["โครงกราฟ node/edge","hand-built จาก topology จริง","fixture"]];
   document.getElementById("prov").innerHTML=items.map(([a,b,s])=>`<div class="border rounded-xl p-3 ${s=='real'?'border-green-200 bg-green-50':'border-amber-200 bg-amber-50'}">
     <div class="font-semibold">${a}</div><div class="text-xs text-slate-500">${b}</div>
     <div class="text-xs mt-1 ${s=='real'?'text-green-700':'text-amber-700'}">${s=='real'?'✅ จริง':'⚙️ fixture'}</div></div>`).join("");}
 
-function renderJourney(){const steps=[["1.000","fixture (tuned)"],["0.800","สเปกเขื่อนจริง"],["0.545","ground truth จริง"],["0.769","+runoff+gauge"],["0.833","เหตุการณ์ 2564"]];
+function renderJourney(){const steps=[["1.000","fixture (tuned)"],["0.545","ground truth จริง (N=10)"],["0.769","+runoff+gauge (N=10)"],["0.909","ลุ่มน้ำเต็ม 8 สาขา (N=23)"]];
   document.getElementById("journey").innerHTML=steps.map((s,i)=>`<span class="pill" style="background:#e0e7ff;color:#3730a3">${s[0]}<span class="text-xs text-slate-500"> ${s[1]}</span></span>${i<steps.length-1?'<span class="text-slate-400">→</span>':''}`).join("");}
 
 async function load(y){DATA=await j("/api/data/"+y);document.getElementById("llmp").textContent=DATA.llm_provider;
@@ -99,8 +99,8 @@ function renderKPI(){const r=DATA.results||{},c=DATA.confusion||{};
     ["Precision (neg-ctrl)",f(cc.precision),"#16a34a"],["Specificity",f(cc.specificity),"#16a34a"]];
   document.getElementById("kpi").innerHTML=k.map(x=>`<div class="kpi"><div class="text-2xl font-bold" style="color:${x[2]}">${x[1]}</div><div class="text-xs text-slate-500">${x[0]}</div></div>`).join("");}
 
-function renderRes(){const r=DATA.results||{};let h="<thead><tr><th>ระบบ</th><th>F1@2-hop</th><th>F1@4-hop</th><th>F1 รวม</th><th>Traceability</th><th>latency</th></tr></thead><tbody>";
-  SYS.forEach(s=>{const d=r[s.k]||{};const hb=d.f1_by_hop||{};h+=`<tr><td class="font-semibold" style="color:${s.c}">${s.n}</td><td>${f(hb["2"])}</td><td>${f(hb["4"])}</td><td><b>${f(d.f1_overall)}</b></td><td>${((d.traceability||0)*100|0)}%</td><td class="text-slate-400">${d.avg_latency_ms||'-'} ms</td></tr>`;});
+function renderRes(){const r=DATA.results||{};let h="<thead><tr><th>ระบบ</th><th>F1@2</th><th>F1@3</th><th>F1@4</th><th>F1@5</th><th>F1 รวม</th><th>Traceability</th><th>latency</th></tr></thead><tbody>";
+  SYS.forEach(s=>{const d=r[s.k]||{};const hb=d.f1_by_hop||{};h+=`<tr><td class="font-semibold" style="color:${s.c}">${s.n}</td><td>${f(hb["2"])}</td><td>${f(hb["3"])}</td><td>${f(hb["4"])}</td><td>${f(hb["5"])}</td><td><b>${f(d.f1_overall)}</b></td><td>${((d.traceability||0)*100|0)}%</td><td class="text-slate-400">${d.avg_latency_ms||'-'} ms</td></tr>`;});
   document.getElementById("tRes").innerHTML=h+"</tbody>";}
 
 function renderAbl(){const a=(DATA.ablation||{}).variants||{};let h="<thead><tr><th>variant</th><th>F1</th><th>ΔF1 vs full</th><th>#ทำนาย</th></tr></thead><tbody>";
@@ -108,7 +108,7 @@ function renderAbl(){const a=(DATA.ablation||{}).variants||{};let h="<thead><tr>
   Object.entries(a).forEach(([n,v])=>{const d=v.f1-base;const col=Math.abs(d)<1e-9?'#64748b':d<0?'#dc2626':'#16a34a';
     h+=`<tr><td>${n}</td><td><b>${f(v.f1)}</b></td><td style="color:${col};font-weight:600">${n.startsWith('full')?'—':(d>=0?'+':'')+d.toFixed(3)}</td><td>${v.n_pred}</td></tr>`;});
   document.getElementById("tAbl").innerHTML=h+"</tbody>";
-  document.getElementById("ablNote").textContent="ตัด runoff = F1 ตกมากสุด (กลไกสำคัญ); ตัด overflow-gate = F1 ขึ้น (gate เข้มไป — ชี้ว่าควรใช้ gauge ละเอียดขึ้น)";}
+  document.getElementById("ablNote").textContent="ตัด runoff = F1 ตก (กลไกสำคัญ); ตัด overflow-gate = F1 ตก (gate ด้วย river-gauge จริงช่วยกันทำนายเกิน); ตัด protection = F1 ตก (คันกั้นน้ำ กทม./นนทบุรี ช่วยจริง)";}
 
 function renderConf(){const c=DATA.confusion||{};let h="<thead><tr><th>ระบบ</th><th>TP</th><th>FP</th><th>FN</th><th>TN</th><th>Precision</th><th>Recall</th><th>Specificity</th><th>Accuracy</th></tr></thead><tbody>";
   SYS.forEach(s=>{const d=c[s.k]||{};h+=`<tr><td class="font-semibold" style="color:${s.c}">${s.n}</td><td>${d.tp}</td><td>${d.fp}</td><td>${d.fn}</td><td>${d.tn}</td><td><b>${f(d.precision)}</b></td><td>${f(d.recall)}</td><td>${f(d.specificity)}</td><td>${f(d.accuracy)}</td></tr>`;});
@@ -125,7 +125,9 @@ function renderCharts(){const r=DATA.results||{},a=(DATA.ablation||{}).variants|
   const labels=SYS.map(s=>s.n);
   if(chHop)chHop.destroy();chHop=new Chart(document.getElementById("chHop"),{type:"bar",
     data:{labels,datasets:[{label:"2-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["2"]||0),backgroundColor:"#38bdf8"},
-      {label:"4-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["4"]||0),backgroundColor:"#fb7185"}]},
+      {label:"3-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["3"]||0),backgroundColor:"#a78bfa"},
+      {label:"4-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["4"]||0),backgroundColor:"#fb7185"},
+      {label:"5-hop",data:SYS.map(s=>(r[s.k]||{}).f1_by_hop?.["5"]||0),backgroundColor:"#f59e0b"}]},
     options:{scales:{y:{max:1,beginAtZero:true}}}});
   const an=Object.keys(a),av=an.map(k=>a[k].f1);
   if(chAbl)chAbl.destroy();chAbl=new Chart(document.getElementById("chAbl"),{type:"bar",

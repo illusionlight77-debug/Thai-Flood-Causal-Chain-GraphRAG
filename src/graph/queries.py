@@ -21,7 +21,7 @@ CONSTRAINTS = [
 
 # ── causal chain 2..4 hop → Province ที่ระบุ (ใช้อธิบายจังหวัดเดียว) ──
 CAUSAL_CHAIN_TO_PROVINCE = f"""
-MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province {{name_en:$province}})
+MATCH path = (src)-[rels:{CAUSAL_RELS}*2..6]->(p:Province {{name_en:$province}})
 WITH path, length(path) AS hops,
      [n IN nodes(path) | coalesce(n.name, n.name_en)] AS chain,
      [r IN relationships(path) | r.evidence] AS evidences
@@ -34,7 +34,7 @@ ORDER BY hops
 #   ความจุจริงจาก river-gauge) (2) จังหวัดไม่มีคันกั้นน้ำป้องกัน (p.protected=false) — แทน threshold
 #   ตั้งเอง 7.0–9.5 เดิม. ดู river_gauges_*.json + PROTECTED_PROVINCES.
 CAUSAL_FLOOD_PREDICT = f"""
-MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province)
+MATCH path = (src)-[rels:{CAUSAL_RELS}*2..6]->(p:Province)
 WHERE src.active = true
 WITH p, path, length(path) AS hops, nodes(path) AS ns, relationships(path) AS rs
 WITH p, hops,
@@ -55,8 +55,12 @@ ORDER BY hops, province
 #   4-hop ข้ามลุ่มน้ำผ่านจุดบรรจบ) — เป็นสมบัติของภูมิศาสตร์ ไม่ใช่ของเหตุการณ์.
 #   (แก้ correctness bug 2026-07-27: เดิมกรอง active:true ทำให้ hop-tag เลื่อนตามว่าเขื่อนไหน
 #    active ในเหตุการณ์นั้น → bucket 2/4-hop ของ eval set ไม่คงที่ ดู README.)
+#   (อัปเดต 2026-09-03: เริ่มจาก RainStation ไม่ใช่ Reservoir — ลุ่มน้ำสาขาที่ไม่มีเขื่อน
+#    (ยม/สะแกกรัง/ท่าจีน) วัด hop จากเขื่อนไม่ได้. hop = สายเหตุ-ผลสั้นสุดจากต้นน้ำฝน →
+#    ได้ bucket 2/3/4/5-hop ครบ: 2=จังหวัดต้นน้ำในสาขา, 3=เจ้าพระยาตอนล่างผ่านป่าสัก/สะแกกรัง,
+#    4=จังหวัดจุดบรรจบ (ปากน้ำโพ), 5=ท่าจีน (แยกจากเจ้าพระยา).)
 HOP_PER_PROVINCE = f"""
-MATCH path = (src:Reservoir)-[:{CAUSAL_RELS}*2..4]->(p:Province)
+MATCH path = (src:RainStation)-[:{CAUSAL_RELS}*2..6]->(p:Province)
 RETURN p.id AS pid, p.name_en AS province, min(length(path)) AS hops
 ORDER BY hops, province
 """
@@ -64,7 +68,7 @@ ORDER BY hops, province
 # ── #6 early-warning: lead time (ชม.) = ผลรวม lag_hours ตามสายเหตุ-ผลที่สั้นสุดถึงจังหวัด ──
 #   ใช้ gate เดียวกับการทำนาย (reach ล้น + ไม่มีคันกั้นน้ำ) → บอก "อีกกี่ ชม. จังหวัดจะท่วม"
 LEAD_TIME_TO_PROVINCE = f"""
-MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province {{name_en:$province}})
+MATCH path = (src)-[rels:{CAUSAL_RELS}*2..6]->(p:Province {{name_en:$province}})
 WHERE src.active = true
 WITH p, nodes(path) AS ns, reduce(s=0, r IN rels | s + coalesce(r.lag_hours,0)) AS lag
 WITH p, ns[size(ns)-2] AS last_reach, lag

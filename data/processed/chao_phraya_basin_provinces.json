@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "description": "The Chao Phraya river-basin province universe used for the flood eval (expanded from the original 10 to 23 in-basin provinces). Basin membership follows Thailand's 8 Chao Phraya sub-basins (Ping, Wang, Yom, Nan, Sakae Krang, Pasak, Tha Chin, Chao Phraya main). Provinces OUTSIDE the basin (Northeast/Chi-Mun, Mekong, Mae Klong, Bang Pakong, South) are excluded because the causal graph is scoped to the Chao Phraya system. Each province lists its Thai name (for matching GISTDA tables), GADM4.1 NAME_1 (geometry), centroid, and primary sub-basin.",
+    "scope": "Chao Phraya basin only",
+    "created": "2026-09-03"
+  },
+  "provinces": {
+    "TAK":          {"th": "ตาก", "gadm": "Tak", "lon": 99.13, "lat": 16.87, "subbasin": "Ping"},
+    "KAMPHAENGPHET":{"th": "กำแพงเพชร", "gadm": "KamphaengPhet", "lon": 99.53, "lat": 16.48, "subbasin": "Ping"},
+    "SUKHOTHAI":    {"th": "สุโขทัย", "gadm": "Sukhothai", "lon": 99.82, "lat": 17.01, "subbasin": "Yom"},
+    "UTTARADIT":    {"th": "อุตรดิตถ์", "gadm": "Uttaradit", "lon": 100.10, "lat": 17.62, "subbasin": "Nan"},
+    "PHITSANULOK":  {"th": "พิษณุโลก", "gadm": "Phitsanulok", "lon": 100.27, "lat": 16.82, "subbasin": "Nan"},
+    "PHICHIT":      {"th": "พิจิตร", "gadm": "Phichit", "lon": 100.35, "lat": 16.44, "subbasin": "Nan"},
+    "NAKHONSAWAN":  {"th": "นครสวรรค์", "gadm": "NakhonSawan", "lon": 100.14, "lat": 15.70, "subbasin": "ChaoPhraya"},
+    "UTHAITHANI":   {"th": "อุทัยธานี", "gadm": "UthaiThani", "lon": 99.87, "lat": 15.38, "subbasin": "SakaeKrang"},
+    "CHAINAT":      {"th": "ชัยนาท", "gadm": "ChaiNat", "lon": 100.13, "lat": 15.19, "subbasin": "ChaoPhraya"},
+    "SINGBURI":     {"th": "สิงห์บุรี", "gadm": "SingBuri", "lon": 100.40, "lat": 14.89, "subbasin": "ChaoPhraya"},
+    "ANGTHONG":     {"th": "อ่างทอง", "gadm": "AngThong", "lon": 100.46, "lat": 14.59, "subbasin": "ChaoPhraya"},
+    "AYUTTHAYA":    {"th": "พระนครศรีอยุธยา", "gadm": "PhraNakhonSiAyutthaya", "lon": 100.58, "lat": 14.35, "subbasin": "ChaoPhraya"},
+    "LOPBURI":      {"th": "ลพบุรี", "gadm": "LopBuri", "lon": 100.65, "lat": 15.05, "subbasin": "Pasak"},
+    "SARABURI":     {"th": "สระบุรี", "gadm": "Saraburi", "lon": 100.92, "lat": 14.53, "subbasin": "Pasak"},
+    "PHETCHABUN":   {"th": "เพชรบูรณ์", "gadm": "Phetchabun", "lon": 101.16, "lat": 16.42, "subbasin": "Pasak"},
+    "SUPHANBURI":   {"th": "สุพรรณบุรี", "gadm": "SuphanBuri", "lon": 100.12, "lat": 14.47, "subbasin": "ThaChin"},
+    "NAKHONPATHOM": {"th": "นครปฐม", "gadm": "NakhonPathom", "lon": 100.06, "lat": 13.82, "subbasin": "ThaChin"},
+    "PATHUMTHANI":  {"th": "ปทุมธานี", "gadm": "PathumThani", "lon": 100.53, "lat": 14.02, "subbasin": "ChaoPhraya"},
+    "NONTHABURI":   {"th": "นนทบุรี", "gadm": "Nonthaburi", "lon": 100.51, "lat": 13.86, "subbasin": "ChaoPhraya"},
+    "BANGKOK":      {"th": "กรุงเทพมหานคร", "gadm": "BangkokMetropolis", "lon": 100.52, "lat": 13.75, "subbasin": "ChaoPhraya"},
+    "CHIANGMAI":    {"th": "เชียงใหม่", "gadm": "ChiangMai", "lon": 98.99, "lat": 18.79, "subbasin": "Ping"},
+    "LAMPANG":      {"th": "ลำปาง", "gadm": "Lampang", "lon": 99.49, "lat": 18.29, "subbasin": "Wang"},
+    "LAMPHUN":      {"th": "ลำพูน", "gadm": "Lamphun", "lon": 99.01, "lat": 18.58, "subbasin": "Ping"}
+  }
+}

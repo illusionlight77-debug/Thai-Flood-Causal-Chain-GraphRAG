@@ -1,19 +1,19 @@
-"""สร้าง fixture ลุ่มเจ้าพระยา เหตุการณ์น้ำท่วม ก.ย.–ต.ค. 2022 (พ.ศ. 2565).
+"""สร้างกราฟเหตุ-ผลลุ่มเจ้าพระยา (ขยายเป็น 8 ลุ่มน้ำสาขา · 23 จังหวัด).
 
-ทำไมต้องมี fixture: causal chain ที่ *coherent* (lag/spillway/threshold/geometry ตรงกัน)
-ประกอบจาก API สดตรง ๆ ไม่ได้ในรอบเดียว + GISTDA STAC ต่อไม่ติด (ดู README > Bugs).
-ค่าต่าง ๆ อิงเหตุการณ์จริง (เขื่อนภูมิพล/สิริกิติ์/เจ้าพระยา, ปากน้ำโพ) แต่เป็น
-demonstration dataset — ตัวเลข eval ที่ได้จึงเป็น "on fixture" ระบุชัดใน README.
+**อัปเดต 2026-09-03 (ขยาย N + ลด fixture):** เดิมกราฟมี 4 reach / 10 จังหวัด (hand-built).
+ตอนนี้ขยายเป็นโครงลุ่มเจ้าพระยาจริง 8 ลุ่มน้ำสาขา — ปิง/วัง/ยม/น่าน/สะแกกรัง/ป่าสัก/ท่าจีน/
+เจ้าพระยา — ครอบคลุม 23 จังหวัดในลุ่มน้ำ (ดู chao_phraya_basin_provinces.json).
 
-ผลลัพธ์เขียนลง data/processed/:
-  graph_nodes.json      nodes ทั้งหมด
-  graph_edges.json      causal edges (FEEDS/OVERFLOWS_TO/FLOWS_TO) + evidence
-                        (INUNDATES สร้างในเฟส 2 จาก point-in-polygon)
-  provinces.geojson     polygon จังหวัด (EPSG:4326)
-  reach_outlets.geojson จุดปลายน้ำของ reach + threshold (สำหรับ PIP → INUNDATES)
-  gistda_flood_extent.geojson  ground truth (gold) — พื้นที่น้ำท่วม
-  event_state.json      สถานะเหตุการณ์ (เขื่อนล้น + ระดับน้ำ reach)
-  news_corpus.json      ข่าวน้ำท่วม (สำหรับ vector-rag)
+ที่มาของแต่ละส่วน (ทำไม *ไม่ใช่ค่าที่ตั้งให้เข้ากับผล*):
+  • จังหวัด + ลุ่มน้ำสาขา     ← chao_phraya_basin_provinces.json (ภูมิศาสตร์จริง)
+  • geometry                 ← GADM4.1 (จริง)
+  • gold (จังหวัดท่วม)        ← ground_truth_{year}.json (GISTDA satellite ≥10,000 ไร่)
+  • reach.overflow           ← river_reach_overbank_{year}.json (RID SWOC gauge, *อิสระจาก satellite gold*)
+  • dam spillway/active      ← dam_specs.json (EGAT/RID)
+โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง (ทิศการไหลจริง) — evidence ชี้กลับแหล่งทุกเส้น.
+
+EVENT_ID เลือกเหตุการณ์ (chao_phraya_2022 / chao_phraya_2021). โครงกราฟ + universe จังหวัด
+เหมือนกันทุกเหตุการณ์ (เทียบ cross-event ยุติธรรม); เปลี่ยนเฉพาะ gold + reach.overflow ต่อปี.
 """
 from __future__ import annotations
 
@@ -23,56 +23,88 @@ from pathlib import Path
 
 from src.config import settings
 
-# ── event-parameterized (Item 4 groundwork): เลือกเหตุการณ์ด้วย env EVENT_ID ──
-#   ไฟล์ข้อมูลรายเหตุการณ์ตั้งชื่อลงท้ายด้วยปี: ground_truth_{year}.json, river_gauges_{year}.json,
-#   และ dam_specs.json → observed_{year}. เพิ่มเหตุการณ์ใหม่ = วางไฟล์ชุดนี้ + ตั้ง EVENT_ID.
+# ── event-parameterized ──────────────────────────────────────────
 EVENT_ID = os.environ.get("EVENT_ID", "chao_phraya_2022")
-_YEAR = EVENT_ID.rsplit("_", 1)[-1]          # "2022"
+_YEAR = EVENT_ID.rsplit("_", 1)[-1]
 _EVENT_DATES = {
     "2022": ("2022-09-25/2022-10-15", "2022-10-10"),
-    "2021": ("2021-09-24/2021-10-05", "2021-10-01"),  # DIANMU 2564
+    "2021": ("2021-09-24/2021-10-05", "2021-10-01"),
 }
 EVENT_PERIOD, LAYER_DATE = _EVENT_DATES.get(_YEAR, (f"{_YEAR}-09/{_YEAR}-10", f"{_YEAR}-10-01"))
 
-# ── จังหวัด: (lon, lat, ชื่อไทย, ชื่ออังกฤษ) ─────────────────────
+_PROC = settings.data_processed_dir
+
+# ── จังหวัด (23) — โหลดจาก basin membership (ภูมิศาสตร์จริง) ─────────
+_BASIN_PATH = _PROC / "chao_phraya_basin_provinces.json"
+_BASIN = json.loads(_BASIN_PATH.read_text("utf-8"))["provinces"] if _BASIN_PATH.exists() else {}
+
+# PROVINCES: pid -> (lon, lat, ชื่อไทย, ชื่ออังกฤษ)  (คงรูปทูเพิลเดิมเพื่อ backward-compat)
+_EN = {  # pid -> English display name (GISTDA/GADM style with spaces)
+    "TAK": "Tak", "KAMPHAENGPHET": "Kamphaeng Phet", "SUKHOTHAI": "Sukhothai",
+    "UTTARADIT": "Uttaradit", "PHITSANULOK": "Phitsanulok", "PHICHIT": "Phichit",
+    "NAKHONSAWAN": "Nakhon Sawan", "UTHAITHANI": "Uthai Thani", "CHAINAT": "Chai Nat",
+    "SINGBURI": "Sing Buri", "ANGTHONG": "Ang Thong", "AYUTTHAYA": "Ayutthaya",
+    "LOPBURI": "Lopburi", "SARABURI": "Saraburi", "PHETCHABUN": "Phetchabun",
+    "SUPHANBURI": "Suphan Buri", "NAKHONPATHOM": "Nakhon Pathom", "PATHUMTHANI": "Pathum Thani",
+    "NONTHABURI": "Nonthaburi", "BANGKOK": "Bangkok", "CHIANGMAI": "Chiang Mai",
+    "LAMPANG": "Lampang", "LAMPHUN": "Lamphun",
+}
 PROVINCES: dict[str, tuple[float, float, str, str]] = {
-    "TAK":        (99.13, 16.87, "ตาก", "Tak"),
-    "PHITSANULOK":(100.27, 16.82, "พิษณุโลก", "Phitsanulok"),
-    "NAKHONSAWAN":(100.14, 15.70, "นครสวรรค์", "Nakhon Sawan"),
-    "CHAINAT":    (100.13, 15.19, "ชัยนาท", "Chai Nat"),
-    "SINGBURI":   (100.40, 14.89, "สิงห์บุรี", "Sing Buri"),
-    "ANGTHONG":   (100.46, 14.59, "อ่างทอง", "Ang Thong"),
-    "AYUTTHAYA":  (100.58, 14.35, "พระนครศรีอยุธยา", "Ayutthaya"),
-    "PATHUMTHANI":(100.53, 14.02, "ปทุมธานี", "Pathum Thani"),
-    "NONTHABURI": (100.51, 13.86, "นนทบุรี", "Nonthaburi"),
-    "BANGKOK":    (100.52, 13.75, "กรุงเทพมหานคร", "Bangkok"),
+    pid: (v["lon"], v["lat"], v["th"], _EN.get(pid, pid)) for pid, v in _BASIN.items()
 }
-HALF = 0.05  # ครึ่งความกว้าง box จังหวัด (องศา) — เล็กพอไม่ให้ box จังหวัดที่อยู่ชิดกัน
-             # (นนทบุรี/กรุงเทพ ห่างกัน ~0.11°) ทับกัน → point-in-polygon ได้จังหวัดเดียวชัด
+GADM_NAME = {pid: v["gadm"] for pid, v in _BASIN.items()}
+PROV_SUBBASIN = {pid: v["subbasin"] for pid, v in _BASIN.items()}
+HALF = 0.05
 
-# ── RiverReach → [(province_id, threshold_m)] : ใช้สร้าง INUNDATES + PIP ──
+# ── โครงลุ่มน้ำ (8 สาขา) → reach + INUNDATES (ภูมิศาสตร์จริง: reach ไหลผ่านจังหวัดใด) ──
 REACH_INUNDATION: dict[str, list[tuple[str, float]]] = {
-    "RR-PING":     [("TAK", 8.0)],
-    "RR-NAN":      [("PHITSANULOK", 8.0)],
-    "RR-CP-UPPER": [("NAKHONSAWAN", 8.0), ("CHAINAT", 9.0)],
-    "RR-CP-LOWER": [("SINGBURI", 7.0), ("ANGTHONG", 7.0), ("AYUTTHAYA", 7.5),
-                    ("PATHUMTHANI", 8.0), ("NONTHABURI", 9.0), ("BANGKOK", 9.5)],
+    "RR-PING":       [("TAK", 8.0), ("KAMPHAENGPHET", 8.0), ("CHIANGMAI", 8.0), ("LAMPHUN", 8.0)],
+    "RR-WANG":       [("LAMPANG", 8.0)],
+    "RR-YOM":        [("SUKHOTHAI", 8.0), ("PHICHIT", 8.0)],
+    "RR-NAN":        [("UTTARADIT", 8.0), ("PHITSANULOK", 8.0), ("PHICHIT", 8.0)],
+    "RR-SAKAEKRANG": [("UTHAITHANI", 8.0)],
+    "RR-CP-UPPER":   [("NAKHONSAWAN", 8.0), ("CHAINAT", 9.0)],
+    "RR-CP-LOWER":   [("SINGBURI", 7.0), ("ANGTHONG", 7.0), ("AYUTTHAYA", 7.5),
+                      ("PATHUMTHANI", 8.0), ("NONTHABURI", 9.0), ("BANGKOK", 9.5)],
+    "RR-PASAK":      [("PHETCHABUN", 8.0), ("LOPBURI", 8.0), ("SARABURI", 8.0)],
+    "RR-THACHIN":    [("SUPHANBURI", 8.0), ("NAKHONPATHOM", 8.0)],
 }
+REACH_SUBBASIN = {
+    "RR-PING": "Ping", "RR-WANG": "Wang", "RR-YOM": "Yom", "RR-NAN": "Nan",
+    "RR-SAKAEKRANG": "SakaeKrang", "RR-CP-UPPER": "ChaoPhraya", "RR-CP-LOWER": "ChaoPhraya",
+    "RR-PASAK": "Pasak", "RR-THACHIN": "ThaChin",
+}
+REACH_META = {  # reach -> (ชื่อ, basin, stream order)
+    "RR-PING": ("ปิงท้ายเขื่อนภูมิพล", "Ping", 4),
+    "RR-WANG": ("แม่น้ำวัง", "Wang", 4),
+    "RR-YOM": ("แม่น้ำยม (ไม่มีเขื่อนใหญ่)", "Yom", 4),
+    "RR-NAN": ("น่านท้ายเขื่อนสิริกิติ์", "Nan", 4),
+    "RR-SAKAEKRANG": ("แม่น้ำสะแกกรัง", "SakaeKrang", 4),
+    "RR-CP-UPPER": ("เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)", "ChaoPhraya", 6),
+    "RR-CP-LOWER": ("เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)", "ChaoPhraya", 7),
+    "RR-PASAK": ("แม่น้ำป่าสัก (เขื่อนป่าสักฯ)", "Pasak", 5),
+    "RR-THACHIN": ("แม่น้ำท่าจีน (แยกจากเจ้าพระยาที่ชัยนาท)", "ThaChin", 6),
+}
+REACH_LEVEL = {r: 8.0 for r in REACH_META}  # nominal (gate ใช้ overflow ไม่ใช่ level แล้ว)
 
-# ── สถานะเขื่อน: ดึงจาก dam_specs.json (สเปกจริง + สถานะสังเกตปี 2565) ──────
-#   spillway_level, active (เขื่อนล้นสปิลเวย์จริงไหม) มาจากข้อมูลจริง ไม่ใช่ค่าที่ตั้งให้เข้ากับผล
-#   (แก้ threshold circularity — ดู README Bugs 2026-07-27)
-_DAM_SPECS_PATH = settings.data_processed_dir / "dam_specs.json"
-
-# fallback (ใช้เมื่อ dam_specs.json หาย เพื่อคง reproducibility) = ค่าเดิมก่อน 2026-07-27
-_FALLBACK_SPILLWAY = {"RES-BHUMIBOL": 260.0, "RES-SIRIKIT": 162.0, "RES-CHAOPHRAYA": 16.5}
-_FALLBACK_ACTIVE = {"RES-BHUMIBOL": True, "RES-SIRIKIT": True, "RES-CHAOPHRAYA": True}
+# ── เขื่อน: spillway + active จาก dam_specs.json (จริง) ─────────────
+_DAM_SPECS_PATH = _PROC / "dam_specs.json"
+_FALLBACK_SPILLWAY = {"RES-BHUMIBOL": 260.0, "RES-SIRIKIT": 162.0,
+                      "RES-CHAOPHRAYA": 16.5, "RES-PASAK": 42.0}
+_FALLBACK_ACTIVE = {"RES-BHUMIBOL": True, "RES-SIRIKIT": True,
+                    "RES-CHAOPHRAYA": True, "RES-PASAK": True}
+_DAM_META = {  # rid -> (ชื่อ, capacity_mcm, lat, lon, basin)
+    "RES-BHUMIBOL": ("เขื่อนภูมิพล (Bhumibol)", 13462, 17.24, 98.97, "Ping"),
+    "RES-SIRIKIT": ("เขื่อนสิริกิติ์ (Sirikit)", 9510, 17.76, 100.56, "Nan"),
+    "RES-PASAK": ("เขื่อนป่าสักชลสิทธิ์ (Pasak Jolasid)", 960, 15.06, 101.06, "Pasak"),
+    "RES-CHAOPHRAYA": ("เขื่อนเจ้าพระยา (Chao Phraya Dam)", 0, 15.16, 100.18, "ChaoPhraya"),
+}
 
 
 def _load_dam_specs() -> dict:
     if _DAM_SPECS_PATH.exists():
         return json.loads(_DAM_SPECS_PATH.read_text("utf-8"))
-    print(f"[fixtures] WARNING: {_DAM_SPECS_PATH.name} หาย → ใช้ fallback (ค่าเดิม tuned)")
+    print(f"[fixtures] WARNING: {_DAM_SPECS_PATH.name} หาย → ใช้ fallback")
     return {}
 
 
@@ -83,7 +115,6 @@ def _spillway_level(specs: dict, rid: str) -> float:
 
 
 def _is_active(specs: dict, rid: str) -> bool:
-    """เขื่อน active = ล้นสปิลเวย์จริง (storage dam) หรือส่งน้ำเกิน flood threshold (barrage)."""
     obs = specs.get(rid, {}).get(f"observed_{_YEAR}", specs.get(rid, {}).get("observed_2022"))
     if obs is None:
         return _FALLBACK_ACTIVE[rid]
@@ -94,78 +125,81 @@ def _is_active(specs: dict, rid: str) -> bool:
 _SPECS = _load_dam_specs()
 RESERVOIR_SPILLWAY = {rid: _spillway_level(_SPECS, rid) for rid in _FALLBACK_SPILLWAY}
 RESERVOIR_ACTIVE = {rid: _is_active(_SPECS, rid) for rid in _FALLBACK_ACTIVE}
-# ผลจริงปี 2565: ภูมิพล/สิริกิติ์ = retaining (ไม่ล้นสปิลเวย์) → active False;
-#   เขื่อนเจ้าพระยา (barrage) ส่งน้ำ 3,048 ≥ 2,800 → active True. ดู dam_specs.json.
 
-REACH_LEVEL = {"RR-PING": 5.0, "RR-NAN": 6.0, "RR-CP-UPPER": 9.5, "RR-CP-LOWER": 8.5}
-# ⚠️ REACH_LEVEL + INUNDATES per-province threshold ยัง tuned (= ตัวแทน "ระดับการป้องกัน" ของแต่ละจังหวัด
-#    เช่น กทม./นนทบุรี มีคันกั้นน้ำ King's Dyke จึง threshold สูง) — ยังไม่ de-circularize เต็ม.
-
-# ── river-gauge จริง (RID 9 ต.ค. 65) → reach.overflow = ลำน้ำหลักล้นความจุจริงไหม ──────
-#   de-circularize "reach ล้นไหม" ด้วยข้อมูลจริง: C.2 นครสวรรค์ 3,099≥2,840 → RR-CP-UPPER ล้น;
-#   C.13 3,048≥2,800 → RR-CP-LOWER ล้น; Ping P.7A 409<585 → RR-PING ไม่ล้น (ตากท่วมจากฝนท้องถิ่น).
-_GAUGES_PATH = settings.data_processed_dir / f"river_gauges_{_YEAR}.json"
+# ── reach.overflow ← river_reach_overbank_{year}.json (RID gauge, อิสระจาก satellite) ──
+_OVERBANK_PATH = _PROC / f"river_reach_overbank_{_YEAR}.json"
+_GAUGES_PATH = _PROC / f"river_gauges_{_YEAR}.json"
 
 
 def _load_reach_overflow() -> dict:
-    if _GAUGES_PATH.exists():
+    if _OVERBANK_PATH.exists():
+        sub = json.loads(_OVERBANK_PATH.read_text("utf-8")).get("subbasin_overbank", {})
+        return {r: bool(sub.get(REACH_SUBBASIN[r], {}).get("overflow", False)) for r in REACH_META}
+    if _GAUGES_PATH.exists():  # fallback: reach-level gauge file (เหตุการณ์เดิม)
         g = json.loads(_GAUGES_PATH.read_text("utf-8")).get("reach_gauge", {})
-        return {rid: bool(g.get(rid, {}).get("overflow", False)) for rid in REACH_LEVEL}
-    # fallback: ก่อนมี gauge จริง ถือว่า reach ที่ระดับ ≥ 7 ถือว่าล้น (ค่าเดิมโดยประมาณ)
-    return {rid: REACH_LEVEL[rid] >= 7.0 for rid in REACH_LEVEL}
+        return {r: bool(g.get(r, {}).get("overflow", False)) for r in REACH_META}
+    print(f"[fixtures] WARNING: ไม่มี overbank/gauge ของ {_YEAR} → overflow=False ทุก reach")
+    return {r: False for r in REACH_META}
 
 
 REACH_OVERFLOW = _load_reach_overflow()
-# ฝนกระจายทั้งลุ่ม (พายุโนรู 2565 / เตี้ยนหมู่ 2564 = เหตุการณ์ฝนหนักที่บันทึกไว้)
-# → rain station active = ต้นเหตุ runoff (bypass เขื่อนที่ไม่ล้น)
-RAIN_ACTIVE = {"RS-PING": True, "RS-NAN": True}
 
-# ── A1 (de-circularize INUNDATES): จังหวัดที่มี "คันกั้นน้ำ" ป้องกัน (ไม่ท่วมแม้ reach ล้น) ──
-#   แทน threshold รายจังหวัดที่เคย tuned (7.0–9.5) ด้วยข้อเท็จจริงจริง: กรุงเทพ+นนทบุรี มีแนว
-#   คันกั้นน้ำพระราชดำริ (King's Dyke) ป้องกันเขตชั้นใน → gate = (reach ล้นจริง) ∧ (จังหวัดไม่ถูกป้องกัน)
-PROTECTED_PROVINCES = {"BANGKOK", "NONTHABURI"}  # source: King's Dyke / แนวคันกั้นน้ำ กทม.-ปริมณฑล
+# ── สถานีฝน (1 ต่อลุ่มน้ำต้นน้ำ) — active ทั้งหมด (ฝนกระจายทั้งลุ่ม = ข้อเท็จจริงของเหตุการณ์) ──
+RAIN_STATIONS = {  # rid -> (ชื่อ, lat, lon, basin)
+    "RS-PING": ("สถานีฝนปิงตอนบน (Ping upper)", 18.79, 98.98, "Ping"),
+    "RS-WANG": ("สถานีฝนวังตอนบน (Wang upper)", 18.29, 99.49, "Wang"),
+    "RS-YOM": ("สถานีฝนยมตอนบน (Yom upper)", 18.14, 100.14, "Yom"),
+    "RS-NAN": ("สถานีฝนน่านตอนบน (Nan upper)", 19.19, 100.78, "Nan"),
+    "RS-SAKAEKRANG": ("สถานีฝนสะแกกรัง (Sakae Krang)", 15.38, 99.87, "SakaeKrang"),
+    "RS-PASAK": ("สถานีฝนป่าสักตอนบน (Pasak upper)", 16.42, 101.16, "Pasak"),
+}
+RAIN_ACTIVE = {rid: True for rid in RAIN_STATIONS}
 
-# ── ground truth (gold) — จาก GISTDA จริง (Item 3) ผ่าน ground_truth_2022.json ──────
-#   fallback = ชุด fixture เดิม เพื่อคง reproducibility ถ้าไฟล์หาย
-_FALLBACK_GOLD = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA", "PATHUMTHANI"]
-_GROUND_TRUTH_PATH = settings.data_processed_dir / f"ground_truth_{_YEAR}.json"
+# ── จังหวัดที่มีคันกั้นน้ำป้องกัน (ไม่ท่วมแม้ reach ล้น) — King's Dyke กทม./ปริมณฑล ──
+PROTECTED_PROVINCES = {"BANGKOK", "NONTHABURI"}
+
+# ── gold ← ground_truth_{year}.json (GISTDA จริง) ───────────────────
+_FALLBACK_GOLD = ["NAKHONSAWAN", "CHAINAT", "SINGBURI", "ANGTHONG", "AYUTTHAYA"]
+_GROUND_TRUTH_PATH = _PROC / f"ground_truth_{_YEAR}.json"
 
 
 def _load_gold() -> list[str]:
     if _GROUND_TRUTH_PATH.exists():
-        gt = json.loads(_GROUND_TRUTH_PATH.read_text("utf-8"))
-        return list(gt.get("gold_flooded", _FALLBACK_GOLD))
-    print(f"[fixtures] WARNING: {_GROUND_TRUTH_PATH.name} หาย → ใช้ gold fixture เดิม")
+        return list(json.loads(_GROUND_TRUTH_PATH.read_text("utf-8")).get("gold_flooded", _FALLBACK_GOLD))
+    print(f"[fixtures] WARNING: {_GROUND_TRUTH_PATH.name} หาย → gold fallback")
     return _FALLBACK_GOLD
 
 
 GOLD_FLOODED = _load_gold()
 
-# ── geometry จริง: GADM level-1 (จังหวัด) — Item 3 แทน box สังเคราะห์ ──────
-_GADM_PATH = settings.data_processed_dir.parent / "raw" / "gadm41_THA_1.json"
-GADM_NAME = {  # prov_id → GADM NAME_1
-    "TAK": "Tak", "PHITSANULOK": "Phitsanulok", "NAKHONSAWAN": "NakhonSawan",
-    "CHAINAT": "ChaiNat", "SINGBURI": "SingBuri", "ANGTHONG": "AngThong",
-    "AYUTTHAYA": "PhraNakhonSiAyutthaya", "PATHUMTHANI": "PathumThani",
-    "NONTHABURI": "Nonthaburi", "BANGKOK": "BangkokMetropolis",
-}
+# ── geometry จริง: GADM level-1 ────────────────────────────────────
+_GADM_PATH = _PROC.parent / "raw" / "gadm41_THA_1.json"
 
 
 def _load_gadm_geoms() -> dict:
-    """{prov_id: geojson-geometry} จาก GADM. ว่าง = ใช้ box fallback."""
     if not _GADM_PATH.exists():
         return {}
     d = json.loads(_GADM_PATH.read_text("utf-8"))
     by_name = {f["properties"].get("NAME_1"): f["geometry"] for f in d["features"]}
-    out = {}
-    for pid, name in GADM_NAME.items():
-        if name in by_name:
-            out[pid] = by_name[name]
-    return out
+    return {pid: by_name[name] for pid, name in GADM_NAME.items() if name in by_name}
 
 
 _GADM_GEOMS = _load_gadm_geoms()
-USE_REAL_GEOM = len(_GADM_GEOMS) == len(GADM_NAME)
+USE_REAL_GEOM = len(_GADM_GEOMS) == len(GADM_NAME) and bool(GADM_NAME)
+
+# ── FLOWS_TO topology (ทิศการไหลจริงของลุ่มเจ้าพระยา) ────────────────
+CONFLUENCE = ("CONF-PAKNAMPHO", "ปากน้ำโพ (Pak Nam Pho)", 15.70, 100.12)
+FLOWS = [  # (src, dst, lag_hours)
+    ("RR-WANG", "RR-PING", 24),               # วัง → ปิง
+    ("RR-PING", "CONF-PAKNAMPHO", 36),
+    ("RR-YOM", "CONF-PAKNAMPHO", 36),
+    ("RR-NAN", "CONF-PAKNAMPHO", 36),
+    ("CONF-PAKNAMPHO", "RR-CP-UPPER", 12),
+    ("RR-CP-UPPER", "RR-CP-LOWER", 24),
+    ("RR-CP-UPPER", "RR-THACHIN", 12),        # ท่าจีนแยกที่ชัยนาท
+    ("RR-SAKAEKRANG", "RR-CP-LOWER", 18),     # สะแกกรังเข้าเจ้าพระยาที่ชัยนาท (ใต้ปากน้ำโพ)
+    ("RR-PASAK", "RR-CP-LOWER", 18),          # ป่าสักเข้าเจ้าพระยาที่อยุธยา
+]
 
 
 def _ev(station_id: str, dataset: str, timestamp: str = LAYER_DATE) -> dict:
@@ -174,39 +208,18 @@ def _ev(station_id: str, dataset: str, timestamp: str = LAYER_DATE) -> dict:
 
 def build_nodes() -> list[dict]:
     nodes: list[dict] = []
-    # RainStation (ต้นน้ำ)
-    nodes += [
-        {"label": "RainStation", "id": "RS-PING", "name": "สถานีฝนปิงตอนบน (Ping upper)",
-         "active": RAIN_ACTIVE["RS-PING"], "lat": 18.79, "lon": 98.98, "basin": "Ping"},
-        {"label": "RainStation", "id": "RS-NAN", "name": "สถานีฝนน่านตอนบน (Nan upper)",
-         "active": RAIN_ACTIVE["RS-NAN"], "lat": 19.19, "lon": 100.78, "basin": "Nan"},
-    ]
-    # Reservoir
-    nodes += [
-        {"label": "Reservoir", "id": "RES-BHUMIBOL", "name": "เขื่อนภูมิพล (Bhumibol)",
-         "capacity_mcm": 13462, "spillway_level": RESERVOIR_SPILLWAY["RES-BHUMIBOL"],
-         "active": RESERVOIR_ACTIVE["RES-BHUMIBOL"], "lat": 17.24, "lon": 98.97, "basin": "Ping"},
-        {"label": "Reservoir", "id": "RES-SIRIKIT", "name": "เขื่อนสิริกิติ์ (Sirikit)",
-         "capacity_mcm": 9510, "spillway_level": RESERVOIR_SPILLWAY["RES-SIRIKIT"],
-         "active": RESERVOIR_ACTIVE["RES-SIRIKIT"], "lat": 17.76, "lon": 100.56, "basin": "Nan"},
-        {"label": "Reservoir", "id": "RES-CHAOPHRAYA", "name": "เขื่อนเจ้าพระยา (Chao Phraya Dam)",
-         "capacity_mcm": 0, "spillway_level": RESERVOIR_SPILLWAY["RES-CHAOPHRAYA"],
-         "active": RESERVOIR_ACTIVE["RES-CHAOPHRAYA"], "lat": 15.16, "lon": 100.18, "basin": "ChaoPhraya"},
-    ]
-    # RiverReach (แนบระดับน้ำเหตุการณ์)
-    for rid, (name, basin, order) in {
-        "RR-PING": ("ปิงท้ายเขื่อนภูมิพล", "Ping", 4),
-        "RR-NAN": ("น่านท้ายเขื่อนสิริกิติ์", "Nan", 4),
-        "RR-CP-UPPER": ("เจ้าพระยาตอนบน (ปากน้ำโพ–ชัยนาท)", "ChaoPhraya", 6),
-        "RR-CP-LOWER": ("เจ้าพระยาตอนล่าง (ชัยนาท–กรุงเทพ)", "ChaoPhraya", 7),
-    }.items():
+    for rid, (name, lat, lon, basin) in RAIN_STATIONS.items():
+        nodes.append({"label": "RainStation", "id": rid, "name": name,
+                      "active": RAIN_ACTIVE[rid], "lat": lat, "lon": lon, "basin": basin})
+    for rid, (name, cap, lat, lon, basin) in _DAM_META.items():
+        nodes.append({"label": "Reservoir", "id": rid, "name": name, "capacity_mcm": cap,
+                      "spillway_level": RESERVOIR_SPILLWAY[rid], "active": RESERVOIR_ACTIVE[rid],
+                      "lat": lat, "lon": lon, "basin": basin})
+    for rid, (name, basin, order) in REACH_META.items():
         nodes.append({"label": "RiverReach", "id": rid, "name": name, "basin": basin,
-                      "order": order, "level": REACH_LEVEL[rid],
-                      "overflow": REACH_OVERFLOW[rid]})  # ล้นจริงไหม (จาก river-gauge)
-    # Confluence (จุดบรรจบข้ามลุ่มน้ำ)
-    nodes.append({"label": "Confluence", "id": "CONF-PAKNAMPHO",
-                  "name": "ปากน้ำโพ (Pak Nam Pho)", "lat": 15.70, "lon": 100.12})
-    # Province (geometry มาจาก provinces.geojson ตอนโหลด)
+                      "order": order, "level": REACH_LEVEL[rid], "overflow": REACH_OVERFLOW[rid]})
+    cid, cname, clat, clon = CONFLUENCE
+    nodes.append({"label": "Confluence", "id": cid, "name": cname, "lat": clat, "lon": clon})
     for pid, (lon, lat, th, en) in PROVINCES.items():
         nodes.append({"label": "Province", "id": pid, "name_th": th, "name_en": en,
                       "lat": lat, "lon": lon, "protected": pid in PROTECTED_PROVINCES})
@@ -214,45 +227,28 @@ def build_nodes() -> list[dict]:
 
 
 def build_causal_edges() -> list[dict]:
-    """FEEDS / OVERFLOWS_TO / FLOWS_TO (INUNDATES สร้างในเฟส 2)."""
     edges: list[dict] = []
-    # FEEDS (ฝน → เขื่อน)
-    edges += [
-        {"type": "FEEDS", "src": "RS-PING", "dst": "RES-BHUMIBOL", "lag_hours": 48,
-         "evidence": _ev("RS-PING", "D1/data.go.th telemetry")},
-        {"type": "FEEDS", "src": "RS-NAN", "dst": "RES-SIRIKIT", "lag_hours": 48,
-         "evidence": _ev("RS-NAN", "D1/data.go.th telemetry")},
-    ]
-    # RUNOFF_TO (ฝน → น้ำท่าลงลำน้ำโดยตรง, bypass เขื่อน) — เหตุจริงของน้ำท่วม 2565
-    edges += [
-        {"type": "RUNOFF_TO", "src": "RS-PING", "dst": "RR-PING", "lag_hours": 24,
-         "evidence": _ev("RS-PING", "D1/data.go.th rain→runoff")},
-        {"type": "RUNOFF_TO", "src": "RS-NAN", "dst": "RR-NAN", "lag_hours": 24,
-         "evidence": _ev("RS-NAN", "D1/data.go.th rain→runoff")},
-    ]
-    # OVERFLOWS_TO (เขื่อน → ลำน้ำ) — spillway ดึงจาก dam_specs.json (สเปกจริง)
-    edges += [
-        {"type": "OVERFLOWS_TO", "src": "RES-BHUMIBOL", "dst": "RR-PING",
-         "spillway": RESERVOIR_SPILLWAY["RES-BHUMIBOL"],
-         "evidence": _ev("RES-BHUMIBOL", "D2/dam_specs.json (EGAT/thaiwater 2565)")},
-        {"type": "OVERFLOWS_TO", "src": "RES-SIRIKIT", "dst": "RR-NAN",
-         "spillway": RESERVOIR_SPILLWAY["RES-SIRIKIT"],
-         "evidence": _ev("RES-SIRIKIT", "D2/dam_specs.json (EGAT/thaiwater 2565)")},
-        {"type": "OVERFLOWS_TO", "src": "RES-CHAOPHRAYA", "dst": "RR-CP-LOWER",
-         "spillway": RESERVOIR_SPILLWAY["RES-CHAOPHRAYA"],
-         "evidence": _ev("RES-CHAOPHRAYA", "D2/dam_specs.json (RID C.13 9 ต.ค. 65)")},
-    ]
-    # FLOWS_TO (ลำน้ำ → จุดบรรจบ/ลำน้ำ)
-    edges += [
-        {"type": "FLOWS_TO", "src": "RR-PING", "dst": "CONF-PAKNAMPHO", "lag_hours": 36,
-         "evidence": _ev("RR-PING", "D1/data.go.th river gauge")},
-        {"type": "FLOWS_TO", "src": "RR-NAN", "dst": "CONF-PAKNAMPHO", "lag_hours": 36,
-         "evidence": _ev("RR-NAN", "D1/data.go.th river gauge")},
-        {"type": "FLOWS_TO", "src": "CONF-PAKNAMPHO", "dst": "RR-CP-UPPER", "lag_hours": 12,
-         "evidence": _ev("CONF-PAKNAMPHO", "D1/data.go.th river gauge")},
-        {"type": "FLOWS_TO", "src": "RR-CP-UPPER", "dst": "RR-CP-LOWER", "lag_hours": 24,
-         "evidence": _ev("RR-CP-UPPER", "D1/data.go.th river gauge")},
-    ]
+    dam_of = {"RS-PING": "RES-BHUMIBOL", "RS-NAN": "RES-SIRIKIT", "RS-PASAK": "RES-PASAK"}
+    reach_of = {"RS-PING": "RR-PING", "RS-WANG": "RR-WANG", "RS-YOM": "RR-YOM", "RS-NAN": "RR-NAN",
+                "RS-SAKAEKRANG": "RR-SAKAEKRANG", "RS-PASAK": "RR-PASAK"}
+    # FEEDS (ฝน → เขื่อน) + RUNOFF_TO (ฝน → ลำน้ำ bypass เขื่อน)
+    for rs in RAIN_STATIONS:
+        if rs in dam_of:
+            edges.append({"type": "FEEDS", "src": rs, "dst": dam_of[rs], "lag_hours": 48,
+                          "evidence": _ev(rs, "D1/data.go.th telemetry")})
+        edges.append({"type": "RUNOFF_TO", "src": rs, "dst": reach_of[rs], "lag_hours": 24,
+                      "evidence": _ev(rs, "D1/data.go.th rain→runoff")})
+    # OVERFLOWS_TO (เขื่อน → ลำน้ำ)
+    dam_reach = {"RES-BHUMIBOL": "RR-PING", "RES-SIRIKIT": "RR-NAN",
+                 "RES-PASAK": "RR-PASAK", "RES-CHAOPHRAYA": "RR-CP-LOWER"}
+    for dam, reach in dam_reach.items():
+        edges.append({"type": "OVERFLOWS_TO", "src": dam, "dst": reach,
+                      "spillway": RESERVOIR_SPILLWAY[dam],
+                      "evidence": _ev(dam, "D2/dam_specs.json (EGAT/RID)")})
+    # FLOWS_TO (ลำน้ำ/จุดบรรจบ ตามทิศการไหลจริง)
+    for src, dst, lag in FLOWS:
+        edges.append({"type": "FLOWS_TO", "src": src, "dst": dst, "lag_hours": lag,
+                      "evidence": _ev(src, "D1/RID river network (flow direction)")})
     return edges
 
 
@@ -262,7 +258,6 @@ def _box(lon: float, lat: float) -> list:
 
 
 def _prov_geometry(pid: str) -> dict:
-    """geometry จริงจาก GADM ถ้ามี; ไม่งั้น box สังเคราะห์ (fallback)."""
     if pid in _GADM_GEOMS:
         return _GADM_GEOMS[pid]
     lon, lat, *_ = PROVINCES[pid]
@@ -270,7 +265,6 @@ def _prov_geometry(pid: str) -> dict:
 
 
 def _outlet_point(pid: str) -> list:
-    """จุดตัวแทนภายใน polygon จังหวัด (representative_point) → PIP ตกในจังหวัดแน่นอน."""
     if pid in _GADM_GEOMS:
         from shapely.geometry import shape
         p = shape(_GADM_GEOMS[pid]).representative_point()
@@ -290,7 +284,6 @@ def build_provinces_geojson() -> dict:
 
 
 def build_reach_outlets_geojson() -> dict:
-    """จุดปลายน้ำต่อ (reach, province) วางในจังหวัดปลายทาง → PIP กู้ mapping ได้."""
     feats = []
     for reach, targets in REACH_INUNDATION.items():
         for pid, threshold in targets:
@@ -302,12 +295,13 @@ def build_reach_outlets_geojson() -> dict:
 
 
 def build_flood_extent_geojson() -> dict:
-    """ground truth (gold) — พื้นที่น้ำท่วมจริง = union polygon จังหวัด gold (GADM) จาก GISTDA."""
     feats = []
     for pid in GOLD_FLOODED:
+        if pid not in PROVINCES:
+            continue
         feats.append({"type": "Feature",
                       "properties": {"event": EVENT_ID, "prov_id": pid,
-                                     "source": "GISTDA NORU2022 (thaiwater) + GADM4.1 geometry",
+                                     "source": "GISTDA satellite (thaiwater) + GADM4.1 geometry",
                                      "layer_date": LAYER_DATE},
                       "geometry": _prov_geometry(pid)})
     return {"type": "FeatureCollection", "features": feats}
@@ -315,16 +309,12 @@ def build_flood_extent_geojson() -> dict:
 
 def build_event_state() -> dict:
     return {"event_id": EVENT_ID, "period": EVENT_PERIOD, "layer_date": LAYER_DATE,
-            "reservoir_active": RESERVOIR_ACTIVE, "reach_level": REACH_LEVEL,
-            "gold_flooded": GOLD_FLOODED}
+            "reservoir_active": RESERVOIR_ACTIVE, "reach_overflow": REACH_OVERFLOW,
+            "gold_flooded": GOLD_FLOODED, "n_provinces": len(PROVINCES)}
 
 
 def build_news_corpus() -> list[dict]:
-    """ข่าวน้ำท่วม (สำหรับ vector-rag). coverage bias เหมือนข่าวจริง:
-    อยุธยา/กรุงเทพ/นครสวรรค์ ถูกรายงานหนัก; สิงห์บุรี/อ่างทอง/ชัยนาท/ปทุมฯ เบาบาง —
-    สะท้อนว่าข่าว 'เห็น' จังหวัดใหญ่ แต่พลาดจังหวัดเล็กปลายสาย. Bangkok ถูกพูดถึงบ่อย
-    (แต่ gold ไม่ท่วม → เป็น false positive ของ vector).
-    """
+    """ข่าวน้ำท่วม (vector-rag). coverage bias เหมือนข่าวจริง: จังหวัดใหญ่ถูกรายงานหนัก."""
     return [
         {"id": "N1", "date": "2022-10-01",
          "text": "สถานการณ์น้ำเจ้าพระยายังวิกฤต น้ำท่วมพระนครศรีอยุธยาขยายวงกว้าง "
@@ -333,34 +323,35 @@ def build_news_corpus() -> list[dict]:
          "text": "เขื่อนเจ้าพระยาเพิ่มการระบายน้ำ กระทบพื้นที่ท้ายน้ำ อยุธยา และเขตเศรษฐกิจ "
                  "กรุงเทพมหานคร ประชาชนเตรียมรับมือ"},
         {"id": "N3", "date": "2022-10-03",
-         "text": "น้ำเหนือหลากลงนครสวรรค์ ระดับน้ำปากน้ำโพสูงขึ้นต่อเนื่อง "
-                 "น้ำท่วมนครสวรรค์หลายอำเภอ"},
+         "text": "น้ำเหนือหลากลงนครสวรรค์ ระดับน้ำปากน้ำโพสูงขึ้นต่อเนื่อง น้ำท่วมนครสวรรค์หลายอำเภอ"},
         {"id": "N4", "date": "2022-10-05",
-         "text": "อยุธยาอ่วม น้ำท่วมโบราณสถาน นักท่องเที่ยวลด เจ้าหน้าที่เร่งสูบน้ำ "
-                 "ขณะกรุงเทพยังเฝ้าระวังน้ำทะเลหนุน"},
+         "text": "อยุธยาอ่วม น้ำท่วมโบราณสถาน นักท่องเที่ยวลด ขณะกรุงเทพยังเฝ้าระวังน้ำทะเลหนุน"},
         {"id": "N5", "date": "2022-10-06",
-         "text": "รายงานพิเศษ: ทำไมกรุงเทพจึงเสี่ยงน้ำท่วมทุกปี ระบบระบายน้ำและคันกั้นน้ำ "
-                 "เจ้าพระยา การบริหารเขื่อน"},
+         "text": "รายงานพิเศษ: ทำไมกรุงเทพจึงเสี่ยงน้ำท่วมทุกปี ระบบระบายน้ำและคันกั้นน้ำเจ้าพระยา"},
         {"id": "N6", "date": "2022-10-07",
          "text": "น้ำท่วมสิงห์บุรีบางพื้นที่ริมเจ้าพระยา ชาวบ้านขนของหนีน้ำ"},
         {"id": "N7", "date": "2022-10-08",
-         "text": "ชัยนาทเฝ้าระวังน้ำล้นตลิ่ง หลังเขื่อนเจ้าพระยาระบายเพิ่ม "
-                 "พื้นที่การเกษตรได้รับผลกระทบ"},
+         "text": "ชัยนาทเฝ้าระวังน้ำล้นตลิ่ง หลังเขื่อนเจ้าพระยาระบายเพิ่ม พื้นที่การเกษตรได้รับผลกระทบ"},
         {"id": "N8", "date": "2022-10-09",
-         "text": "ภาพรวมลุ่มเจ้าพระยา: น้ำจากเขื่อนภูมิพลและสิริกิติ์ไหลรวมที่ปากน้ำโพ "
-                 "ก่อนลงเจ้าพระยาตอนล่าง กระทบหลายจังหวัด"},
+         "text": "ภาพรวมลุ่มเจ้าพระยา: น้ำจากเขื่อนภูมิพลและสิริกิติ์ไหลรวมที่ปากน้ำโพ ก่อนลงเจ้าพระยาตอนล่าง"},
+        {"id": "N9", "date": "2022-10-04",
+         "text": "แม่น้ำยมล้นตลิ่งท่วมสุโขทัยและพิจิตร พื้นที่การเกษตรเสียหายหนัก"},
+        {"id": "N10", "date": "2022-10-05",
+         "text": "น้ำท่าจีนเอ่อล้นท่วมสุพรรณบุรีและนครปฐม เร่งระบายน้ำ"},
+        {"id": "N11", "date": "2022-10-06",
+         "text": "แม่น้ำป่าสักหนุนสูง น้ำท่วมลพบุรี สระบุรี และเพชรบูรณ์"},
     ]
 
 
 def build_deprecated_fixture_flood_extent() -> dict:
-    """เก็บ ground truth เดิม (box + gold fixture 6 จังหวัด) ไว้เทียบย้อนหลัง (Item 3 ไม่ลบทิ้ง)."""
     polys = []
     for pid in _FALLBACK_GOLD:
-        lon, lat, *_ = PROVINCES[pid]
-        polys.append(_box(lon, lat))
+        if pid in PROVINCES:
+            lon, lat, *_ = PROVINCES[pid]
+            polys.append(_box(lon, lat))
     return {"type": "FeatureCollection", "features": [
         {"type": "Feature",
-         "properties": {"event": EVENT_ID, "source": "DEPRECATED fixture (box, tuned gold 6 จว.)",
+         "properties": {"event": EVENT_ID, "source": "DEPRECATED fixture (box, tuned gold)",
                         "layer_date": LAYER_DATE},
          "geometry": {"type": "MultiPolygon", "coordinates": polys}}]}
 
@@ -373,7 +364,6 @@ def write_all(out_dir: Path | None = None) -> Path:
     (out / "provinces.geojson").write_text(json.dumps(build_provinces_geojson(), ensure_ascii=False, indent=2), "utf-8")
     (out / "reach_outlets.geojson").write_text(json.dumps(build_reach_outlets_geojson(), ensure_ascii=False, indent=2), "utf-8")
     (out / "gistda_flood_extent.geojson").write_text(json.dumps(build_flood_extent_geojson(), ensure_ascii=False, indent=2), "utf-8")
-    # เก็บ ground truth เดิมไว้ (ไม่ลบ) สำหรับเทียบ fixture↔real
     (out / "gistda_flood_extent_fixture_deprecated.geojson").write_text(
         json.dumps(build_deprecated_fixture_flood_extent(), ensure_ascii=False, indent=2), "utf-8")
     (out / "event_state.json").write_text(json.dumps(build_event_state(), ensure_ascii=False, indent=2), "utf-8")
@@ -383,4 +373,5 @@ def write_all(out_dir: Path | None = None) -> Path:
 
 if __name__ == "__main__":
     p = write_all()
-    print(f"fixtures written to {p}")
+    print(f"fixtures written to {p}  ({len(PROVINCES)} provinces, {len(REACH_META)} reaches, "
+          f"event={EVENT_ID}, gold={len(GOLD_FLOODED)})")

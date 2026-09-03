@@ -23,12 +23,12 @@ def f1(pred: set[str], gold: set[str]) -> float:
 
 def f1_by_hop(
     predictions: Sequence[tuple[int, set[str], set[str]]],
-    hop_buckets: Iterable[int] = (2, 4),
+    hop_buckets: Iterable[int] = (2, 3, 4, 5),
 ) -> dict[int, float]:
     """group ผลตามความยาว chain แล้วเฉลี่ย F1.
 
     predictions: ลำดับของ (hop, pred_provinces, gold_provinces).
-    คืน {2: mean_f1, 4: mean_f1}.
+    คืน {2: .., 3: .., 4: .., 5: ..} (multi-hop granularity — วัด H2 ละเอียดขึ้น).
     """
     out: dict[int, float] = {}
     for bucket in hop_buckets:
