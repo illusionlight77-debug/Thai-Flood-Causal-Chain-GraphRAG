@@ -1,0 +1,75 @@
+{
+  "event": "chao_phraya_2021",
+  "gold": [
+    "Ang Thong",
+    "Ayutthaya",
+    "Chai Nat",
+    "Nakhon Sawan",
+    "Phitsanulok",
+    "Sing Buri"
+  ],
+  "variants": {
+    "full (ครบทุกกลไก)": {
+      "f1": 0.833,
+      "n_pred": 6,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Sing Buri"
+      ]
+    },
+    "−runoff": {
+      "f1": 0.6,
+      "n_pred": 4,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Pathum Thani",
+        "Sing Buri"
+      ]
+    },
+    "−overflow gate": {
+      "f1": 0.857,
+      "n_pred": 8,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Phitsanulok",
+        "Sing Buri",
+        "Tak"
+      ]
+    },
+    "−protection": {
+      "f1": 0.714,
+      "n_pred": 8,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Bangkok",
+        "Chai Nat",
+        "Nakhon Sawan",
+        "Nonthaburi",
+        "Pathum Thani",
+        "Sing Buri"
+      ]
+    },
+    "−direction (undirected)": {
+      "f1": 0.833,
+      "n_pred": 6,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Sing Buri"
+      ]
+    }
+  }
+}

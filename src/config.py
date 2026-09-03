@@ -43,6 +43,12 @@ class Settings:
     anthropic_model: str = field(default_factory=lambda: _get("ANTHROPIC_MODEL", "claude-opus-4-8"))
     embedding_provider: str = field(default_factory=lambda: _get("EMBEDDING_PROVIDER", "huggingface"))
     embedding_model: str = field(default_factory=lambda: _get("EMBEDDING_MODEL", "BAAI/bge-m3"))
+    # ── LLM (คำอธิบายน้ำท่วม) ──
+    llm_provider: str = field(default_factory=lambda: _get("LLM_PROVIDER", "none"))
+    groq_api_key: str = field(default_factory=lambda: _get("GROQ_API_KEY", ""))
+    groq_model: str = field(default_factory=lambda: _get("GROQ_MODEL", "qwen/qwen3.8-27b"))
+    ollama_base: str = field(default_factory=lambda: _get("OLLAMA_BASE", "http://localhost:11434"))
+    ollama_model: str = field(default_factory=lambda: _get("OLLAMA_MODEL", "qwen2.5"))
 
     # ── data endpoints (ยืนยันจริงตอนเฟส 1) ─────────────────
     datagoth_ckan_base: str = field(default_factory=lambda: _get("DATAGOTH_CKAN_BASE", "https://data.go.th/api/3/action"))

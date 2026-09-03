@@ -61,5 +61,16 @@ RETURN p.id AS pid, p.name_en AS province, min(length(path)) AS hops
 ORDER BY hops, province
 """
 
+# ── #6 early-warning: lead time (ชม.) = ผลรวม lag_hours ตามสายเหตุ-ผลที่สั้นสุดถึงจังหวัด ──
+#   ใช้ gate เดียวกับการทำนาย (reach ล้น + ไม่มีคันกั้นน้ำ) → บอก "อีกกี่ ชม. จังหวัดจะท่วม"
+LEAD_TIME_TO_PROVINCE = f"""
+MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province {{name_en:$province}})
+WHERE src.active = true
+WITH p, nodes(path) AS ns, reduce(s=0, r IN rels | s + coalesce(r.lag_hours,0)) AS lag
+WITH p, ns[size(ns)-2] AS last_reach, lag
+WHERE last_reach.overflow = true AND coalesce(p.protected, false) = false
+RETURN min(lag) AS lead_hours
+"""
+
 # ── traceability guard: ต้องได้ 0 ─────────────────────────────
 COUNT_EDGES_WITHOUT_EVIDENCE = "MATCH ()-[e]->() WHERE e.evidence IS NULL RETURN count(e) AS n"
