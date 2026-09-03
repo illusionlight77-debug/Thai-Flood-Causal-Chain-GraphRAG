@@ -138,7 +138,13 @@ try:
     for f in prov_gj["features"]:
         f["properties"]["predicted"] = f["properties"]["name_en"] in causal_pred
 
-    layers = [
+    layers = []
+    # ถ้ามี GISTDA sphere key → ใช้ basemap ของ GISTDA เป็นพื้นหลัง (verified: basemap tiles ใช้ได้)
+    if settings.gistda_api_key:
+        tile_url = ("https://basemap.sphere.gistda.or.th/tiles/sphere_hybrid/EPSG3857/"
+                    "{z}/{x}/{y}.jpeg?key=" + settings.gistda_api_key)
+        layers.append(pdk.Layer("TileLayer", data=tile_url, min_zoom=0, max_zoom=19, tile_size=256))
+    layers += [
         pdk.Layer("GeoJsonLayer", flood_gj, get_fill_color=[30, 120, 220, 90],
                   stroked=False, pickable=False),
         pdk.Layer("GeoJsonLayer", prov_gj, get_fill_color=(
@@ -149,7 +155,8 @@ try:
         map_style=None,
         initial_view_state=pdk.ViewState(latitude=15.0, longitude=100.3, zoom=6.2),
         layers=layers, tooltip={"text": "{name_en}"}))
-    st.caption("🔵 พื้นที่น้ำท่วมจริง (GISTDA)  ·  🔴 จังหวัดที่ causal-graphrag ทำนายว่าท่วม")
+    _bm = "GISTDA sphere basemap" if settings.gistda_api_key else "ไม่มี basemap (ใส่ GISTDA_API_KEY ใน .env ได้)"
+    st.caption(f"🔵 พื้นที่น้ำท่วมจริง (GISTDA)  ·  🔴 จังหวัดที่ causal-graphrag ทำนายว่าท่วม  ·  🗺️ {_bm}")
 except Exception as exc:  # noqa: BLE001
     st.caption(f"(แผนที่ pydeck ใช้ไม่ได้: {exc}) — แสดงเป็นรายการแทน")
     st.write("gold:", ", ".join(sorted(gold)))

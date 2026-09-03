@@ -37,6 +37,7 @@ class Settings:
 
     # ── LLM / embeddings ───────────────────────────────────
     anthropic_api_key: str = field(default_factory=lambda: _get("ANTHROPIC_API_KEY", ""))
+    gistda_api_key: str = field(default_factory=lambda: _get("GISTDA_API_KEY", ""))  # sphere basemap
     anthropic_model: str = field(default_factory=lambda: _get("ANTHROPIC_MODEL", "claude-opus-4-8"))
     embedding_provider: str = field(default_factory=lambda: _get("EMBEDDING_PROVIDER", "huggingface"))
     embedding_model: str = field(default_factory=lambda: _get("EMBEDDING_MODEL", "BAAI/bge-m3"))
