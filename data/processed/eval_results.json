@@ -1,29 +1,29 @@
 {
   "causal-graphrag": {
     "f1_by_hop": {
-      "2": 0.7692,
-      "4": 0.7692
+      "2": 0.8333,
+      "4": 0.8333
     },
-    "f1_overall": 0.7692,
-    "traceability": 0.7143,
-    "avg_latency_ms": 6.21
+    "f1_overall": 0.8333,
+    "traceability": 0.8333,
+    "avg_latency_ms": 13.55
   },
   "entity-graphrag": {
     "f1_by_hop": {
-      "2": 0.6909,
-      "4": 0.8235
+      "2": 0.6857,
+      "4": 0.75
     },
-    "f1_overall": 0.7288,
+    "f1_overall": 0.7071,
     "traceability": 0.0,
-    "avg_latency_ms": 8.85
+    "avg_latency_ms": 10.61
   },
   "vector-rag": {
     "f1_by_hop": {
-      "2": 0.2618,
-      "4": 0.3818
+      "2": 0.1056,
+      "4": 0.2111
     },
-    "f1_overall": 0.2961,
+    "f1_overall": 0.1407,
     "traceability": 0.0,
-    "avg_latency_ms": 1.09
+    "avg_latency_ms": 1.29
   }
 }

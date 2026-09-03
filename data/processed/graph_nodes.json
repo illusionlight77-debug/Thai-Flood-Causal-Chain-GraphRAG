@@ -99,7 +99,8 @@
     "name_th": "ตาก",
     "name_en": "Tak",
     "lat": 16.87,
-    "lon": 99.13
+    "lon": 99.13,
+    "protected": false
   },
   {
     "label": "Province",
@@ -107,7 +108,8 @@
     "name_th": "พิษณุโลก",
     "name_en": "Phitsanulok",
     "lat": 16.82,
-    "lon": 100.27
+    "lon": 100.27,
+    "protected": false
   },
   {
     "label": "Province",
@@ -115,7 +117,8 @@
     "name_th": "นครสวรรค์",
     "name_en": "Nakhon Sawan",
     "lat": 15.7,
-    "lon": 100.14
+    "lon": 100.14,
+    "protected": false
   },
   {
     "label": "Province",
@@ -123,7 +126,8 @@
     "name_th": "ชัยนาท",
     "name_en": "Chai Nat",
     "lat": 15.19,
-    "lon": 100.13
+    "lon": 100.13,
+    "protected": false
   },
   {
     "label": "Province",
@@ -131,7 +135,8 @@
     "name_th": "สิงห์บุรี",
     "name_en": "Sing Buri",
     "lat": 14.89,
-    "lon": 100.4
+    "lon": 100.4,
+    "protected": false
   },
   {
     "label": "Province",
@@ -139,7 +144,8 @@
     "name_th": "อ่างทอง",
     "name_en": "Ang Thong",
     "lat": 14.59,
-    "lon": 100.46
+    "lon": 100.46,
+    "protected": false
   },
   {
     "label": "Province",
@@ -147,7 +153,8 @@
     "name_th": "พระนครศรีอยุธยา",
     "name_en": "Ayutthaya",
     "lat": 14.35,
-    "lon": 100.58
+    "lon": 100.58,
+    "protected": false
   },
   {
     "label": "Province",
@@ -155,7 +162,8 @@
     "name_th": "ปทุมธานี",
     "name_en": "Pathum Thani",
     "lat": 14.02,
-    "lon": 100.53
+    "lon": 100.53,
+    "protected": false
   },
   {
     "label": "Province",
@@ -163,7 +171,8 @@
     "name_th": "นนทบุรี",
     "name_en": "Nonthaburi",
     "lat": 13.86,
-    "lon": 100.51
+    "lon": 100.51,
+    "protected": true
   },
   {
     "label": "Province",
@@ -171,6 +180,7 @@
     "name_th": "กรุงเทพมหานคร",
     "name_en": "Bangkok",
     "lat": 13.75,
-    "lon": 100.52
+    "lon": 100.52,
+    "protected": true
   }
 ]

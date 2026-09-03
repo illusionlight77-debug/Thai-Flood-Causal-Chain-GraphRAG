@@ -30,19 +30,19 @@ ORDER BY hops
 """
 
 # ── ทำนายชุดจังหวัดที่ท่วม: จาก "ต้นเหตุ active" (เขื่อนที่ล้น/บาร์ราจ *หรือ* ฝนที่ทำ runoff) ──
-#   gate 2 ชั้นด้วยข้อมูลจริง: (1) last_reach.overflow = true (ลำน้ำหลักล้นความจุจริง จาก river-gauge)
-#   (2) last_reach.level >= INUNDATES.threshold (ระดับการป้องกันรายจังหวัด). ดู river_gauges_2022.json.
+#   gate 2 ชั้นด้วยข้อมูลจริง (A1 de-circularized): (1) last_reach.overflow = true (ลำน้ำหลักล้น
+#   ความจุจริงจาก river-gauge) (2) จังหวัดไม่มีคันกั้นน้ำป้องกัน (p.protected=false) — แทน threshold
+#   ตั้งเอง 7.0–9.5 เดิม. ดู river_gauges_*.json + PROTECTED_PROVINCES.
 CAUSAL_FLOOD_PREDICT = f"""
 MATCH path = (src)-[rels:{CAUSAL_RELS}*2..4]->(p:Province)
 WHERE src.active = true
 WITH p, path, length(path) AS hops, nodes(path) AS ns, relationships(path) AS rs
 WITH p, hops,
      ns[size(ns)-2] AS last_reach,
-     last(rs) AS inun,
      [r IN rs | r.evidence] AS evidences,
      [n IN ns | coalesce(n.name, n.name_en)] AS chain
 WHERE last_reach.overflow = true
-  AND (inun.threshold IS NULL OR last_reach.level >= inun.threshold)
+  AND coalesce(p.protected, false) = false
 RETURN p.id AS pid, p.name_en AS province,
        min(hops) AS hops,
        head(collect(chain)) AS chain,

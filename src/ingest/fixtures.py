@@ -116,8 +116,14 @@ def _load_reach_overflow() -> dict:
 
 
 REACH_OVERFLOW = _load_reach_overflow()
-# ฝนกระจายทั้งลุ่ม (พายุโนรู 2565) → rain station active = ต้นเหตุ runoff (bypass เขื่อนที่ไม่ล้น)
+# ฝนกระจายทั้งลุ่ม (พายุโนรู 2565 / เตี้ยนหมู่ 2564 = เหตุการณ์ฝนหนักที่บันทึกไว้)
+# → rain station active = ต้นเหตุ runoff (bypass เขื่อนที่ไม่ล้น)
 RAIN_ACTIVE = {"RS-PING": True, "RS-NAN": True}
+
+# ── A1 (de-circularize INUNDATES): จังหวัดที่มี "คันกั้นน้ำ" ป้องกัน (ไม่ท่วมแม้ reach ล้น) ──
+#   แทน threshold รายจังหวัดที่เคย tuned (7.0–9.5) ด้วยข้อเท็จจริงจริง: กรุงเทพ+นนทบุรี มีแนว
+#   คันกั้นน้ำพระราชดำริ (King's Dyke) ป้องกันเขตชั้นใน → gate = (reach ล้นจริง) ∧ (จังหวัดไม่ถูกป้องกัน)
+PROTECTED_PROVINCES = {"BANGKOK", "NONTHABURI"}  # source: King's Dyke / แนวคันกั้นน้ำ กทม.-ปริมณฑล
 
 # ── ground truth (gold) — จาก GISTDA จริง (Item 3) ผ่าน ground_truth_2022.json ──────
 #   fallback = ชุด fixture เดิม เพื่อคง reproducibility ถ้าไฟล์หาย
@@ -203,7 +209,7 @@ def build_nodes() -> list[dict]:
     # Province (geometry มาจาก provinces.geojson ตอนโหลด)
     for pid, (lon, lat, th, en) in PROVINCES.items():
         nodes.append({"label": "Province", "id": pid, "name_th": th, "name_en": en,
-                      "lat": lat, "lon": lon})
+                      "lat": lat, "lon": lon, "protected": pid in PROTECTED_PROVINCES})
     return nodes
 
 

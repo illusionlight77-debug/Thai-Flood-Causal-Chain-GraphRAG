@@ -1,15 +1,19 @@
 {
   "_meta": {
-    "description": "Reach-overflow state for the 2021 DIANMU event. NOTE (honest, lower confidence than 2022): we did NOT find an independent single-day RID gauge bulletin for early Oct 2021 (the 2022 bulletin URL pattern 404s for 2021). Reach overflow here is set from the DOCUMENTED EVENT MECHANISM, not from an independent gauge reading — flagged so it is not over-trusted.",
-    "evidence_basis": "In 2021: upper storage dams (Bhumibol/Sirikit) were low post-drought and NOT spilling; the Chao Phraya barrage passed Dianmu flood flows; Nakhon Sawan flooded heavily (925,514 rai) from north runoff at the confluence, while the Ping main stem stayed low (Tak only 2,208 rai). This mirrors the 2022 mechanism.",
-    "confidence": "medium (mechanism-based, no independent 2021 gauge snapshot)",
-    "source": "https://www.thaiwater.net/uploads/contents/current/2021/DIANMU2021/flood_area.html + Dianmu 2021 reporting",
+    "description": "Reach-overflow state for the 2021 DIANMU event, from REPORTED river-gauge peaks (upgraded from mechanism-inference in A2, 2026-07-27).",
+    "evidence_basis": "C.2 Nakhon Sawan peaked ~3,000-3,100 m3/s (22 Oct 2564) — above channel capacity 2,840 -> RR-CP-UPPER overflow. Chao Phraya Dam (C.13) released ~2,700-2,800 m3/s (at/near the 2,800 downstream flood threshold); lower Chao Phraya provinces (Chai Nat/Sing Buri/Ang Thong/Ayutthaya) flooded. Ping/Nan main stems stayed low (Tak only 2,208 rai; Phitsanulok flooded from the Yom sub-basin, not in graph).",
+    "confidence": "based on reported peaks (news/RID); slightly lower than 2022's single-day RID bulletin but no longer pure inference",
+    "sources": [
+      {"field": "C.2 Nakhon Sawan ~3,000-3,100 m3/s (22 Oct 2564)", "url": "https://www.thaipost.net/main/detail/117600"},
+      {"field": "Chao Phraya Dam / C.13 ~2,700 m3/s at Sappaya", "url": "https://www.thaipbs.or.th/news/content/358218"},
+      {"field": "flood extent per province (Dianmu)", "url": "https://www.thaiwater.net/uploads/contents/current/2021/DIANMU2021/flood_area.html"}
+    ],
     "retrieved_date": "2026-07-27"
   },
   "reach_gauge": {
-    "RR-PING":     {"station": "P.7A", "overflow": false, "note": "Ping main stem low; Tak only 2,208 rai (below cutoff)"},
-    "RR-NAN":      {"station": "N.67/N.5A", "overflow": false, "note": "Nan main stem; Phitsanulok flooded from Yom sub-basin (not in graph) -> causal misses it"},
-    "RR-CP-UPPER": {"station": "C.2 (นครสวรรค์)", "overflow": true, "note": "Nakhon Sawan 925,514 rai -> confluence/main channel over flood level"},
-    "RR-CP-LOWER": {"station": "C.13 (เขื่อนเจ้าพระยา)", "overflow": true, "note": "barrage passed Dianmu flows -> Chai Nat/Sing Buri/Ang Thong/Ayutthaya flooded"}
+    "RR-PING":     {"station": "P.7A", "capacity_cms": 585, "overflow": false, "note": "Ping main stem low; Tak only 2,208 rai"},
+    "RR-NAN":      {"station": "N.67/N.5A", "overflow": false, "note": "Nan main stem low; Phitsanulok flooded from Yom (not in graph)"},
+    "RR-CP-UPPER": {"station": "C.2 (นครสวรรค์)", "capacity_cms": 2840, "observed_cms": 3050, "overflow": true, "note": "peak ~3,000-3,100 >= 2,840 -> overflow (REAL, cited)"},
+    "RR-CP-LOWER": {"station": "C.13 (เขื่อนเจ้าพระยา)", "flood_threshold_cms": 2800, "observed_cms": 2750, "overflow": true, "note": "release ~2,700-2,800 at/near flood threshold; lower provinces flooded"}
   }
 }

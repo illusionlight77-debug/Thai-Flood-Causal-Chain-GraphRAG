@@ -70,7 +70,7 @@
 5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
 6. **UI** — Streamlit ถามตอบ + chain viewer + evidence panel + แผนที่ overlay.
 
-> 📈 **สถานะข้อมูลปัจจุบัน:** สเปกเขื่อน ✅จริง · vector corpus ✅194 ข่าวจริง · ground truth ✅GISTDA satellite จริง · geometry ✅GADM จริง · river-gauge ✅จริง(2565) / medium(2564). เหลือ fixture เฉพาะ *โครง node/edge ของกราฟ* + INUNDATES per-province threshold.
+> 📈 **สถานะข้อมูลปัจจุบัน:** สเปกเขื่อน ✅จริง · vector corpus ✅194 ข่าวจริง · ground truth ✅GISTDA satellite จริง · geometry ✅GADM จริง · river-gauge ✅จริง(2565+2564) · INUNDATES threshold ✅**de-circularized แล้ว** (gauge จริง + คันกั้นน้ำ King's Dyke แทนค่าตั้งเอง). เหลือ fixture เฉพาะ *โครง node/edge ของกราฟ* (hand-built).
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
 
@@ -292,7 +292,7 @@ gold = จังหวัดที่ GISTDA วัดพื้นที่ท�
 | vector-rag | 0.262 | 0.382 | −0.120 | 0.296 | 0% |
 
 - **causal กู้จังหวัดจุดบรรจบคืนได้** (นครสวรรค์/ชัยนาท) โดย chain เริ่มจาก **"สถานีฝน → runoff → ปากน้ำโพ → เจ้าพระยาตอนบน"** — *กลไกจริง* ไม่ใช่เขื่อนล้น. และ **กลับมานำ entity (0.769 > 0.729) อย่างชอบธรรม** เพราะขับด้วยข้อมูล gauge จริง + โครงสร้างถูก ไม่ใช่ fixture.
-- **ยังพลาด/เกินอย่างซื่อสัตย์:** miss ตาก/พิษณุโลก (ท่วมจากฝนท้องถิ่นในลุ่มย่อยที่ลำน้ำหลัก *ไม่* ล้น — Ping P.7A 409<585), FP ปทุมธานี (per-province threshold ยัง tuned).
+- **ยังพลาด/เกินอย่างซื่อสัตย์:** miss ตาก/พิษณุโลก (ท่วมจากฝนท้องถิ่นในลุ่มย่อยที่ลำน้ำหลัก *ไม่* ล้น — Ping P.7A 409<585), FP ปทุมธานี (ไม่มีคันกั้นน้ำ + reach ล้น → ทำนายท่วม แต่พื้นที่จริง 3,190 ไร่ < เกณฑ์ 10k).
 - **Finding (river-gauge):** *ระดับน้ำในลำน้ำรายวัน ≠ พื้นที่ท่วมจากดาวเทียม* — 9 ต.ค. บางสถานีสาขาลดต่ำกว่าตลิ่งแล้วทั้งที่ GISTDA ยังเห็นน้ำท่วมบนที่ราบ (พีคผ่านไป น้ำยังขัง) → เราจึง gate ที่ลำน้ำ*หลัก*ล้นความจุ.
 
 **เส้นทาง F1 ของ causal (ซื่อสัตย์ทุกก้าว):** `1.000 (fixture)` → `0.800 (I1 สเปกเขื่อน)` → `0.545 (I3 ground truth จริง)` → **`0.769 (runoff + gauge จริง)`**
@@ -315,9 +315,9 @@ gold = จังหวัดที่ GISTDA วัดพื้นที่ท�
 - **vector-rag ตกแรงใน 2021 (0.296→0.141)** เพราะคลังข่าวเอียงไปทาง 2565 → generalize แย่สุด (finding เพิ่ม: baseline ที่ตอบตามข่าวไม่ทน cross-event).
 - entity ค่อนข้างคงที่ (0.729, 0.707).
 
-**ข้อจำกัดที่รายงานตรง ๆ:** reach-overflow ของ 2021 มาจาก *กลไกเหตุการณ์ที่บันทึกไว้* (เขื่อนใหญ่ปีนั้นน้ำน้อย/ไม่ล้น + barrage
-ส่งน้ำ Dianmu + นครสวรรค์ท่วม 925k ไร่) ไม่ใช่ RID gauge bulletin รายวันอิสระเหมือน 2565 (หา 2564 ไม่เจอที่ path เดิม) →
-confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](data/processed/river_gauges_2021.json)).
+**ข้อจำกัดที่รายงานตรง ๆ:** reach-overflow ของ 2021 อัปเกรดแล้ว (A2) → ใช้ **peak จริงที่รายงาน** (C.2 นครสวรรค์ ~3,000–3,100 ≥ 2,840;
+C.13 ~2,700–2,800) ไม่ใช่การเดาล้วน แต่ยังเป็น *ตัวเลข peak จากข่าว/รายงาน* ไม่ใช่ RID bulletin รายวันเหมือน 2565 → confidence
+ยังต่ำกว่า 2565 เล็กน้อย (ระบุใน [`river_gauges_2021.json`](data/processed/river_gauges_2021.json)).
 
 ### เหตุการณ์ที่ทดสอบ / Test events
 | Event | ลุ่มน้ำ | ช่วงเวลา | #จังหวัด gold | ground truth | สถานะ |
@@ -346,7 +346,8 @@ confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](
 | 2026-07-27 | province geometry เป็น box สังเคราะห์ (overlay กับ flood จริงไม่ได้ความหมาย) | fixture ใช้ box ±0.05° | ดาวน์โหลด **GADM4.1 THA level-1** เป็น polygon จังหวัดจริง; PIP ใช้ representative_point; overlay ใช้เกณฑ์พื้นที่ทับ ≥ 50% (แทน sliver 1 m²) | ไม่ (ทำให้ geospatial สมจริง) |
 | 2026-07-27 | ใช้ ground truth จริงแล้ว **causal F1 ตกเหลือ 0.545 และต่ำกว่า entity** | schema ไม่มี path ฝน→น้ำท่า → miss ตาก/พิษณุโลก/นครสวรรค์/ชัยนาท + FP ปทุมธานี | ยังไม่แก้ schema รอบนี้ — รายงานตรง ๆ เป็น finding หลัก; ทางแก้คือเติม node/edge runoff | **ใช่ (สำคัญที่สุด)** — เผยข้อจำกัดจริงของ schema ที่ fixture ปิดบัง |
 | 2026-07-27 | Item 4: พื้นที่ท่วมรายจังหวัด 2564 หน้า YearlyReport เป็น prose ไม่มีตาราง | หน้า yearly summary รวมกลุ่มจังหวัด | **แก้แล้ว:** เจอหน้า event-specific `2021/DIANMU2021/flood_area.html` ที่มีตารางรายจังหวัดครบ (แบบเดียวกับ NORU2022) → `ground_truth_2021.json` จริง | ไม่ (ปลดล็อก Item 4) |
-| 2026-07-27 | 2021 RID gauge bulletin หาไม่เจอ (path เดิม 404) | RID เปลี่ยน naming/archive ปี 2564 | ใช้ reach-overflow 2564 จากกลไกเหตุการณ์ (confidence medium, ระบุใน river_gauges_2021.json) แทน gauge รายวัน | **บางส่วน** — 2021 overflow อ่อนกว่า 2022 (รายงานไว้) |
+| 2026-07-27 | 2021 RID gauge bulletin รายวันหาไม่เจอ (path 404) | RID เปลี่ยน naming/archive ปี 2564 | **A2:** ใช้ peak จริงจากข่าว (C.2 ~3,000–3,100, C.13 ~2,700–2,800, cited) แทนการเดา → 2564 overflow มีฐานข้อมูลจริง | บางส่วน — ยังเป็น peak รายงาน ไม่ใช่ bulletin รายวัน |
+| 2026-07-27 | **A1: INUNDATES threshold รายจังหวัดยัง tuned (7.0–9.5)** = circularity ชิ้นสุดท้าย | ค่าตั้งเอง | แทนด้วย gate จริง: reach.overflow (gauge) ∧ ¬protected (คันกั้นน้ำ King's Dyke = กทม./นนทบุรี). ผลไม่เปลี่ยน (0.769/0.833) | ไม่ (ปิด circularity; ผลยืนบนของจริงล้วน) |
 | 2026-07-27 | **ระดับน้ำในลำน้ำรายวัน ≠ พื้นที่ท่วมจากดาวเทียม** (9 ต.ค. สถานีสาขาลดต่ำกว่าตลิ่งแล้วแต่ GISTDA ยังเห็นน้ำท่วม) | พีคผ่านไปแต่น้ำยังขังบนที่ราบ; gauge เป็น snapshot ราย instant | gate `reach.overflow` ที่ **ลำน้ำหลัก**ล้นความจุ (C.2/C.13) ไม่ใช่สาขา; ตาก/พิษณุโลก (ฝนท้องถิ่น) จึง miss อย่างซื่อสัตย์ | ไม่ (เป็นข้อจำกัดเชิงฟิสิกส์ที่รายงานไว้) |
 
 **Known-risk checklist (เฝ้าระวัง):**
@@ -361,7 +362,7 @@ confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](
 
 > อ้างตัวเลขจาก Results เท่านั้น. **สถานะข้อมูล (หลัง Item 1–3):** สเปกเขื่อน + สถานะปี 2565 = จริง (dam_specs.json),
 > vector corpus = ข่าวจริง 194 ชิ้น, **ground truth = GISTDA satellite จริง** (ground_truth_2022.json), geometry = GADM จริง.
-> เหลือ *fixture* เฉพาะ: โครง causal graph (nodes/edges) + INUNDATES threshold/reach.level ที่ยัง tuned. ยัง 1 เหตุการณ์.
+> เหลือ *fixture* เฉพาะ: โครง causal graph (nodes/edges) ที่ hand-built. (INUNDATES threshold de-circularized แล้วใน A1: gauge จริง + คันกั้นน้ำ).
 
 **เดิมสรุปว่า causal ชนะทุกด้าน (F1 1.000). พอยกเป็นข้อมูลจริงทีละชั้น ข้อสรุปเปลี่ยน — และนี่คือผลที่ซื่อสัตย์กว่า:**
 
@@ -377,13 +378,14 @@ confidence ต่ำกว่า (ระบุใน [`river_gauges_2021.json`](
   เส้นทาง `1.000→0.800→0.545→0.769`: ตอน 0.545 คือ schema ขาด path ฝน→น้ำท่า (เจอเพราะใช้ ground truth จริง);
   พอเติม `RUNOFF_TO` + gate ด้วย river-gauge จริง (ไม่ tune ให้ตรง gold) causal กู้จังหวัดจุดบรรจบคืน → นำกลับ.
   **จุดสำคัญ:** การนำครั้งนี้ยืนบน *ข้อมูลจริง + โครงสร้างถูก* (ต่างจาก 1.000 เดิมที่ยืนบน fixture). ยัง miss
-  ตาก/พิษณุโลก (ฝนท้องถิ่น, ลำน้ำหลักไม่ล้น) และ FP ปทุมธานี (per-province threshold ยัง tuned) — รายงานไว้ตรง ๆ.
+  ตาก/พิษณุโลก (ฝนท้องถิ่น, ลำน้ำหลักไม่ล้น) และ FP ปทุมธานี (พื้นที่จริง 3,190 ไร่ < เกณฑ์) — รายงานไว้ตรง ๆ.
 - **causal vs relational hop:** causal เป็นมิติที่ *ต่าง* จาก relational hop จริง — และหลังเติม runoff + gauge จริง **ข้อได้เปรียบ F1 กลับมายืนบนข้อมูลจริง** (ไม่ใช่ fixture): causal นำ entity ทั้ง 2 เหตุการณ์ (0.769 vs 0.729, 0.833 vs 0.707) พร้อม traceability ที่ baseline ทำไม่ได้.
 - **Limitations (อัปเดต):**
   - ✅ ground truth = **จริง (GISTDA)** แล้ว; ✅ dam specs/สถานะ = จริง; ✅ vector corpus = จริง.
   - **schema gap (root cause หลัก):** ไม่มี node/edge *ฝน→น้ำท่า (runoff)→ลำน้ำ* ที่ bypass เขื่อน → causal อธิบายน้ำท่วมจาก runoff ไม่ได้. งานถัดไปสำคัญสุด.
-  - INUNDATES threshold + `reach.level` **ยัง tuned** — ต้องใช้ river-gauge จริง (C.2/C.13) จึงจะ de-circularize ครบ.
-  - ~~1 เหตุการณ์~~ **แก้แล้ว (Item 4): ทดสอบ 2 เหตุการณ์จริง (2564+2565) — causal นำทั้งคู่**; แต่ยังเป็นลุ่มน้ำเดียว (เจ้าพระยา), ควรเพิ่มลุ่มน้ำอื่น. 2564 reach-overflow confidence ต่ำกว่า (ไม่มี gauge รายวัน).
+  - ~~INUNDATES threshold ยัง tuned~~ **แก้แล้ว (A1): de-circularize ด้วย reach.overflow (gauge จริง) + คันกั้นน้ำ King's Dyke แทนค่า 7.0–9.5. ตัวเลขผลไม่เปลี่ยน (0.769/0.833) = ยืนยันว่าค่า tuned เดิมตรงกับความจริงพอดี.**
+  - ~~1 เหตุการณ์~~ **แก้แล้ว (Item 4): 2 เหตุการณ์จริง (2564+2565) — causal นำทั้งคู่**; แต่ยังเป็นลุ่มน้ำเดียว (เจ้าพระยา), ควรเพิ่มลุ่มน้ำอื่น.
+  - เหลือ fixture: **โครง node/edge ของกราฟ** (hand-built) — ควรสร้างจาก river-network จริง (HydroSHEDS/RID GIS); และ rain-active grounded ที่ระดับ *เหตุการณ์พายุ* (NORU/Dianmu) ยังไม่ได้ต่อฝนรายสถานีจาก CKAN (A3 = future เพราะ dataset ไม่ตรง 2 สถานีต้นน้ำ).
   - Sentinel-1/GEE ทำไม่ได้ใน environment นี้ → ใช้ GISTDA product แทน (ยังเป็น satellite จริง).
 - **ต่อยอด (เรียงความสำคัญ):** (1) เติม path ฝน→น้ำท่าใน schema, (2) ใช้ river-gauge จริงแทน threshold tuned,
   (3) Item 4 หลายเหตุการณ์/ลุ่มน้ำ, (4) early-warning + dashboard (climate-resilience / NECTEC).
