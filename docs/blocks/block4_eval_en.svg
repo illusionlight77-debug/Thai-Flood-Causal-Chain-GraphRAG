@@ -1,0 +1,43 @@
+<svg viewBox="0 0 980 490" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs><marker id="a4" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker></defs>
+  <rect width="980" height="490" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#efe3cc"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">④ Evaluation — scoring, honestly</text>
+  <text x="30" y="50" font-size="13.5" fill="#8a6d3b">src/eval/*.py — compare all 3 systems to the GISTDA answer key on a frozen eval set</text>
+
+  <g font-size="12" fill="#3a2f22">
+    <rect x="30" y="86" width="215" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="107">answers from 3 systems (③)</text>
+    <rect x="30" y="128" width="215" height="34" rx="6" fill="#fbeee9" stroke="#c0492f" stroke-width="1.4"/><text x="42" y="149">gold key from GISTDA (②)</text>
+  </g>
+  <path d="M250,124 L294,124" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a4)"/>
+
+  <rect x="300" y="80" width="330" height="96" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+  <text x="465" y="104" font-size="13.5" font-weight="700" fill="#245c37" text-anchor="middle">Tier 1 · core metrics</text>
+  <text x="315" y="126" font-size="12" fill="#3a2f22">F1-by-hop (by causal-chain length 2/3/4/5)</text>
+  <text x="315" y="145" font-size="12" fill="#3a2f22">Traceability — % of answers that cite evidence</text>
+  <text x="315" y="164" font-size="12" fill="#3a2f22">Specificity · Faithfulness (grounding)</text>
+
+  <rect x="300" y="190" width="330" height="96" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="465" y="214" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Tier 2 · statistical confirmation</text>
+  <text x="315" y="236" font-size="12" fill="#3a2f22">McNemar exact test (paired, one/two-sided)</text>
+  <text x="315" y="255" font-size="12" fill="#3a2f22">Bootstrap CI · Discrimination · Ablation</text>
+  <text x="315" y="274" font-size="12" fill="#3a2f22">4 events · N = 92 cases total</text>
+
+  <path d="M634,180 L678,180" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a4)"/>
+  <g>
+    <polygon points="705,120 875,120 855,240 685,240" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.8"/>
+    <text x="780" y="150" font-size="13" font-weight="700" fill="#3a2f22" text-anchor="middle">real results</text>
+    <text x="780" y="172" font-size="11" fill="#8a6d3b" text-anchor="middle">eval_results.json</text>
+    <text x="780" y="189" font-size="11" fill="#8a6d3b" text-anchor="middle">results_table.md</text>
+    <text x="780" y="211" font-size="11" fill="#8a6d3b" text-anchor="middle">→ feeds backend UI</text>
+  </g>
+
+  <rect x="30" y="304" width="920" height="160" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="328" font-size="13" font-weight="700" fill="#8a6d3b">Hard rules / results (reported straight)</text>
+  <text x="46" y="350" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700" fill="#c0492f">never edit the eval set / tune for nicer numbers</tspan> — hop buckets are a property of geography, frozen, not shifted per event</text>
+  <text x="46" y="371" font-size="12.5" fill="#3a2f22">• always report old and new together — e.g. F1 was 1.000 (1 event) → 0.545 (full basin) → 0.909 (graph fixed)</text>
+  <text x="46" y="392" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">causal wins decisively:</tspan> Traceability &amp; Specificity — both baselines = 0</text>
+  <text x="46" y="413" font-size="12.5" fill="#3a2f22">• F1: beats entity significantly one-sided (p=0.044); two-sided not yet (p=0.087) — <tspan font-weight="700">both reported</tspan></text>
+  <text x="46" y="434" font-size="12.5" fill="#3a2f22">• beats vector decisively (p&lt;0.001) · the loss (2024 fixed gate) is logged as a limitation, not hidden</text>
+  <text x="46" y="455" font-size="12" fill="#a58a5a">• independent gold (GISTDA) + frozen eval set = numbers that "can drop" are numbers you can trust</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg viewBox="0 0 980 500" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs><marker id="a6" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8801f"/></marker></defs>
+  <rect width="980" height="500" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#f4ecd8"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#8a6d3b" font-family="Georgia,serif">⑥ Extension — forecasting / risk (add-on)</text>
+  <text x="30" y="50" font-size="13.5" fill="#9a7a3f">src/eval/risk_warning.py + EARLY_WARNING query — we build no new predictor; we "wrap" warnings with grounded numbers</text>
+
+  <text x="30" y="88" font-size="13" font-weight="700" fill="#8a6d3b">Inputs (every number has a source)</text>
+  <g font-size="11.5" fill="#3a2f22">
+    <rect x="30" y="100" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="120">causal warning: which prov. will flood</text>
+    <rect x="30" y="138" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="158">measured precision = 0.938</text>
+    <rect x="30" y="176" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="196">lead-time + slowdown ×5.7 (from 2011)</text>
+    <rect x="30" y="214" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="234">population (NSO) · historical flood freq.</text>
+  </g>
+  <path d="M285,175 L325,175" stroke="#b8801f" stroke-width="2" fill="none" marker-end="url(#a6)"/>
+
+  <rect x="330" y="100" width="300" height="150" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="2"/>
+  <text x="480" y="124" font-size="13.5" font-weight="700" fill="#8a6d3b" text-anchor="middle">wrap with standard numbers</text>
+  <text x="345" y="148" font-size="12" fill="#3a2f22">P(flood | warned) = measured precision</text>
+  <text x="345" y="167" font-size="11" fill="#a58a5a">   (NOAA glossary · EFAS HESS 2009)</text>
+  <text x="345" y="188" font-size="12" fill="#3a2f22">time window = [fast wave, ×5.7 basin-fill]</text>
+  <text x="345" y="209" font-size="12" fill="#3a2f22">Risk = Hazard × Exposure × Vuln</text>
+  <text x="345" y="228" font-size="11" fill="#a58a5a">   (UNDRR / IPCC decomposition)</text>
+  <text x="345" y="246" font-size="11.5" fill="#3a2f22" font-weight="700">= per-province risk + level</text>
+
+  <path d="M633,175 L677,175" stroke="#b8801f" stroke-width="2" fill="none" marker-end="url(#a6)"/>
+  <g>
+    <polygon points="705,120 880,120 861,230 686,230" fill="#f3ece0" stroke="#b8801f" stroke-width="1.8"/>
+    <text x="780" y="150" font-size="12.5" font-weight="700" fill="#8a6d3b" text-anchor="middle">risk-annotated warning</text>
+    <text x="780" y="172" font-size="11" fill="#9a7a3f" text-anchor="middle">province + prob + lead</text>
+    <text x="780" y="190" font-size="11" fill="#9a7a3f" text-anchor="middle">+ risk level</text>
+    <text x="780" y="212" font-size="11" fill="#9a7a3f" text-anchor="middle">→ warn.html page</text>
+  </g>
+
+  <rect x="30" y="272" width="920" height="98" rx="10" fill="#fbeee9" stroke="#c0492f" stroke-width="1.6"/>
+  <text x="46" y="296" font-size="13" font-weight="700" fill="#c0492f">Why it might NOT happen (uncertainty — always stated)</text>
+  <text x="46" y="318" font-size="12.5" fill="#3a2f22">• dams pre-release in time / rainfall lower than expected · dikes + pumping succeed · gates divert the flow</text>
+  <text x="46" y="339" font-size="12.5" fill="#3a2f22">• the model uses an on/off threshold (overflow = flood) — real severity is a spectrum · lead-time is a window, not a point</text>
+  <text x="46" y="360" font-size="12.5" fill="#3a2f22">• precision 0.938 = ~6% of warnings are false alarms statistically → a warning is a "risk", not a certain forecast</text>
+
+  <rect x="30" y="386" width="920" height="94" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="410" font-size="13" font-weight="700" fill="#8a6d3b">Why this way / how trustworthy</text>
+  <text x="46" y="432" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">no invented numbers:</tspan> the probability is the precision <tspan font-weight="700">measured from real results</tspan>; slowdown measured on the 2011 event</text>
+  <text x="46" y="453" font-size="12.5" fill="#3a2f22">• the risk formula follows <tspan font-weight="700">international standards</tspan> (UNDRR/IPCC) + cited work (EFAS, NOAA, Sci.Rep.), not ad-hoc</text>
+  <text x="46" y="474" font-size="12.5" fill="#3a2f22">• positioned clearly as an "add-on" — the main work is <tspan font-weight="700">measuring verifiability of explanations</tspan>, not forecast accuracy</text>
+</svg>

@@ -123,6 +123,48 @@
 ![⑥ Extension](docs/blocks/block6_extension.svg)
 </details>
 
+#### 🌐 English version
+
+▶ **[Open the interactive walkthrough](docs/system_walkthrough.html)** — one page, click through the overview + all 6 blocks (open it locally / via GitHub Pages).
+
+![System Overview (EN)](docs/system_overview_en.svg)
+
+<details>
+<summary><b>① Ingestion &amp; Graph Build</b> — turn real data into a causal graph in Neo4j</summary>
+
+![① Ingestion & Graph Build](docs/blocks/block1_ingest_en.svg)
+</details>
+
+<details>
+<summary><b>② Geo Mapping</b> — GeoPandas maps reach→province + lays down the gold key</summary>
+
+![② Geo Mapping](docs/blocks/block2_geo_en.svg)
+</details>
+
+<details>
+<summary><b>③ 3 Retrievers ★</b> — the core: causal vs entity vs vector</summary>
+
+![③ 3 Retrievers](docs/blocks/block3_retrievers_en.svg)
+</details>
+
+<details>
+<summary><b>④ Evaluation</b> — score vs GISTDA + statistical confirmation (reported straight)</summary>
+
+![④ Evaluation](docs/blocks/block4_eval_en.svg)
+</details>
+
+<details>
+<summary><b>⑤ DEM Validation</b> — independent physics check of flow direction</summary>
+
+![⑤ DEM Validation](docs/blocks/block5_dem_en.svg)
+</details>
+
+<details>
+<summary><b>⑥ Extension</b> — forecasting/risk add-on + "why it might not happen"</summary>
+
+![⑥ Extension](docs/blocks/block6_extension_en.svg)
+</details>
+
 ---
 ### 🖥️ หน้าจอระบบ / UI (แยก 2 ส่วนชัดเจน)
 

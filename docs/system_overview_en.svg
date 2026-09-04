@@ -1,0 +1,130 @@
+<svg viewBox="0 0 1500 920" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6b8a"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1500" height="920" fill="#f6efe1"/>
+  <g stroke="#e4d7be" stroke-width="1.4" fill="none" opacity="0.7">
+    <path d="M-20,120 C300,60 600,180 900,120 S1400,60 1520,140"/>
+    <path d="M-20,150 C300,90 600,210 900,150 S1400,90 1520,170"/>
+    <path d="M-20,860 C300,800 700,900 1000,840 S1420,800 1520,870"/>
+    <path d="M-20,830 C300,770 700,870 1000,810 S1420,770 1520,840"/>
+  </g>
+
+  <text x="60" y="66" font-size="34" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">Thai Flood Causal-Chain GraphRAG</text>
+  <text x="62" y="98" font-size="18" fill="#8a6d3b">“Why did this province flood?” — measuring how much following the <tspan font-weight="700" fill="#c0492f">real causal chain</tspan> makes explanations more verifiable than vector search</text>
+
+  <text x="60" y="168" font-size="16" font-weight="700" fill="#2f6b8a" letter-spacing="2">① THE CAUSAL CHAIN NATURE FOLLOWS</text>
+  <line x1="150" y1="272" x2="1350" y2="272" stroke="#cdbfa2" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>
+
+  <g>
+    <circle cx="180" cy="272" r="54" fill="#fbf6ec" stroke="#2f6b8a" stroke-width="2.4"/>
+    <g transform="translate(180,258)" stroke="#2f6b8a" stroke-width="2.4" fill="none" stroke-linecap="round">
+      <path d="M-20,-4 a12,12 0 0 1 24,-4 a10,10 0 0 1 10,8 h-36 a8,8 0 0 1 2,0z" fill="#dfeef4"/>
+      <line x1="-14" y1="10" x2="-18" y2="20"/><line x1="0" y1="10" x2="-4" y2="22"/><line x1="14" y1="10" x2="10" y2="20"/>
+    </g>
+    <text x="180" y="360" font-size="16" font-weight="700" fill="#3a2f22" text-anchor="middle">Upstream rain</text>
+    <text x="180" y="380" font-size="12.5" fill="#8a6d3b" text-anchor="middle">RainStation</text>
+  </g>
+  <g>
+    <circle cx="470" cy="272" r="54" fill="#fbf6ec" stroke="#2f6b8a" stroke-width="2.4"/>
+    <g transform="translate(470,272)" stroke="#2f6b8a" stroke-width="2.4" fill="none"><path d="M-22,14 L-14,-14 L14,-14 L22,14 Z" fill="#dfeef4"/><line x1="-18" y1="2" x2="18" y2="2"/></g>
+    <text x="470" y="360" font-size="16" font-weight="700" fill="#3a2f22" text-anchor="middle">Reservoir</text>
+    <text x="470" y="380" font-size="12.5" fill="#8a6d3b" text-anchor="middle">Reservoir</text>
+  </g>
+  <g>
+    <circle cx="750" cy="272" r="54" fill="#fbf6ec" stroke="#2f6b8a" stroke-width="2.4"/>
+    <g transform="translate(750,272)" stroke="#2f6b8a" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M-20,-14 L0,0 L-20,14"/><path d="M0,-14 L20,0 L0,14"/></g>
+    <text x="750" y="360" font-size="16" font-weight="700" fill="#3a2f22" text-anchor="middle">Spillway overflow</text>
+    <text x="750" y="380" font-size="12.5" fill="#8a6d3b" text-anchor="middle">Overflow</text>
+  </g>
+  <g>
+    <circle cx="1035" cy="272" r="54" fill="#fbf6ec" stroke="#2f6b8a" stroke-width="2.4"/>
+    <g transform="translate(1035,272)" stroke="#2f6b8a" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M-22,-8 q11,-10 22,0 t22,0"/><path d="M-22,4 q11,-10 22,0 t22,0"/><path d="M-22,16 q11,-10 22,0 t22,0"/></g>
+    <text x="1035" y="360" font-size="16" font-weight="700" fill="#3a2f22" text-anchor="middle">Downstream river</text>
+    <text x="1035" y="380" font-size="12.5" fill="#8a6d3b" text-anchor="middle">RiverReach</text>
+  </g>
+  <g>
+    <circle cx="1320" cy="272" r="54" fill="#fbeee9" stroke="#c0492f" stroke-width="2.8"/>
+    <g transform="translate(1320,264)" stroke="#c0492f" stroke-width="2.4" fill="#f4d5cb"><path d="M0,-18 C13,-18 20,-8 20,0 C20,12 6,20 0,26 C-6,20 -20,12 -20,0 C-20,-8 -13,-18 0,-18 Z"/><circle cx="0" cy="-2" r="6" fill="#c0492f"/></g>
+    <text x="1320" y="360" font-size="16" font-weight="700" fill="#c0492f" text-anchor="middle">Province floods</text>
+    <text x="1320" y="380" font-size="12.5" fill="#a5583f" text-anchor="middle">Province</text>
+  </g>
+
+  <path d="M236,272 L412,272" fill="none" stroke="#2f6b8a" stroke-width="2.6" marker-end="url(#arw)"/>
+  <text x="324" y="262" font-size="12" fill="#5a7d8c" text-anchor="middle">FEEDS · lag</text>
+  <path d="M526,272 L694,272" fill="none" stroke="#2f6b8a" stroke-width="2.6" marker-end="url(#arw)"/>
+  <text x="610" y="262" font-size="12" fill="#5a7d8c" text-anchor="middle">OVERFLOWS</text>
+  <path d="M806,272 L979,272" fill="none" stroke="#2f6b8a" stroke-width="2.6" marker-end="url(#arw)"/>
+  <text x="892" y="262" font-size="12" fill="#5a7d8c" text-anchor="middle">FLOWS_TO · lag</text>
+  <path d="M1091,272 L1264,272" fill="none" stroke="#2f6b8a" stroke-width="2.6" marker-end="url(#arw)"/>
+  <text x="1177" y="262" font-size="12" fill="#5a7d8c" text-anchor="middle">INUNDATES</text>
+
+  <text x="750" y="418" font-size="13.5" fill="#8a6d3b" text-anchor="middle" font-style="italic">every edge carries evidence (station / timestamp) → answers are traceable back to a real source</text>
+  <line x1="60" y1="448" x2="1440" y2="448" stroke="#e0d3ba" stroke-width="1.5"/>
+
+  <text x="60" y="492" font-size="16" font-weight="700" fill="#b8801f" letter-spacing="2">② THE SYSTEM WE BUILT TO MEASURE IT</text>
+
+  <rect x="70" y="560" width="180" height="86" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="160" y="595" font-size="15.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Real data</text>
+  <text x="160" y="616" font-size="12.5" fill="#8a6d3b" text-anchor="middle">GISTDA · RID gauges</text>
+  <text x="160" y="633" font-size="12.5" fill="#8a6d3b" text-anchor="middle">DEM · thaiwater</text>
+
+  <rect x="330" y="560" width="200" height="86" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="430" y="590" font-size="15.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Build causal graph</text>
+  <text x="430" y="611" font-size="13" fill="#3a2f22" text-anchor="middle">Neo4j</text>
+  <text x="430" y="630" font-size="11.5" fill="#a58a5a" text-anchor="middle">8 sub-basins · 23 provinces</text>
+
+  <rect x="610" y="548" width="230" height="110" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2.6"/>
+  <text x="725" y="578" font-size="16" font-weight="700" fill="#245c37" text-anchor="middle">3 systems compete</text>
+  <text x="725" y="600" font-size="12.5" fill="#2f6b3a" text-anchor="middle">on the same task</text>
+  <text x="725" y="622" font-size="12.5" fill="#3a2f22" text-anchor="middle">causal · entity · vector</text>
+  <text x="725" y="645" font-size="11" fill="#7a8a5a" text-anchor="middle">★ our contribution</text>
+
+  <rect x="920" y="560" width="190" height="86" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="1015" y="592" font-size="15.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Score</text>
+  <text x="1015" y="613" font-size="12.5" fill="#8a6d3b" text-anchor="middle">F1-by-hop · Traceability</text>
+  <text x="1015" y="630" font-size="12.5" fill="#8a6d3b" text-anchor="middle">McNemar · bootstrap</text>
+
+  <polygon points="1195,560 1400,560 1375,646 1170,646" fill="#f3ece0" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="1288" y="592" font-size="15" font-weight="700" fill="#3a2f22" text-anchor="middle">Results</text>
+  <text x="1288" y="613" font-size="11.5" fill="#8a6d3b" text-anchor="middle">causal wins Traceability</text>
+  <text x="1288" y="629" font-size="11.5" fill="#8a6d3b" text-anchor="middle">+ F1 (p=0.044, one-sided)</text>
+
+  <path d="M250,603 L328,603" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M530,603 L608,603" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M840,603 L918,603" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#ar)"/>
+  <path d="M1110,603 L1168,603" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#ar)"/>
+
+  <polygon points="945,470 1130,470 1108,516 923,516" fill="#fbeee9" stroke="#c0492f" stroke-width="1.8"/>
+  <text x="1027" y="491" font-size="13.5" font-weight="700" fill="#c0492f" text-anchor="middle">GISTDA satellite truth</text>
+  <text x="1027" y="508" font-size="11.5" fill="#a5583f" text-anchor="middle">independent of model = judge</text>
+  <path d="M1015,516 L1015,558" fill="none" stroke="#c0492f" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="335" y="700" width="190" height="66" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <text x="430" y="728" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Validate flow direction</text>
+  <text x="430" y="746" font-size="11.5" fill="#8a6d3b" text-anchor="middle">DEM validation · 4 checks</text>
+  <path d="M430,700 L430,648" fill="none" stroke="#8a6d3b" stroke-width="1.8" marker-end="url(#ar)"/>
+
+  <polygon points="1180,700 1400,700 1378,772 1158,772" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.8"/>
+  <text x="1279" y="728" font-size="14" font-weight="700" fill="#8a6d3b" text-anchor="middle">Extension</text>
+  <text x="1279" y="748" font-size="11.5" fill="#9a7a3f" text-anchor="middle">Early Warning / Risk</text>
+  <text x="1279" y="764" font-size="10.5" fill="#a58a5a" text-anchor="middle">prob · lead-time · Hazard×Exp×Vuln</text>
+  <path d="M1288,646 L1288,698" fill="none" stroke="#b8801f" stroke-width="1.8" marker-end="url(#ar)"/>
+
+  <text x="60" y="820" font-size="13.5" fill="#6a5a42" font-style="italic">We take the causal chain in band ①, build it as a graph, let 3 systems walk it on the same task — judged by satellite truth the model never saw.</text>
+
+  <g transform="translate(60,860)">
+    <text x="0" y="0" font-size="12.5" font-weight="700" fill="#3a2f22">Legend:</text>
+    <circle cx="80" cy="-4" r="9" fill="#fbf6ec" stroke="#2f6b8a" stroke-width="2"/>
+    <text x="97" y="0" font-size="12.5" fill="#6a5a42">chain node</text>
+    <rect x="200" y="-13" width="26" height="18" rx="4" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6"/>
+    <text x="234" y="0" font-size="12.5" fill="#6a5a42">system step</text>
+    <rect x="355" y="-13" width="26" height="18" rx="4" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2.4"/>
+    <text x="389" y="0" font-size="12.5" fill="#6a5a42">our contribution</text>
+    <rect x="540" y="-13" width="26" height="18" rx="4" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6" stroke-dasharray="4 2"/>
+    <text x="574" y="0" font-size="12.5" fill="#6a5a42">independent validation</text>
+    <polygon points="745,-13 783,-13 777,5 739,5" fill="#f3ece0" stroke="#8a6d3b" stroke-width="1.6"/>
+    <text x="791" y="0" font-size="12.5" fill="#6a5a42">data in / out</text>
+  </g>
+</svg>
