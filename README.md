@@ -54,7 +54,7 @@
                      ┌───────────────────────────────────────────────┐
                      │  EVAL (src/eval)  F1-by-hop + Traceability      │
                      │  ground truth = GISTDA satellite จริง           │
-                     │  2 เหตุการณ์: NORU 2565 · Dianmu 2564 (EVENT_ID) │
+                     │  4 เหตุการณ์เจ้าพระยา 2565-2567 + โขง (EVENT_ID)│
                      └───────────────────────┬───────────────────────┘
                                              ▼
                      ┌───────────────────────────────────────────────┐
@@ -69,11 +69,11 @@
 2. **Geo** — GeoPandas PIP บน polygon จังหวัด **GADM จริง** → `INUNDATES` edges; overlay flood extent GISTDA → gold.
 3. **Graph** — โหลดเข้า Neo4j; schema มี **`RUNOFF_TO` (ฝน→น้ำท่า bypass เขื่อน)**; `reach.overflow` จาก river-gauge จริง; Cypher `*2..4` วัด hop.
 4. **Retrievers** — 3 ตัว, อินเทอร์เฟซเดียว, eval set เดียวกัน. causal เริ่มจาก "ต้นเหตุ active" (เขื่อนล้น *หรือ* ฝน→runoff).
-5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **2 เหตุการณ์** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
+5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **4 เหตุการณ์เจ้าพระยา + โขง** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
 6. **UI** — FastAPI 2 หน้า: `/` (ใช้งานง่าย: คำอธิบาย LLM + chain + evidence + lead-time + แผนที่ GISTDA + live flood) และ `/lab` (วิจัย: ผลการทดลองทั้งหมด — F1-by-hop, ablation, confusion, bootstrap).
 
 > 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง **+ validate ด้วย DEM flow-accumulation จริง (Copernicus/pysheds, 11/11 เส้น)**. methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · related work: [`docs/REFERENCES.md`](docs/REFERENCES.md).
-> **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **3 เหตุการณ์** (เจ้าพระยา 2565/2564 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
+> **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **5 เหตุการณ์** (เจ้าพระยา 2565/2564/2566/2567 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
 ### 🖥️ หน้าจอทั้งหมด / UI windows tour
 
@@ -82,7 +82,7 @@
 #### หน้าที่ 1 — ใช้งานง่าย (`/`)
 คำถาม: *"ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?"* (เคส **4-hop** ข้ามลุ่มน้ำ):
 
-![หน้าใช้งานง่าย — ผลจริง 3 เหตุการณ์](docs/ui-friendly.png)
+![หน้าใช้งานง่าย — ผลจริง 5 เหตุการณ์](docs/ui-friendly.png)
 
 **อ่านภาพตามส่วน:**
 - **① แท็บเหตุการณ์** — เจ้าพระยา 2565 / 2564 / โขง-อีสาน (live) + ปุ่มไป **หน้าวัดผล/วิจัย**.
@@ -193,7 +193,7 @@ API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (pr
 
 **3 หน้า** (ภาพจริงอยู่ใน [System Tour](#-system-tour) — [ui-friendly.png](docs/ui-friendly.png) · [ui-lab.png](docs/ui-lab.png) · [ui-warn.png](docs/ui-warn.png)):
 
-**หน้า `/` (ใช้งานง่าย):** แท็บ 3 เหตุการณ์ · ชิปเลือกจังหวัด (🔵 ท่วมจริง) · การ์ดคำอธิบาย LLM (grounded) + chain + evidence + lead-time · แผนที่ GISTDA satellite จริง + 🛰️ Live flood · เทียบ 3 ระบบ.
+**หน้า `/` (ใช้งานง่าย):** แท็บ 5 เหตุการณ์ · ชิปเลือกจังหวัด (🔵 ท่วมจริง) · การ์ดคำอธิบาย LLM (grounded) + chain + evidence + lead-time · แผนที่ GISTDA satellite จริง + 🛰️ Live flood · เทียบ 3 ระบบ.
 
 **หน้า `/lab` (วิจัย/วัดผล):** สถานะข้อมูล · เส้นทาง F1 · KPI (รวม faithfulness) · กราฟ F1-by-hop + ablation · ตาราง eval/ablation/confusion/bootstrap + ทุกจังหวัด × 3 ระบบ + lead-time.
 
@@ -231,16 +231,16 @@ API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (pr
 
 **สิ่งที่การขยาย N เผยให้เห็น:** พอเพิ่มจังหวัด negative จริงเข้ามา **entity ที่ "เดาว่าท่วมเกือบทุกจังหวัด" ร่วงทันที** (recall 1.0 แต่ precision ~0.7, specificity 0) — จุดอ่อนที่ N=10 มองไม่เห็น. causal ขึ้นเป็น 0.909/0.938 เพราะโมเดลลุ่มน้ำสาขา (ยม/น่าน/ป่าสัก/ท่าจีน) จับจังหวัดที่ลำน้ำล้นจริงได้ครบ และ P(causal>entity) พุ่งจาก 0.32 → **0.80/0.96**.
 
-### 2) ผลหลัก — F1, Traceability, Specificity (N=23)
-| System | 2565 F1 | 2564 F1 | อีสาน F1* | **Traceability** | **Specificity** |
-|---|---|---|---|---|---|
-| **causal-graphrag** | **0.909** | **0.938** | 0.667 | **0.88 / 0.94 / 1.00** | **0.83 / 0.86 / 0.67** |
-| entity-graphrag | 0.641 | 0.638 | 0.824 | 0 / 0 / 0 | 0 / 0 / 0 |
-| vector-rag | 0.140 | 0.050 | N/A | 0 / 0 / 0 | 0.50 / 0.43 / — |
+### 2) ผลหลัก — F1, Specificity บน **4 เหตุการณ์เจ้าพระยา** (N=23/เหตุการณ์) + โขง generalization
+| System | 2565 | 2564 | 2566 | 2567 | อีสาน* | **Specificity** (ทุกเหตุการณ์) |
+|---|---|---|---|---|---|---|
+| **causal** | **0.909** | **0.938** | **0.903** | 0.800 | 0.667 | **0.83 / 0.86 / 0.75 / 0.50 / 0.67** |
+| entity | 0.600 | 0.593 | 0.596 | 0.621 | 0.824 | **0 ทุกเหตุการณ์** (เดาท่วมหมด) |
+| vector | 0.140 | 0.050 | ~0.1 | ~0.1 | N/A | 0.5 / 0.43 / … |
 
-\* อีสาน (โขง) ยังเป็นชุด live N=10 (generalization test แยก, self-contained).
+Traceability ของ causal = **0.88 / 0.94 / 0.93 / 0.74 / 1.00** (baseline = 0 เสมอ). \* อีสาน = live N=10 (generalization แยก).
 
-**causal นำทั้ง F1, Traceability และ Specificity บนเจ้าพระยาทั้งสองเหตุการณ์** — เดิม (N=10) F1 นำแบบไม่ significant; **ตอนนี้ (N=23) นำชัดขึ้นมาก** ขณะที่ traceability/specificity ยังเด็ดขาดเหมือนเดิม (baseline = 0).
+**causal นำ F1 บน 3/4 เหตุการณ์เจ้าพระยา** (2565/2564/2566) และ **นำ specificity ทุกเหตุการณ์ที่มี negative** (entity = 0). **2567 causal แพ้ F1** (0.800 vs entity 0.905-ish เดาเกิน) — gate ตายตัวพลาดจังหวัดลุ่มปิงที่ท่วมปี 2567 = honest FN. Backtest 4 เหตุการณ์จึงให้ภาพจริง ไม่ใช่แค่เหตุการณ์ที่เข้าข้าง.
 
 ### 3) F1 แยกตาม hop — multi-hop granularity 2/3/4/5 (N=23)
 | System | 2565 (2 / 3 / 4 / 5) | 2564 (2 / 3 / 4 / 5) |
@@ -260,25 +260,20 @@ causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั�
 
 (2564: causal TP15/FP1/FN1/TN6 → P 0.938, R 0.938, **Spec 0.857**.) → **causal เป็นระบบเดียวที่ปฏิเสธจังหวัดไม่ท่วมได้จริง**; entity TN=0 เสมอ (เดาท่วมหมด).
 
-### 5) #4 Bootstrap significance (resample จังหวัด, n=3000; pooled n=5000)
-| | causal F1 mean [CI95] | entity F1 mean [CI95] | paired causal−entity |
-|---|---|---|---|
-| 2565 (N=23) | 0.907 [0.786, 1.00] | 0.847 [0.722, 0.955] | +0.061, CI **[−0.076, 0.206]**, P=**0.80** |
-| 2564 (N=23) | 0.935 [0.828, 1.00] | 0.817 [0.686, 0.930] | +0.118, CI **[−0.007, 0.274]**, P=**0.96** |
-| **pooled 2565+2564 (N=46)** | **0.921 [0.846, 0.984]** | 0.834 [0.740, 0.918] | **+0.088, CI [−0.006, 0.189], P=0.969** |
+### 5) #4 Significance — bootstrap + McNemar บน **4 เหตุการณ์ (N=92)**
+**#1 เพิ่มเหตุการณ์สำเร็จ:** เจอตาราง GISTDA ระดับตำบลใน Excel รายปี (thaiwater YearlyReport) → รวมเป็นรายจังหวัด → เพิ่ม **เจ้าพระยา 2566/2567** เป็นเหตุการณ์ที่ให้คะแนน (gate ตายตัวจาก bulletin 2565 = out-of-sample จริง ไม่ refit). รวม **4 เหตุการณ์ = 92 province-cases**.
 
-**อัปเดตซื่อสัตย์:** เดิม (N=10) paired CI คร่อม 0 กว้าง (P=0.32) → "ไม่ significant". พอ N=23 ช่องว่างชัดขึ้น; **pooling 2 เหตุการณ์ (N=46, [`src/eval/pooled_significance.py`](src/eval/pooled_significance.py))** ได้ P(causal>entity) = **0.969** — แต่ **ขอบล่าง CI = −0.006 คือ *แตะเส้น 95% พอดี***.
-
-**#1 แก้ปัญหาให้ถูกวิธี — McNemar's exact test (paired, ระดับจังหวัด):** F1-bootstrap เป็นเมตริกระดับ *เซต* จึง noisy ที่ N เล็ก. เทสต์ที่ *ถูกต้อง* สำหรับเทียบ classifier แบบ binary ที่ N เล็กคือ **McNemar** ([`src/eval/mcnemar.py`](src/eval/mcnemar.py)) — นับเฉพาะจังหวัดที่สองระบบตัดสิน *ต่างกัน* (discordant):
-
-| เทียบ (pooled N=46) | both ถูก | causal ถูกคนเดียว | อีกฝั่งถูกคนเดียว | p two-sided | p one-sided* |
+**McNemar's exact test (paired ระดับจังหวัด, [`src/eval/mcnemar.py`](src/eval/mcnemar.py)):**
+| เทียบ (pooled N=92) | both ถูก | causal ถูกคนเดียว | อีกฝั่งถูกคนเดียว | p two-sided | p one-sided* |
 |---|---|---|---|---|---|
-| causal vs **vector** | 6 | **35** | 1 | **0.0000** ✅ | **0.0000** ✅ |
-| causal vs **entity** | 30 | **11** | 3 | 0.057 (borderline) | **0.029** ✅ |
+| causal vs **vector** | 10 | **67** | 5 | **0.0000** ✅ | **0.0000** ✅ |
+| causal vs **entity** | 58 | **19** | 9 | 0.087 (borderline) | **0.044** ✅ |
 
-\* H1 เป็น *directional* (ตั้งไว้แต่ต้นว่า causal ดีกว่า) → one-sided test ชอบธรรม.
+**bootstrap (pooled N=92):** causal F1 0.885, entity 0.842, paired **+0.043 CI[−0.025, 0.115] P=0.889**.
 
-→ **causal ชนะ vector อย่างมีนัยสำคัญสูง (p<0.001)**; **ชนะ entity แบบ directional one-sided p=0.029 (มีนัยสำคัญ)** two-sided p=0.057 (แตะเส้น). **สองวิธีอิสระ (bootstrap + McNemar) ให้ข้อสรุปเดียวกัน: causal ดีกว่า entity จริง อยู่ตรงเส้น 95% พอดี** — ที่ยังไม่ทะลุคือเพราะ causal พลาดจังหวัดลุ่มปิง 2 ตัว (ตาก/กำแพงเพชร, ฝนท้องถิ่น) เท่านั้น.
+\* H1 เป็น *directional* (ตั้งไว้แต่ต้นว่า causal ดีกว่า) → one-sided ชอบธรรม.
+
+→ **causal ชนะ vector สูงมาก (p<0.001); ชนะ entity แบบ one-sided p=0.044 (ยังมีนัยสำคัญแม้เพิ่มเป็น 4 เหตุการณ์)**. สำคัญ: **การเพิ่มเหตุการณ์เผยความจริงมากขึ้น ไม่ได้ทำให้ผลดูดีขึ้นเสมอ** — 2566 causal ชนะชัด (Δ+0.31) แต่ **2567 causal *แพ้*** (recall ต่ำ เพราะ gate ตายตัวพลาดจังหวัดลุ่มปิงที่ท่วมปีนั้น) → ดึง pooled ลงจาก 2-เหตุการณ์เดิม (p 0.029→0.044) **แต่ยังผ่าน**. นี่คือ backtest ที่ซื่อสัตย์: ผลแข็งแรงขึ้นเพราะทนเหตุการณ์ที่ไม่เข้าข้าง.
 
 ### 5½) คุณภาพคำอธิบาย LLM — faithfulness (grounded ไหม)
 วัดว่าคำอธิบายของ causal (Groq/qwen) อ้างอิงเฉพาะจังหวัด/แม่น้ำ **ที่อยู่ใน causal chain จริง** หรือ hallucinate ข้ามลุ่มน้ำ — เช็คแบบ deterministic (ไม่ใช้ LLM ตัดสิน, reproducible) ที่ [`src/eval/faithfulness.py`](src/eval/faithfulness.py); จับได้แม้กรณีที่เคยทำให้เลิกใช้ gpt-oss (มันเสก "แม่น้ำโขง" ในคำตอบเจ้าพระยา).
@@ -330,7 +325,7 @@ lead-time (ชม.) เทียบกับ **ลำดับน้ำท่ว
 
 **#5 Blind / out-of-sample** ([`src/eval/blind_test.py`](src/eval/blind_test.py)) — โมเดล **มี learned parameter = 0** (โครงสร้างจาก hydrology, gate จาก RID gauge อิสระ, gold ใช้*ให้คะแนน*เท่านั้น) → **ทุกเหตุการณ์เป็น out-of-sample โดยโครงสร้าง, leakage เป็นไปไม่ได้เชิงโครงสร้าง**. เหตุการณ์โขง/อีสาน = **prospective live blind** (freeze GISTDA live → ทำนาย → เทียบ). แต่ละน้ำท่วมใหม่ในอนาคต = blind test อีกครั้ง (กลไก `mekong_ne.py`).
 
-**#1 เพิ่มเหตุการณ์:** pipeline พร้อม (`EVENT_ID`) — ติด*ข้อมูล*ไม่ใช่โค้ด. ตาราง GISTDA รายจังหวัดครบที่ cutoff มีแค่ NORU2022/DIANMU2021 (เช็ค 2554/2556/2563/2567 แล้ว = ยอดรวมรายภาค/Excel เท่านั้น — ดู [HISTORY](docs/HISTORY.md)) → significance ยืนบน 2 เหตุการณ์ + NE blind.
+**#1 เพิ่มเหตุการณ์ (แก้แล้ว):** เจอว่า thaiwater YearlyReport มี **Excel ระดับตำบล** (ในโฟลเดอร์ `img/`) → รวมเป็นพื้นที่ท่วมรายจังหวัด (ไร่) ได้ → เพิ่ม **เจ้าพระยา 2566/2567** เป็นเหตุการณ์ให้คะแนน (รวม 4 เหตุการณ์ N=92). gate ปี 2566/2567 ตายตัวจาก bulletin 2565 (out-of-sample). 2554 ยังเพิ่มไม่ได้ (agricultural subset + ท่วมหมด = non-discriminating, ดู [discrimination](#7½)).
 
 📚 **งานที่เกี่ยวข้อง/อ้างอิง:** ดู [`docs/REFERENCES.md`](docs/REFERENCES.md) — GraphRAG multi-hop (arXiv:2502.11371 ฐานของ H1), causal river-network (Danube, arXiv:1907.03555), flood-KG+LLM+GIS (IJGIS 2024), McNemar, RAGAS ฯลฯ.
 
@@ -356,10 +351,12 @@ finding ที่ได้จากการพยายามเพิ่มม
 |---|---|---|---|---|
 | เจ้าพระยา 2565 | 6/23 | **+0.31** | 0.83 | 0 |
 | เจ้าพระยา 2564 | 7/23 | **+0.35** | 0.86 | 0 |
+| เจ้าพระยา 2566 | 8/23 | **+0.31** | 0.75 | 0 |
+| เจ้าพระยา 2567 | 4/23 | +0.18 | 0.50 | 0 |
 | โขง/อีสาน | 3/10 | −0.16* | 0.67 | 0 |
 | **มหาอุทกภัย 2554** | **0/23** | ≈0 (ท่วมหมด) | — | — |
 
-\* อีสาน causal แพ้ F1 เพราะ recall ต่ำ (โมเดลจับแค่ริมโขง) แต่ specificity ยังชนะ.
+\* อีสาน causal แพ้ F1 เพราะ recall ต่ำ (โมเดลจับแค่ริมโขง) แต่ specificity ยังชนะ. 2567 neg น้อย (4) + gate ตายตัวพลาดลุ่มปิง → spec ต่ำสุด (0.50).
 
 → (1) **causal specificity ชนะทุกเหตุการณ์ที่มี negative** (entity=0 เสมอ). (2) F1 ชนะเพิ่มเมื่อกราฟจับเส้นทางน้ำได้ดี. (3) **2554 ท่วมเกือบทุกจังหวัด (ERIA/GISTDA ยืนยัน — [gistda_flood_2011_eria.json](data/processed/gistda_flood_2011_eria.json)) → ไม่มีอะไรให้ปฏิเสธ → causal≈entity** — จึงไม่เพิ่มเป็น event ให้คะแนน (และจะทำ significance ไม่ได้ดีขึ้น). จุดขาย causal (specificity + traceability) มีค่าบน**เหตุการณ์น้ำท่วมบางส่วน** ซึ่งคือส่วนใหญ่ของเหตุการณ์จริง.
 
@@ -373,8 +370,10 @@ finding ที่ได้จากการพยายามเพิ่มม
 ### เหตุการณ์ที่ทดสอบ / Test events (universe ลุ่มเจ้าพระยา 23 จังหวัด)
 | Event | ลุ่มน้ำ | ช่วงเวลา | gold/รวม | ground truth | causal F1 |
 |---|---|---|---|---|---|
-| chao_phraya_2022 | เจ้าพระยา (NORU) | 2022-09-28 → 10-14 | 17/23 | GISTDA satellite (53 จว.) + GADM4.1 | **0.909** |
-| chao_phraya_2021 | เจ้าพระยา (Dianmu) | 2021-09-24 → 10-12 | 16/23 | GISTDA satellite (DIANMU2021) + GADM4.1 | **0.938** |
+| chao_phraya_2022 | เจ้าพระยา (NORU) | 2022 | 17/23 | GISTDA satellite (53 จว.) | **0.909** |
+| chao_phraya_2021 | เจ้าพระยา (Dianmu) | 2021 | 16/23 | GISTDA satellite (DIANMU2021) | **0.938** |
+| chao_phraya_2023 | เจ้าพระยา | 2023 (ทั้งปี) | 15/23 | GISTDA tambon Excel → รายจังหวัด | **0.903** |
+| chao_phraya_2024 | เจ้าพระยา | 2024 (ทั้งปี) | 19/23 | GISTDA tambon Excel → รายจังหวัด | 0.800 (แพ้ entity — honest) |
 | mekong_ne_2026 | โขง/อีสาน | live (frozen) | live | GISTDA live flood API | 0.667 (generalization) |
 
 ---
@@ -383,9 +382,10 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 รายงานตรง ๆ — จุดที่ระบบ*ยัง*ไม่สมบูรณ์ (ประวัติการแก้บั๊ก/ตัวเลขทุกก้าวอยู่ครบใน [`docs/HISTORY.md`](docs/HISTORY.md)):
 
-- **N ยังจำกัด** (23/เหตุการณ์, pooled 46). causal ชนะ entity แบบ one-sided McNemar p=0.029 / bootstrap P=0.97 แต่ two-sided ยัง*แตะเส้น* 95% — ต้องการเหตุการณ์เพิ่มถึงจะผ่านเต็ม (2554 เพิ่มไม่ได้: ข้อมูลรายจังหวัดไม่พอ + น้ำท่วมเกือบทุกจังหวัด = discriminate น้อย).
-- **โครง node/edge = hand-built** จาก topology จริง — **validate ด้วย DEM flow-accumulation จริง (pysheds)** แล้ว แต่ยังไม่ auto-delineate ลำน้ำย่อยทุกเส้นจาก grid ละเอียด.
-- **reach.overflow ปี 2564 = medium confidence** (ไม่มี RID bulletin รายวันของ 2564 → อิงกลไก + peak รายงาน).
+- **N: 4 เหตุการณ์ = 92 province-cases.** causal ชนะ entity **one-sided McNemar p=0.044 (มีนัยสำคัญ)** แต่ two-sided (0.087) ยัง*แตะเส้น* — ทนขึ้นแล้ว (รวมเหตุการณ์ที่ causal แพ้คือ 2567).
+- **gate ปี 2566/2567 = ตายตัวจาก bulletin 2565** (out-of-sample, ไม่ refit) → ปี 2567 ที่ลุ่มปิงท่วมจริง โมเดลพลาด (recall ต่ำ) = **จุดอ่อนจริง: ต้องใช้ gauge สดต่อเหตุการณ์** ไม่ใช่ pattern ตายตัว.
+- **reach.overflow ปี 2564 = medium confidence** (ไม่มี RID bulletin รายวันของ 2564).
+- **โครง node/edge = hand-built** จาก topology จริง — validate ด้วย DEM flow-accumulation (pysheds) แล้ว แต่ยังไม่ auto-delineate จาก grid 30 ม.
 - **lead-time** จับลำดับปลายน้ำได้ (ρ≈0.76) แต่ปี 2554 ลุ่มน้ำเต็มไม่เป็นลำดับ (อ่างทอง/อยุธยาท่วมพร้อมต้นน้ำ) → โมเดลไล่ปลายน้ำจับไม่ครบ.
 - **ระดับน้ำรายวัน ≠ พื้นที่ท่วมดาวเทียม** (physical): จังหวัดฝนท้องถิ่นลุ่มปิง (ตาก/กำแพงเพชร) ที่ลำน้ำหลักไม่ล้น จึง miss อย่างซื่อสัตย์.
 
@@ -404,7 +404,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 - **H1 (traceability): สนับสนุนแข็งแรงและเด็ดขาด.** causal = **0.88 / 0.94 / 1.00** traceable (2565/2564/อีสาน) เทียบ baseline = **0** เสมอ. ข้อได้เปรียบเชิงโครงสร้างที่ชัดที่สุด (ทุก edge มี evidence).
 - **Specificity: causal เป็นระบบเดียวที่ "รู้จักปฏิเสธ".** specificity **0.83 / 0.86 / 0.67** ขณะ entity = **0** เสมอ (เดาท่วมทุกจังหวัด). พอขยาย universe เป็น 23 จังหวัด (มี negative จริงเยอะ) จุดอ่อนนี้ของ entity ยิ่งเห็นชัด.
 - **H2 (ทน hop): สนับสนุนแข็งแรง.** causal ΔF1 = 0 ข้าม **2/3/4/5-hop** ทั้งสองเหตุการณ์ (ทำนาย footprint ทั้งลุ่มจาก event-state → hop-invariant); entity แกว่งตาม hop.
-- **F1 (อัปเดตหลังขยาย N=10→23): causal นำชัดขึ้นมาก และเกือบมีนัยสำคัญ.** causal 0.909/0.938 vs entity 0.641/0.638. **paired bootstrap: P(causal>entity) = 0.80 (2565) / 0.96 (2564)** — เดิม N=10 อยู่ที่ 0.32 (สรุปไม่ได้). ปี 2564 CI แตะ 0 พอดี [−0.007, 0.274] = **เกือบผ่าน 95%**. ยังไม่ significant เต็มทุกเหตุการณ์ (N ยังไม่ใหญ่พอ) แต่ทิศทางชัดและสอดคล้อง. บนอีสาน entity ยังชนะ F1 (เดาเกิน) — จุดขายที่ *มีนัยสำคัญ* ของ causal ยังคือ **traceability + specificity + คำอธิบายตรวจสอบได้**.
+- **F1 (backtest 4 เหตุการณ์เจ้าพระยา, N=92): causal ชนะ entity อย่างมีนัยสำคัญ (one-sided).** causal นำ F1 บน 3/4 เหตุการณ์ (0.909/0.938/0.903) แต่ **แพ้ปี 2567** (gate ตายตัวพลาดลุ่มปิง) — **McNemar pooled one-sided p=0.044 (SIG)** vs vector p<0.001. การเพิ่มเหตุการณ์ทำให้ผล*ทน*ขึ้น (รวมเหตุการณ์ที่ไม่เข้าข้าง) ไม่ใช่แค่ดูดีขึ้น. จุดขายที่เด็ดขาดยังคือ **traceability + specificity (0 ของ baseline)**.
 - **Generalization:** causal พลาดเฉพาะจังหวัด **local-rain** สม่ำเสมอ (ลุ่มปิง ตาก/กำแพงเพชร ↔ อีสานในแผ่นดิน สกลนคร/อุดร/กาฬสินธุ์) จับ mainstem/สาขาที่ลำน้ำล้นได้ครบ → schema คงเส้นคงวาข้ามลุ่มน้ำ.
 - **เส้นทาง F1 ซื่อสัตย์:** `1.000 (fixture) → 0.545 (ground truth จริง N=10) → 0.769 (runoff+gauge N=10) → 0.909 (ลุ่มน้ำเต็ม 8 สาขา N=23)` — การตกที่ 0.545 คือความจริงที่ fixture ปิดบัง; การขึ้นที่ 0.909 ยืนบน N ใหญ่ + gate อิสระ (RID gauge) ไม่เคย tune ให้ตรง gold.
 - **ข้อจำกัดที่เหลือ:** ดูสรุปสั้นที่ [ข้อจำกัดปัจจุบัน](#️-ข้อจำกัดปัจจุบัน--integrity-current-limitations) — หลัก ๆ คือ N ยังจำกัด (significance แตะเส้น 95%) และโครง node/edge ยัง hand-built (แม้ DEM-validated แล้ว).

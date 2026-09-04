@@ -1,40 +1,42 @@
 {
-  "n_cases": 46,
+  "n_cases": 92,
   "events": [
     "2022",
-    "2021"
+    "2021",
+    "2024",
+    "2023"
   ],
   "bootstrap_n": 5000,
   "systems": {
     "causal-graphrag": {
-      "f1_mean": 0.921,
+      "f1_mean": 0.885,
       "ci95": [
-        0.846,
-        0.984
+        0.823,
+        0.94
       ]
     },
     "entity-graphrag": {
-      "f1_mean": 0.834,
+      "f1_mean": 0.842,
       "ci95": [
-        0.74,
-        0.918
+        0.781,
+        0.898
       ]
     },
     "vector-rag": {
-      "f1_mean": 0.048,
+      "f1_mean": 0.071,
       "ci95": [
         0.0,
-        0.15
+        0.156
       ]
     }
   },
   "paired_causal_vs_entity": {
-    "mean_diff": 0.088,
+    "mean_diff": 0.043,
     "ci95": [
-      -0.006,
-      0.189
+      -0.025,
+      0.115
     ],
-    "prob_causal_better": 0.969,
+    "prob_causal_better": 0.889,
     "significant_95": false
   }
 }

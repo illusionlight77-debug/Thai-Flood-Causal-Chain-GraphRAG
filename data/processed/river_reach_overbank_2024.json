@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "description": "Sub-basin over-bank gate for 2024 — held FIXED from the high-confidence 2022 RID SWOC pattern, NOT refit to 2024 outcomes. This is a deliberate out-of-sample test (#5 blind): the gate is not tuned per event, so where 2024's actual overflow differed from the 2022 pattern, causal produces honest FN/FP. Independent of the GISTDA satellite gold either way.",
+    "source": "fixed = river_reach_overbank_2022.json pattern (RID SWOC 2022)",
+    "confidence": "fixed-pattern (out-of-sample, not refit)",
+    "retrieved_date": "2026-09-04"
+  },
+  "subbasin_overbank": {
+    "Ping":       {"overflow": false, "confidence": "fixed-2022"},
+    "Wang":       {"overflow": false, "confidence": "fixed-2022"},
+    "Yom":        {"overflow": true,  "confidence": "fixed-2022"},
+    "Nan":        {"overflow": true,  "confidence": "fixed-2022"},
+    "SakaeKrang": {"overflow": true,  "confidence": "fixed-2022"},
+    "ChaoPhraya": {"overflow": true,  "confidence": "fixed-2022"},
+    "ThaChin":    {"overflow": true,  "confidence": "fixed-2022"},
+    "Pasak":      {"overflow": true,  "confidence": "fixed-2022"}
+  }
+}

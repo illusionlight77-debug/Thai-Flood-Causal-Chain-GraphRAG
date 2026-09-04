@@ -1,0 +1,137 @@
+{
+  "event": "chao_phraya_2023",
+  "gold": [
+    "Ang Thong",
+    "Ayutthaya",
+    "Chai Nat",
+    "Lopburi",
+    "Nakhon Pathom",
+    "Nakhon Sawan",
+    "Phetchabun",
+    "Phichit",
+    "Phitsanulok",
+    "Saraburi",
+    "Sing Buri",
+    "Sukhothai",
+    "Suphan Buri",
+    "Tak",
+    "Uttaradit"
+  ],
+  "variants": {
+    "full (ครบทุกกลไก)": {
+      "f1": 0.903,
+      "n_pred": 16,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Lopburi",
+        "Nakhon Pathom",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Phetchabun",
+        "Phichit",
+        "Phitsanulok",
+        "Saraburi",
+        "Sing Buri",
+        "Sukhothai",
+        "Suphan Buri",
+        "Uthai Thani",
+        "Uttaradit"
+      ]
+    },
+    "−runoff": {
+      "f1": 0.897,
+      "n_pred": 14,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Lopburi",
+        "Nakhon Pathom",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Phetchabun",
+        "Phichit",
+        "Phitsanulok",
+        "Saraburi",
+        "Sing Buri",
+        "Suphan Buri",
+        "Uttaradit"
+      ]
+    },
+    "−overflow gate": {
+      "f1": 0.833,
+      "n_pred": 21,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Chiang Mai",
+        "Kamphaeng Phet",
+        "Lampang",
+        "Lamphun",
+        "Lopburi",
+        "Nakhon Pathom",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Phetchabun",
+        "Phichit",
+        "Phitsanulok",
+        "Saraburi",
+        "Sing Buri",
+        "Sukhothai",
+        "Suphan Buri",
+        "Tak",
+        "Uthai Thani",
+        "Uttaradit"
+      ]
+    },
+    "−protection": {
+      "f1": 0.848,
+      "n_pred": 18,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Bangkok",
+        "Chai Nat",
+        "Lopburi",
+        "Nakhon Pathom",
+        "Nakhon Sawan",
+        "Nonthaburi",
+        "Pathum Thani",
+        "Phetchabun",
+        "Phichit",
+        "Phitsanulok",
+        "Saraburi",
+        "Sing Buri",
+        "Sukhothai",
+        "Suphan Buri",
+        "Uthai Thani",
+        "Uttaradit"
+      ]
+    },
+    "−direction (undirected)": {
+      "f1": 0.903,
+      "n_pred": 16,
+      "pred": [
+        "Ang Thong",
+        "Ayutthaya",
+        "Chai Nat",
+        "Lopburi",
+        "Nakhon Pathom",
+        "Nakhon Sawan",
+        "Pathum Thani",
+        "Phetchabun",
+        "Phichit",
+        "Phitsanulok",
+        "Saraburi",
+        "Sing Buri",
+        "Sukhothai",
+        "Suphan Buri",
+        "Uthai Thani",
+        "Uttaradit"
+      ]
+    }
+  }
+}

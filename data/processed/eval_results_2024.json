@@ -1,0 +1,41 @@
+{
+  "causal-graphrag": {
+    "f1_by_hop": {
+      "2": 0.8,
+      "3": 0.8,
+      "4": 0.8,
+      "5": 0.8,
+      "6": 0.0,
+      "7": 0.0
+    },
+    "f1_overall": 0.8,
+    "traceability": 0.7368,
+    "avg_latency_ms": 9.66
+  },
+  "entity-graphrag": {
+    "f1_by_hop": {
+      "2": 0.6162,
+      "3": 0.5761,
+      "4": 0.8571,
+      "5": 0.48,
+      "6": 0.0,
+      "7": 0.0
+    },
+    "f1_overall": 0.6209,
+    "traceability": 0.0,
+    "avg_latency_ms": 24.84
+  },
+  "vector-rag": {
+    "f1_by_hop": {
+      "2": 0.1005,
+      "3": 0.1476,
+      "4": 0.1779,
+      "5": 0.1685,
+      "6": 0.0,
+      "7": 0.0
+    },
+    "f1_overall": 0.1233,
+    "traceability": 0.0,
+    "avg_latency_ms": 1.21
+  }
+}

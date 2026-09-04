@@ -23,16 +23,38 @@
         "p_one_sided": 0.0625,
         "significant_two_sided_0.05": false,
         "significant_one_sided_0.05": false
+      },
+      "2024": {
+        "n": 23,
+        "both_correct": 14,
+        "both_wrong": 2,
+        "causal_only_correct": 2,
+        "other_only_correct": 5,
+        "p_two_sided": 0.4531,
+        "p_one_sided": 0.9375,
+        "significant_two_sided_0.05": false,
+        "significant_one_sided_0.05": false
+      },
+      "2023": {
+        "n": 23,
+        "both_correct": 14,
+        "both_wrong": 2,
+        "causal_only_correct": 6,
+        "other_only_correct": 1,
+        "p_two_sided": 0.125,
+        "p_one_sided": 0.0625,
+        "significant_two_sided_0.05": false,
+        "significant_one_sided_0.05": false
       }
     },
     "pooled": {
-      "n": 46,
-      "both_correct": 30,
-      "both_wrong": 2,
-      "causal_only_correct": 11,
-      "other_only_correct": 3,
-      "p_two_sided": 0.0574,
-      "p_one_sided": 0.0287,
+      "n": 92,
+      "both_correct": 58,
+      "both_wrong": 6,
+      "causal_only_correct": 19,
+      "other_only_correct": 9,
+      "p_two_sided": 0.0872,
+      "p_one_sided": 0.0436,
       "significant_two_sided_0.05": false,
       "significant_one_sided_0.05": true
     }
@@ -61,14 +83,36 @@
         "p_one_sided": 0.0,
         "significant_two_sided_0.05": true,
         "significant_one_sided_0.05": true
+      },
+      "2024": {
+        "n": 23,
+        "both_correct": 0,
+        "both_wrong": 5,
+        "causal_only_correct": 16,
+        "other_only_correct": 2,
+        "p_two_sided": 0.0013,
+        "p_one_sided": 0.0007,
+        "significant_two_sided_0.05": true,
+        "significant_one_sided_0.05": true
+      },
+      "2023": {
+        "n": 23,
+        "both_correct": 4,
+        "both_wrong": 1,
+        "causal_only_correct": 16,
+        "other_only_correct": 2,
+        "p_two_sided": 0.0013,
+        "p_one_sided": 0.0007,
+        "significant_two_sided_0.05": true,
+        "significant_one_sided_0.05": true
       }
     },
     "pooled": {
-      "n": 46,
-      "both_correct": 6,
-      "both_wrong": 4,
-      "causal_only_correct": 35,
-      "other_only_correct": 1,
+      "n": 92,
+      "both_correct": 10,
+      "both_wrong": 10,
+      "causal_only_correct": 67,
+      "other_only_correct": 5,
       "p_two_sided": 0.0,
       "p_one_sided": 0.0,
       "significant_two_sided_0.05": true,

@@ -23,6 +23,28 @@
       "entity_spec": 0.0
     },
     {
+      "event": "เจ้าพระยา 2567",
+      "n_total": 23,
+      "n_neg": 4,
+      "neg_frac": 0.17,
+      "causal_f1": 0.8,
+      "entity_f1": 0.6209,
+      "causal_minus_entity": 0.179,
+      "causal_spec": 0.5,
+      "entity_spec": 0.0
+    },
+    {
+      "event": "เจ้าพระยา 2566",
+      "n_total": 23,
+      "n_neg": 8,
+      "neg_frac": 0.35,
+      "causal_f1": 0.9032,
+      "entity_f1": 0.5961,
+      "causal_minus_entity": 0.307,
+      "causal_spec": 0.75,
+      "entity_spec": 0.0
+    },
+    {
       "event": "โขง/อีสาน",
       "n_total": 10,
       "n_neg": 3,
@@ -46,5 +68,5 @@
       "note": "GISTDA (ERIA) แสดงทุกจังหวัดในลุ่มท่วม > cutoff → 0 negative → predict-all เกือบถูก → causal≈entity (ไม่ discriminate)"
     }
   ],
-  "finding": "causal advantage (F1 และ specificity) ปรากฏบนเหตุการณ์ที่มี negative จริง (2565/2564 neg_frac 0.26–0.30). ยิ่ง negative เยอะ causal ยิ่งได้เปรียบเพราะ entity เดาท่วมหมด. เหตุการณ์ที่ท่วมเกือบทั้งลุ่ม (2554) causal≈entity — จุดขายของ causal คือ 'รู้จักปฏิเสธ' ซึ่งมีค่าเฉพาะเมื่อมีอะไรให้ปฏิเสธ."
+  "finding": "(1) causal SPECIFICITY ชนะ (0.67–0.86 vs entity 0) ทุกเหตุการณ์ที่มี negative จริง — entity เดาท่วมหมด specificity=0 เสมอ. (2) causal F1 ชนะเพิ่ม *เมื่อกราฟโมเดล เส้นทางน้ำได้ดี* (เจ้าพระยา 2565/2564: +0.31/+0.35) แต่แพ้เมื่อ recall ต่ำ (โขง/อีสาน โมเดลจับแค่ริมโขง พลาด inland → −0.16). (3) เหตุการณ์ที่ท่วมเกือบทั้งลุ่ม (2554, 0 negative) ไม่มีอะไรให้ปฏิเสธ → causal≈entity. สรุป: จุดขาย causal (specificity + traceability) มีค่าเฉพาะบนเหตุการณ์ discriminating — ซึ่งคือเหตุการณ์น้ำท่วมส่วนใหญ่จริง (บางส่วน ไม่ใช่ทั้งประเทศ)."
 }

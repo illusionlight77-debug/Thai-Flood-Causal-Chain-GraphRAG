@@ -19,9 +19,11 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 WEB = ROOT / "web"
 PROCESSED = settings.data_processed_dir
 
-EVENTS = [("2022", "เจ้าพระยา 2565 (พายุโนรู)"),
-          ("2021", "เจ้าพระยา 2564 (พายุเตี้ยนหมู่)"),
-          ("ne2026", "โขง/อีสาน (live GISTDA)")]
+EVENTS = [("2022", "เจ้าพระยา 2565 (โนรู)"),
+          ("2021", "เจ้าพระยา 2564 (เตี้ยนหมู่)"),
+          ("2024", "เจ้าพระยา 2567"),
+          ("2023", "เจ้าพระยา 2566"),
+          ("ne2026", "โขง/อีสาน (live)")]
 
 app = FastAPI(title="Thai Flood Causal-Chain GraphRAG")
 

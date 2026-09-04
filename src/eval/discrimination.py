@@ -19,7 +19,7 @@ from pathlib import Path
 from src.config import settings
 
 WEB = Path(__file__).resolve().parent.parent.parent / "web"
-EVENTS = [("2022", "เจ้าพระยา 2565"), ("2021", "เจ้าพระยา 2564"), ("ne2026", "โขง/อีสาน")]
+EVENTS = [("2022","เจ้าพระยา 2565"),("2021","เจ้าพระยา 2564"),("2024","เจ้าพระยา 2567"),("2023","เจ้าพระยา 2566"),("ne2026","โขง/อีสาน")]
 
 
 def run() -> dict:

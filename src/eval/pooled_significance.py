@@ -21,7 +21,7 @@ from pathlib import Path
 from src.config import settings
 
 WEB = Path(__file__).resolve().parent.parent.parent / "web"
-EVENTS = ["2022", "2021"]
+EVENTS = ["2022", "2021", "2024", "2023"]
 SYSTEMS = ["causal-graphrag", "entity-graphrag", "vector-rag"]
 
 

@@ -178,7 +178,7 @@ def warning_skill() -> dict:
     import json
     web = Path(__file__).resolve().parent.parent.parent / "web"
     out = {}
-    for y in ("2022", "2021"):
+    for y in ("2022", "2021", "2024", "2023"):
         f = web / f"ui_data_{y}.json"
         if not f.exists():
             continue

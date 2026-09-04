@@ -64,7 +64,7 @@ def build_year(year: str) -> dict:
 
 
 def main() -> None:
-    for year in ("2022", "2021"):
+    for year in ("2022", "2021", "2024", "2023"):
         out = build_year(year)
         p = PROC / f"ground_truth_{year}.json"
         p.write_text(json.dumps(out, ensure_ascii=False, indent=2), "utf-8")

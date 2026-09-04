@@ -5,7 +5,7 @@
     "source": "https://www.thaiwater.net/uploads/contents/current/2022/NORU2022/flood_area.html",
     "significance_cutoff_rai": 10000,
     "universe": "Chao Phraya basin (23 provinces)",
-    "generated": "2026-09-03T20:11:46",
+    "generated": "2026-09-04T10:34:20",
     "frozen_core10": "ground_truth_2022_core10_frozen.json"
   },
   "flooded_area_rai": {

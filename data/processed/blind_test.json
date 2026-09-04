@@ -19,6 +19,22 @@
       "specificity": 0.857,
       "traceability": 0.9375
     },
+    "2024": {
+      "label": "เจ้าพระยา 2567",
+      "f1": 0.8,
+      "POD": 0.737,
+      "FAR": 0.125,
+      "specificity": 0.5,
+      "traceability": 0.7368
+    },
+    "2023": {
+      "label": "เจ้าพระยา 2566",
+      "f1": 0.9032,
+      "POD": 0.933,
+      "FAR": 0.125,
+      "specificity": 0.75,
+      "traceability": 0.9333
+    },
     "ne2026": {
       "label": "โขง/อีสาน (live, prospective blind)",
       "f1": 0.667,
