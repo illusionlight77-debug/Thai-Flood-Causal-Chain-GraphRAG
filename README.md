@@ -108,7 +108,7 @@
 
 ![หน้าเตือนภัยล่วงหน้า](docs/ui-warn.png)
 
-ตัวอย่าง (สถานการณ์ NORU 2565): ล้น ยม/น่าน/ป่าสัก → เตือน สุโขทัย/พิจิตร/พิษณุโลก/ลพบุรี/เพชรบูรณ์ **ด่วนมาก (~24 ชม.)**, แล้ว อ่างทอง/อยุธยา **~42 ชม.**, กรุงเทพ-ปริมณฑล **~90 ชม.** — ลำดับตรงกับ timeline 2554 จริง (ρ≈0.76). API: `/api/early-warning?overflowing=Nan,Yom,Pasak`.
+แต่ละคำเตือนมี **โอกาสท่วม % (จาก precision จริง) · risk level (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence · ประชากรเสี่ยง** เรียงตาม risk (#4). ตัวอย่าง NORU 2565: นครสวรรค์ risk **สูงมาก** 94% → เพชรบูรณ์/พิษณุโลก **ด่วนมาก ~24h** → อยุธยา ~42h → กรุงเทพ-ปริมณฑล. ลำดับตรงกับ timeline 2554 (ρ≈0.76). API: `/api/early-warning`.
 
 > อีกหน้าต่างนอกแอป: **Neo4j Browser** `http://localhost:7476` (user `neo4j` / pass `floodgraph123`) —
 > รัน `MATCH p=(src {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|RUNOFF_TO|INUNDATES*2..4]->(:Province) RETURN p`
@@ -310,7 +310,27 @@ lead-time (ชม.) เทียบกับ **ลำดับน้ำท่ว
 | นครสวรรค์ ท่วมก่อนกรุงเทพ | ✔ (จริง +26 วัน) | ✔ |
 | ต้นน้ำ vs กรุงเทพ-ปริมณฑล (mean day) | 34.5 vs 52.7 | ✔ |
 
-**#3 ปรับ resolution แล้ว:** เพิ่มสถานีย่อยบนแกนเจ้าพระยา (ชัยนาท–สิงห์บุรี / อ่างทอง–อยุธยา / อยุธยา–กรุงเทพ) + โมเดลท่าจีนเป็น distributary ยาวช้า โดยตั้ง lag จาก **ระยะลำน้ำจริง/ความเร็วคลื่นน้ำ** (ไม่ใช่จากวันน้ำท่วม = ไม่ circular) → **Spearman ρ 0.02 → 0.76**. การทำนายจังหวัดที่ท่วม *ไม่เปลี่ยนเลย* (F1/confusion/significance เท่าเดิม) — เปลี่ยนแค่ resolution ของ lead-time. เศษที่เหลือ (อ่างทอง/อยุธยาท่วมพร้อมนครสวรรค์ปี 2554) เป็นการที่ลุ่มน้ำเต็มไม่เป็นลำดับ — โมเดลแบบไล่ปลายน้ำจับไม่ได้ (รายงานตรง ๆ).
+**ปรับ resolution:** เพิ่มสถานีย่อยบนแกนเจ้าพระยา (C.3/C.35/C.29) + โมเดลท่าจีนเป็น distributary ยาวช้า, lag จาก **ระยะลำน้ำจริง/ความเร็วคลื่นน้ำ** (ไม่ใช่จากวันน้ำท่วม) → **Spearman ρ 0.02 → 0.76** (การทำนายจังหวัดไม่เปลี่ยน).
+
+**#2 lead-time เป็นตัวเลขจริง** ([`src/eval/lead_validation.py`](src/eval/lead_validation.py)) — ตอบ "แจ้งเตือนแม่นแค่ไหน":
+| ด้าน | ค่า | อ่านว่า |
+|---|---|---|
+| **ลำดับ (timing order)** | calibrated **R²=0.73** | ✅ ลำดับแม่น |
+| MAE / RMSE (ดิบ) | 213h / 296h | ❌ magnitude ต่ำไป — 2554 คลื่นช้ากว่าโมเดล **~5.7×** (basin-fill ช้าผิดปกติ) |
+| lead adequacy | ≥24h: 75% · ≥48h: 62% · ≥72h: 50% | เตือนทันเวลาได้เกินครึ่ง |
+| **warning skill (POD/FAR/CSI)** | 2565: POD 0.88 · FAR **0.06** · CSI 0.83 · missed 0.12 | ✅ เตือนถูกแม่น พลาดน้อย |
+| | 2564: POD 0.94 · FAR **0.06** · CSI 0.88 · missed 0.06 | (นิยาม NOAA Forecast Verification Glossary) |
+
+→ **timing ลำดับดี (R²=0.73) + warning skill สูง (FAR 0.06)** แต่ตัวเลข *absolute* ยังต้อง calibrate ด้วย onset ของเหตุการณ์ปกติ (2554 เป็น outlier ที่ช้าผิดปกติ ~5.7×) — รายงานตรง ๆ.
+
+**#4 Probabilistic + risk layer** ([`src/eval/risk_warning.py`](src/eval/risk_warning.py), ในหน้า `/warn`) — ห่อคำเตือนด้วยตัวเลขที่มี paper หนุน (ไม่ได้สร้าง predictor ใหม่):
+- **โอกาสท่วม = precision ที่วัดได้จริง (0.94)** = calibrated probability (แนว EFAS, HESS 13:141 2009; NOAA verification glossary)
+- **ช่วงเวลา** = [คลื่นเร็ว, ×5.7 basin-fill] · **confidence** = จาก hop + gauge
+- **Risk = Hazard × Exposure × Vulnerability** (UNDRR/IPCC; flood risk-index 2021): hazard=prob, exposure=ประชากรจังหวัด (NSO census), vulnerability=ความถี่น้ำท่วมในอดีต → เรียงคำเตือนตาม risk
+
+**#5 Blind / out-of-sample** ([`src/eval/blind_test.py`](src/eval/blind_test.py)) — โมเดล **มี learned parameter = 0** (โครงสร้างจาก hydrology, gate จาก RID gauge อิสระ, gold ใช้*ให้คะแนน*เท่านั้น) → **ทุกเหตุการณ์เป็น out-of-sample โดยโครงสร้าง, leakage เป็นไปไม่ได้เชิงโครงสร้าง**. เหตุการณ์โขง/อีสาน = **prospective live blind** (freeze GISTDA live → ทำนาย → เทียบ). แต่ละน้ำท่วมใหม่ในอนาคต = blind test อีกครั้ง (กลไก `mekong_ne.py`).
+
+**#1 เพิ่มเหตุการณ์:** pipeline พร้อม (`EVENT_ID`) — ติด*ข้อมูล*ไม่ใช่โค้ด. ตาราง GISTDA รายจังหวัดครบที่ cutoff มีแค่ NORU2022/DIANMU2021 (เช็ค 2554/2556/2563/2567 แล้ว = ยอดรวมรายภาค/Excel เท่านั้น — ดู [HISTORY](docs/HISTORY.md)) → significance ยืนบน 2 เหตุการณ์ + NE blind.
 
 📚 **งานที่เกี่ยวข้อง/อ้างอิง:** ดู [`docs/REFERENCES.md`](docs/REFERENCES.md) — GraphRAG multi-hop (arXiv:2502.11371 ฐานของ H1), causal river-network (Danube, arXiv:1907.03555), flood-KG+LLM+GIS (IJGIS 2024), McNemar, RAGAS ฯลฯ.
 

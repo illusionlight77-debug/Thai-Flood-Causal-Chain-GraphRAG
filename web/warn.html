@@ -77,14 +77,24 @@ async function predict(){
   const w=d.warnings||[];
   document.getElementById("summary").textContent = ON.size? `${w.length} จังหวัดจะได้รับผลกระทบ` : "เลือกลุ่มน้ำที่ล้นก่อน";
   if(!ON.size){document.getElementById("warnings").innerHTML='<div class="text-slate-400 text-sm">— ยังไม่ได้เลือกลุ่มน้ำ —</div>';return;}
+  const RC={"สูงมาก":"#b91c1c","สูง":"#ea580c","ปานกลาง":"#ca8a04","ต่ำ":"#0369a1"};
   document.getElementById("warnings").innerHTML = w.length? w.map(x=>{
     const[col,lab]=urgency(x.lead_hours);
-    const days=x.lead_hours!=null?(x.lead_hours/24).toFixed(1):"?";
-    return `<div class="flex items-center gap-3 p-2 rounded-lg" style="background:${col}10">
-      <div class="chip text-white" style="background:${col}">${lab}</div>
-      <div class="font-bold text-lg" style="min-width:150px">${x.province_th||x.province}</div>
-      <div class="text-sm" style="color:${col}">อีก ~${x.lead_hours} ชม. (~${days} วัน)</div>
-      <div class="text-xs text-slate-400 truncate">${(x.chain||[]).join(" → ")}</div>
+    const rc=RC[x.risk_level]||"#64748b";
+    const win=x.lead_window_h||[x.lead_hours,x.lead_hours];
+    const prob=x.probability!=null?Math.round(x.probability*100):"?";
+    return `<div class="p-3 rounded-lg" style="background:${rc}0d;border-left:4px solid ${rc}">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="chip text-white" style="background:${col}">${lab}</div>
+        <div class="font-bold text-lg" style="min-width:140px">${x.province_th||x.province}</div>
+        <div class="chip text-white" style="background:${rc}">risk: ${x.risk_level}</div>
+        <div class="text-sm text-slate-600">โอกาสท่วม <b>${prob}%</b> · confidence ${x.confidence}</div>
+      </div>
+      <div class="flex items-center gap-4 mt-1 text-sm flex-wrap">
+        <div style="color:${col}">⏱️ คาดน้ำถึงใน <b>${win[0]}–${win[1]} ชม.</b> (~${(win[0]/24).toFixed(1)}–${(win[1]/24).toFixed(1)} วัน)</div>
+        <div class="text-xs text-slate-400">ประชากรเสี่ยง ~${x.exposure_pop_k||"?"}k · vuln ${x.vulnerability}</div>
+      </div>
+      <div class="text-xs text-slate-400 truncate mt-1">${(x.chain||[]).join(" → ")}</div>
     </div>`;}).join("") : '<div class="text-slate-400 text-sm">— ไม่มีจังหวัดปลายน้ำจากลุ่มที่เลือก —</div>';
 }
 renderSubs();predict();

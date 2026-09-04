@@ -1,0 +1,32 @@
+{
+  "learned_parameters": 0,
+  "leakage": "structurally impossible — gate (reach.overflow) from RID gauge, gold only scores",
+  "protocol": "leave-one-event-out ≡ every-event-out (no fit); NE = prospective live blind",
+  "held_out_metrics": {
+    "2022": {
+      "label": "เจ้าพระยา 2565",
+      "f1": 0.9091,
+      "POD": 0.882,
+      "FAR": 0.062,
+      "specificity": 0.833,
+      "traceability": 0.8824
+    },
+    "2021": {
+      "label": "เจ้าพระยา 2564",
+      "f1": 0.9375,
+      "POD": 0.938,
+      "FAR": 0.062,
+      "specificity": 0.857,
+      "traceability": 0.9375
+    },
+    "ne2026": {
+      "label": "โขง/อีสาน (live, prospective blind)",
+      "f1": 0.667,
+      "POD": 0.571,
+      "FAR": 0.2,
+      "specificity": 0.667,
+      "traceability": 1.0
+    }
+  },
+  "new_event_mechanism": "src/ingest/mekong_ne.py (freeze live GISTDA → scored event)"
+}

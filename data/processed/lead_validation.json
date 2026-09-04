@@ -55,5 +55,49 @@
       "model_orders_correctly": true
     }
   },
-  "note": "main-stem lead (hrs from Pak Nam Pho) vs observed 2011 arrival day. After #3 (finer main-stem reaches C.3/C.35/C.29 with real-distance lags + modeling Tha Chin as a slow ~325km distributary) rho rose from 0.02 to ~0.76 — the model now orders provincial arrival well. Lags are set from river distance/celerity, NOT from the flood dates (no circularity). The residual mismatch is real: in 2011 the central plain (Ang Thong/Ayutthaya) filled about the same time as the Nakhon Sawan breach, which a downstream-ordered model cannot capture."
+  "error_metrics": {
+    "mae_hours": 213.0,
+    "rmse_hours": 296.0,
+    "median_abs_error_hours": 192.0,
+    "calibrated_r2": 0.727,
+    "calibrated_resid_rmse_days": 6.01,
+    "implied_slowdown_x": 5.7,
+    "pct_lead_at_least": {
+      ">=24h": 75.0,
+      ">=48h": 62.5,
+      ">=72h": 50.0
+    },
+    "interpretation": "ลำดับแม่น (R2~0.58) แต่ 2554 คลื่นน้ำช้ากว่าโมเดล ~5.7x (โมเดล = คลื่นน้ำท่วมปกติ; 2554 = ลุ่มน้ำเต็มช้าผิดปกติ). MAE ดิบสูงเพราะ magnitude ยังไม่ calibrate; หลัง calibrate เชิงเส้น residual RMSE ต่ำลง. ตัวเลข absolute ต้องการ onset ของเหตุการณ์ *ปกติ* มา calibrate เพิ่ม (2554 เป็น outlier)."
+  },
+  "note": "main-stem lead (hrs from Pak Nam Pho) vs observed 2011 arrival day. After #3 (finer main-stem reaches C.3/C.35/C.29 with real-distance lags + modeling Tha Chin as a slow ~325km distributary) rho rose from 0.02 to ~0.76 — the model now orders provincial arrival well. Lags are set from river distance/celerity, NOT from the flood dates (no circularity). The residual mismatch is real: in 2011 the central plain (Ang Thong/Ayutthaya) filled about the same time as the Nakhon Sawan breach, which a downstream-ordered model cannot capture.",
+  "warning_skill": {
+    "2022": {
+      "causal-graphrag": {
+        "POD": 0.882,
+        "FAR": 0.062,
+        "CSI": 0.833,
+        "missed_rate": 0.118
+      },
+      "entity-graphrag": {
+        "POD": 1.0,
+        "FAR": 0.261,
+        "CSI": 0.739,
+        "missed_rate": 0.0
+      }
+    },
+    "2021": {
+      "causal-graphrag": {
+        "POD": 0.938,
+        "FAR": 0.062,
+        "CSI": 0.882,
+        "missed_rate": 0.062
+      },
+      "entity-graphrag": {
+        "POD": 1.0,
+        "FAR": 0.304,
+        "CSI": 0.696,
+        "missed_rate": 0.0
+      }
+    }
+  }
 }

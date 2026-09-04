@@ -69,6 +69,8 @@ def early_warning(overflowing: str = ""):
         out = [{"province": r["province"], "province_th": r["province_th"],
                 "lead_hours": int(r["lead_hours"]) if r["lead_hours"] is not None else None,
                 "chain": r["chain"]} for r in rows]
+        from src.eval.risk_warning import annotate  # #4 probability + risk
+        out = annotate(out)
         return {"available": True, "overflowing": subs, "subbasins": _SUBBASINS,
                 "warnings": out, "count": len(out)}
     except Exception as exc:  # noqa: BLE001

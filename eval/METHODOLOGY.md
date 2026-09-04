@@ -36,10 +36,19 @@ Measure whether a retriever that traverses a **real causal chain**
   requires the event to have real negatives; a near-universal flood (2011) is non-discriminating.
   Used to justify NOT adding 2011 as a scored event (would also break the total-flood-area
   metric and the 23-province universe — see the 2011 artifact's note).
-- **Lead-time validation** (`src/eval/lead_validation.py`) — the predicted main-stem lead is
-  checked against the observed 2011 mega-flood progression (documented timeline; used for
-  timing only, not scored). Reported with its honest limitation (province-level ρ≈0, coarse
-  2-station main stem) — never tuned to raise the correlation.
+- **Lead-time validation + warning skill** (`src/eval/lead_validation.py`) — predicted lead vs
+  the observed 2011 progression (timing only, not scored): Spearman ρ, calibrated R², raw
+  MAE/RMSE, lead adequacy, plus POD/FAR/CSI/missed-rate (NOAA glossary) from the scored-event
+  confusion. The raw magnitude error is reported honestly (2011 was a ~5.7× slow-fill outlier),
+  never tuned away.
+- **Probabilistic + risk layer** (`src/eval/risk_warning.py`) — warnings are wrapped with a
+  calibrated probability = the *measured* precision (not invented), a lead window, and
+  Risk = Hazard × Exposure × Vulnerability (UNDRR/IPCC; population from NSO census). No new
+  predictor is trained.
+- **Blind / out-of-sample** (`src/eval/blind_test.py`) — the model has zero learned
+  parameters (structure from hydrology, gate from independent RID gauges; gold only scores),
+  so every event is out-of-sample by construction and gold-leakage is structurally impossible;
+  the Mekong/NE live event is a prospective blind test.
 
 ## 2. Ground truth (never the model's own graph)
 Gold = **GISTDA satellite (Sentinel-1) flood-area** per province, published via thaiwater,

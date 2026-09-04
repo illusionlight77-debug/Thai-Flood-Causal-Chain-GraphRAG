@@ -56,6 +56,28 @@ title + venue/arXiv id (verify the id before formal citation). Grouped by theme.
 - **LlamaIndex `PropertyGraphIndex`** — https://docs.llamaindex.ai. Property-graph retriever
   framework named as the intended stack in CLAUDE.md.
 
+## 3b. Flood early-warning: verification, probability, risk (for the /warn + lead-time work)
+
+- **EFAS — The European Flood Alert System, Part 2** — Hydrology and Earth System Sciences
+  13:141, 2009. The canonical operational probabilistic flood EWS; verifies with Brier
+  skill score vs lead-time. Template for our probabilistic-warning framing.
+- **Two decades of ensemble flood forecasting** — Hydrological Sciences Journal, 2021,
+  doi:10.1080/02626667.2021.2023157. State-of-the-art review of probabilistic/ensemble
+  flood forecasting (what a full #3/#4 would build toward).
+- **NOAA Forecast Verification Glossary** — authoritative definitions of POD (probability
+  of detection), FAR (false alarm ratio), CSI (critical success index), Brier score. Used
+  by `src/eval/lead_validation.py` (warning skill) and `mcnemar.py`.
+- **Flood Risk Assessment Based on Flood Hazard and Vulnerability Indexes** (2021) and the
+  **Risk = Hazard × Exposure × Vulnerability** decomposition (UNDRR/IPCC; holistic flood-risk
+  methodology, Nature Sci. Rep. s41598-025-13025-z). Basis for `src/eval/risk_warning.py`.
+- Exposure data: **NSO Thailand** province population (2020 census).
+
+> **How we differ:** we do NOT build a hydrological/ensemble forecaster. We reuse a
+> *verifiable causal-retrieval* graph as an operator early-warning tool and wrap it with a
+> calibrated probability (our measured precision) + the standard risk index — reporting
+> honest verification skill (POD/FAR/CSI, lead-time error) rather than claiming forecast
+> accuracy we did not build.
+
 ## 4. Statistics / methodology
 
 - **McNemar's test** (McNemar, 1947) — the paired test for two classifiers on the same
