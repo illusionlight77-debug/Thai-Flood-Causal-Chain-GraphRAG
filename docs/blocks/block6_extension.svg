@@ -1,0 +1,47 @@
+<svg viewBox="0 0 980 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a6" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8801f"/></marker></defs>
+  <rect width="980" height="500" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#f4ecd8"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#8a6d3b" font-family="Georgia,serif">⑥ Extension — พยากรณ์ / ความเสี่ยง (ส่วนเสริม)</text>
+  <text x="30" y="50" font-size="13.5" fill="#9a7a3f">src/eval/risk_warning.py + queries EARLY_WARNING — ไม่สร้างตัวทำนายใหม่ แต่ "ห่อ" คำเตือนด้วยตัวเลขที่มีที่มา</text>
+
+  <text x="30" y="88" font-size="13" font-weight="700" fill="#8a6d3b">ข้อมูลเข้า (ทุกตัวมีที่มา)</text>
+  <g font-size="11.5" fill="#3a2f22">
+    <rect x="30" y="100" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="120">คำเตือน causal: จว.ไหนกำลังจะท่วม</text>
+    <rect x="30" y="138" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="158">precision ที่วัดได้ = 0.938</text>
+    <rect x="30" y="176" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="196">lead-time + slowdown ×5.7 (วัดจาก 2011)</text>
+    <rect x="30" y="214" width="250" height="32" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="234">ประชากร (NSO) · ความถี่ท่วมในอดีต</text>
+  </g>
+  <path d="M285,175 L325,175" stroke="#b8801f" stroke-width="2" fill="none" marker-end="url(#a6)"/>
+
+  <rect x="330" y="100" width="300" height="150" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="2"/>
+  <text x="480" y="124" font-size="13.5" font-weight="700" fill="#8a6d3b" text-anchor="middle">ห่อด้วยตัวเลขมีมาตรฐาน</text>
+  <text x="345" y="148" font-size="12" fill="#3a2f22">P(ท่วม | เตือน) = precision ที่วัดได้</text>
+  <text x="345" y="167" font-size="11" fill="#a58a5a">   (NOAA glossary · EFAS HESS 2009)</text>
+  <text x="345" y="188" font-size="12" fill="#3a2f22">หน้าต่างเวลา = [คลื่นเร็ว, ×5.7 เติมลุ่ม]</text>
+  <text x="345" y="209" font-size="12" fill="#3a2f22">Risk = Hazard × Exposure × Vuln</text>
+  <text x="345" y="228" font-size="11" fill="#a58a5a">   (UNDRR / IPCC decomposition)</text>
+  <text x="345" y="246" font-size="11.5" fill="#3a2f22" font-weight="700">= ความเสี่ยงต่อจังหวัด + ระดับ</text>
+
+  <path d="M633,175 L677,175" stroke="#b8801f" stroke-width="2" fill="none" marker-end="url(#a6)"/>
+  <g>
+    <polygon points="705,120 880,120 861,230 686,230" fill="#f3ece0" stroke="#b8801f" stroke-width="1.8"/>
+    <text x="780" y="150" font-size="12.5" font-weight="700" fill="#8a6d3b" text-anchor="middle">คำเตือนติดป้ายเสี่ยง</text>
+    <text x="780" y="172" font-size="11" fill="#9a7a3f" text-anchor="middle">จว. + prob + lead</text>
+    <text x="780" y="190" font-size="11" fill="#9a7a3f" text-anchor="middle">+ ระดับความเสี่ยง</text>
+    <text x="780" y="212" font-size="11" fill="#9a7a3f" text-anchor="middle">→ หน้า warn.html</text>
+  </g>
+
+  <!-- why it might NOT happen -->
+  <rect x="30" y="272" width="920" height="98" rx="10" fill="#fbeee9" stroke="#c0492f" stroke-width="1.6"/>
+  <text x="46" y="296" font-size="13" font-weight="700" fill="#c0492f">ทำไมมันอาจไม่เกิด (ความไม่แน่นอน — เขียนไว้ชัดเสมอ)</text>
+  <text x="46" y="318" font-size="12.5" fill="#3a2f22">• เขื่อนพร่องน้ำทัน / ฝนจริงน้อยกว่าคาด · คันกั้นน้ำ+สูบระบายได้ผล · ประตูน้ำเบี่ยงทางน้ำ</text>
+  <text x="46" y="339" font-size="12.5" fill="#3a2f22">• โมเดลใช้ threshold แบบ on/off (ล้น=ท่วม) — ความรุนแรงจริงเป็น spectrum · lead-time เป็นช่วง ไม่ใช่ค่าจุดเดียว</text>
+  <text x="46" y="360" font-size="12.5" fill="#3a2f22">• precision 0.938 = ~6% ของคำเตือนเป็น false alarm ตามสถิติ → คำเตือนคือ "ความเสี่ยง" ไม่ใช่ "คำพยากรณ์แน่นอน"</text>
+
+  <rect x="30" y="386" width="920" height="94" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="410" font-size="13" font-weight="700" fill="#8a6d3b">ทำไมทำแบบนี้ / น่าเชื่อถือยังไง</text>
+  <text x="46" y="432" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">ไม่กุตัวเลข:</tspan> ความน่าจะเป็น = precision ที่<tspan font-weight="700"> วัดจากผลจริง</tspan>; slowdown = วัดจากเหตุการณ์ 2011</text>
+  <text x="46" y="453" font-size="12.5" fill="#3a2f22">• สูตรความเสี่ยงยึด<tspan font-weight="700"> มาตรฐานสากล</tspan> (UNDRR/IPCC) + มีงานอ้างอิง (EFAS, NOAA, Sci.Rep.) ไม่ใช่คิดเอง</text>
+  <text x="46" y="474" font-size="12.5" fill="#3a2f22">• วางเป็น "ส่วนเสริม" ชัดเจน — งานหลักคือ<tspan font-weight="700"> วัดความ verify ได้ของคำอธิบาย</tspan> ไม่ใช่แข่งความแม่นพยากรณ์</text>
+</svg>

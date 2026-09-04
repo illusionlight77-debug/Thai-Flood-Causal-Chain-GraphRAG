@@ -77,6 +77,53 @@
 > 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง **+ validate ด้วย DEM flow-accumulation จริง (Copernicus/pysheds, 11/11 เส้น)**. methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · related work: [`docs/REFERENCES.md`](docs/REFERENCES.md).
 > **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **5 เหตุการณ์** (เจ้าพระยา 2565/2564/2566/2567 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
+### 🧭 System Overview — ภาพรวม + เจาะทีละก้อน
+
+ภาพรวมทั้งระบบในภาษาเล่าเรื่องของโปรเจกต์ (บน = **สายเหตุ-ผลที่เราเดินตาม**, ล่าง = **ระบบที่สร้างมาวัดมัน**):
+
+![System Overview](docs/system_overview.svg)
+
+> 📖 เวอร์ชันเล่าเรื่องเต็ม (สำหรับเล่าให้อาจารย์/นำเสนอ): [`docs/STORY.md`](docs/STORY.md)
+
+**เจาะเข้าไปทีละก้อน** — แต่ละก้อนบอก *เอาอะไรเข้า → ทำอะไร → ได้อะไรออก → ทำไมเชื่อถือได้*:
+
+<details open>
+<summary><b>① Ingestion &amp; Graph Build</b> — เปลี่ยนข้อมูลจริงเป็นกราฟเหตุ-ผลใน Neo4j</summary>
+
+![① Ingestion & Graph Build](docs/blocks/block1_ingest.svg)
+</details>
+
+<details>
+<summary><b>② Geo Mapping</b> — GeoPandas จับลำน้ำ→จังหวัด + วางเฉลยจากภาพน้ำท่วม</summary>
+
+![② Geo Mapping](docs/blocks/block2_geo.svg)
+</details>
+
+<details>
+<summary><b>③ 3 Retrievers ★</b> — หัวใจงาน: causal vs entity vs vector เดินคนละแบบ</summary>
+
+![③ 3 Retrievers](docs/blocks/block3_retrievers.svg)
+</details>
+
+<details>
+<summary><b>④ Evaluation</b> — ให้คะแนนกับเฉลย GISTDA + ยืนยันทางสถิติ (รายงานตรง)</summary>
+
+![④ Evaluation](docs/blocks/block4_eval.svg)
+</details>
+
+<details>
+<summary><b>⑤ DEM Validation</b> — ตรวจว่าน้ำไหลตามที่กราฟบอกจริง (ข้อมูลฟิสิกส์อิสระ)</summary>
+
+![⑤ DEM Validation](docs/blocks/block5_dem.svg)
+</details>
+
+<details>
+<summary><b>⑥ Extension</b> — พยากรณ์/ความเสี่ยง + "ทำไมอาจไม่เกิด" (ส่วนเสริม)</summary>
+
+![⑥ Extension](docs/blocks/block6_extension.svg)
+</details>
+
+---
 ### 🖥️ หน้าจอระบบ / UI (แยก 2 ส่วนชัดเจน)
 
 ระบบมี **2 identity แยกกัน** (ออกแบบใหม่ 2026-09-04, ฟอนต์ Trirong + IBM Plex Sans Thai/Mono, ลาย contour แผนที่ — ไม่ใช้ template สำเร็จรูป):

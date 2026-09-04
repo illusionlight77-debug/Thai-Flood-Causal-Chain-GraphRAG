@@ -1,0 +1,45 @@
+<svg viewBox="0 0 980 490" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a4" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker></defs>
+  <rect width="980" height="490" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#efe3cc"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">④ Evaluation — ให้คะแนนอย่างซื่อตรง</text>
+  <text x="30" y="50" font-size="13.5" fill="#8a6d3b">src/eval/*.py — เทียบคำตอบ 3 ระบบกับเฉลย GISTDA บนชุดข้อสอบ (eval set) ที่แช่แข็ง</text>
+
+  <!-- inputs -->
+  <g font-size="12" fill="#3a2f22">
+    <rect x="30" y="86" width="215" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="107">คำตอบจาก 3 ระบบ (③)</text>
+    <rect x="30" y="128" width="215" height="34" rx="6" fill="#fbeee9" stroke="#c0492f" stroke-width="1.4"/><text x="42" y="149">เฉลย gold จาก GISTDA (②)</text>
+  </g>
+  <path d="M250,124 L294,124" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a4)"/>
+
+  <!-- process: 2 tiers -->
+  <rect x="300" y="80" width="330" height="96" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+  <text x="465" y="104" font-size="13.5" font-weight="700" fill="#245c37" text-anchor="middle">ชั้นที่ 1 · ตัวชี้วัดหลัก</text>
+  <text x="315" y="126" font-size="12" fill="#3a2f22">F1-by-hop (แยกตามความยาวสายเหตุ-ผล 2/3/4/5)</text>
+  <text x="315" y="145" font-size="12" fill="#3a2f22">Traceability — % คำตอบที่ชี้ evidence กลับได้</text>
+  <text x="315" y="164" font-size="12" fill="#3a2f22">Specificity · Faithfulness (grounding)</text>
+
+  <rect x="300" y="190" width="330" height="96" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="465" y="214" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">ชั้นที่ 2 · ยืนยันทางสถิติ</text>
+  <text x="315" y="236" font-size="12" fill="#3a2f22">McNemar exact test (จับคู่, one/two-sided)</text>
+  <text x="315" y="255" font-size="12" fill="#3a2f22">Bootstrap CI · Discrimination · Ablation</text>
+  <text x="315" y="274" font-size="12" fill="#3a2f22">4 เหตุการณ์ · รวม N = 92 เคส</text>
+
+  <path d="M634,180 L678,180" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a4)"/>
+  <g>
+    <polygon points="705,120 875,120 855,240 685,240" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.8"/>
+    <text x="780" y="150" font-size="13" font-weight="700" fill="#3a2f22" text-anchor="middle">ผลจริง</text>
+    <text x="780" y="172" font-size="11" fill="#8a6d3b" text-anchor="middle">eval_results.json</text>
+    <text x="780" y="189" font-size="11" fill="#8a6d3b" text-anchor="middle">results_table.md</text>
+    <text x="780" y="211" font-size="11" fill="#8a6d3b" text-anchor="middle">→ ป้อน UI หลังบ้าน</text>
+  </g>
+
+  <rect x="30" y="304" width="920" height="160" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="328" font-size="13" font-weight="700" fill="#8a6d3b">กติกาเหล็ก / ผลที่ได้ (รายงานตรง ๆ)</text>
+  <text x="46" y="350" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700" fill="#c0492f">ห้ามแก้ eval set / จูนให้ผลสวย</tspan> — bucket hop เป็นสมบัติภูมิศาสตร์ ตรึงไว้ ไม่เลื่อนตามเหตุการณ์</text>
+  <text x="46" y="371" font-size="12.5" fill="#3a2f22">• รายงานทั้งเลขเก่าและใหม่คู่กันเสมอ — เช่น F1 เคยได้ 1.000 (1 เหตุการณ์) → 0.545 (ขยายลุ่มน้ำ) → 0.909 (ปรับกราฟ)</text>
+  <text x="46" y="392" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">causal ชนะขาด:</tspan> Traceability &amp; Specificity — baseline ทั้งสอง = 0</text>
+  <text x="46" y="413" font-size="12.5" fill="#3a2f22">• F1: ดีกว่า entity อย่างมีนัยสำคัญ one-sided (p=0.044); two-sided ยังไม่ผ่าน (p=0.087) — <tspan font-weight="700">รายงานทั้งคู่</tspan></text>
+  <text x="46" y="434" font-size="12.5" fill="#3a2f22">• เทียบ vector ชนะขาด (p&lt;0.001) · จุดที่แพ้ (2024 gate ตายตัว) บันทึกเป็นข้อจำกัด ไม่ปกปิด</text>
+  <text x="46" y="455" font-size="12" fill="#a58a5a">• เฉลยอิสระ (GISTDA) + eval set แช่แข็ง = ตัวเลขที่ "ตกได้" จึงเป็นตัวเลขที่เชื่อถือได้</text>
+</svg>

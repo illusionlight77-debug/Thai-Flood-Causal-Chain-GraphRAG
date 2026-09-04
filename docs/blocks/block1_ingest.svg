@@ -1,0 +1,45 @@
+<svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker></defs>
+  <rect width="980" height="470" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#efe3cc"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">① Ingestion &amp; Graph Build</text>
+  <text x="30" y="50" font-size="13.5" fill="#8a6d3b">src/ingest/fixtures.py · build_ground_truth.py → src/graph/load.py — เปลี่ยน "ข้อมูลจริง" เป็น "กราฟเหตุ-ผลใน Neo4j"</text>
+
+  <!-- inputs -->
+  <text x="30" y="90" font-size="13" font-weight="700" fill="#2f6b8a">ข้อมูลเข้า (ของจริง ไม่ได้ตั้งให้เข้ากับผล)</text>
+  <g font-size="12" fill="#3a2f22">
+    <rect x="30" y="102" width="250" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="123">ภูมิศาสตร์ลุ่มน้ำ · 8 สาขา 23 จว.<tspan fill="#a58a5a"> (basin json)</tspan></text>
+    <rect x="30" y="142" width="250" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="163">geometry จังหวัด<tspan fill="#a58a5a"> (GADM 4.1)</tspan></text>
+    <rect x="30" y="182" width="250" height="34" rx="6" fill="#fbeee9" stroke="#c0492f" stroke-width="1.4"/><text x="42" y="203">gold จังหวัดท่วม<tspan fill="#a5583f"> (GISTDA ≥10,000 ไร่)</tspan></text>
+    <rect x="30" y="222" width="250" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="243">reach.overflow<tspan fill="#a58a5a"> (RID gauge · อิสระจาก gold)</tspan></text>
+    <rect x="30" y="262" width="250" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="283">เขื่อน spillway/active<tspan fill="#a58a5a"> (EGAT/RID)</tspan></text>
+  </g>
+
+  <!-- process -->
+  <path d="M285,200 L330,200" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a1)"/>
+  <rect x="335" y="120" width="290" height="160" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+  <text x="480" y="146" font-size="14" font-weight="700" fill="#245c37" text-anchor="middle">สร้าง node + edge เหตุ-ผล</text>
+  <text x="350" y="172" font-size="12" fill="#3a2f22">nodes: RainStation · Reservoir ·</text>
+  <text x="350" y="190" font-size="12" fill="#3a2f22">RiverReach · Confluence · Province</text>
+  <text x="350" y="214" font-size="12" fill="#3a2f22">edges (มีทิศ = ทิศน้ำไหล):</text>
+  <text x="350" y="232" font-size="11.5" fill="#2f6b8a">FEEDS · OVERFLOWS_TO · FLOWS_TO ·</text>
+  <text x="350" y="249" font-size="11.5" fill="#2f6b8a">INUNDATES · RUNOFF_TO</text>
+  <text x="350" y="270" font-size="11.5" fill="#c0492f" font-weight="700">ทุก edge แนบ evidence (JSON string)</text>
+
+  <!-- output -->
+  <path d="M628,200 L672,200" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a1)"/>
+  <g>
+    <path d="M700,155 a75,15 0 0 1 150,0 v70 a75,15 0 0 1 -150,0 z" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.8"/>
+    <path d="M700,155 a75,15 0 0 0 150,0" fill="none" stroke="#8a6d3b" stroke-width="1.8"/>
+    <text x="775" y="192" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">Neo4j causal graph</text>
+    <text x="775" y="212" font-size="11.5" fill="#8a6d3b" text-anchor="middle">พร้อมให้ retriever เดิน</text>
+  </g>
+
+  <!-- why box -->
+  <rect x="30" y="322" width="820" height="118" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="346" font-size="13" font-weight="700" fill="#8a6d3b">ทำไมทำแบบนี้ / น่าเชื่อถือยังไง</text>
+  <text x="46" y="368" font-size="12.5" fill="#3a2f22">• โครง node/edge วางมือตาม topology ลุ่มน้ำ<tspan font-weight="700"> จริง</tspan> (ทิศการไหลจริง) — ไม่ได้ปรับให้เข้ากับเฉลย</text>
+  <text x="46" y="389" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700" fill="#c0492f">ตัดวงจร (de-circularize):</tspan> ประตูน้ำ "ล้น" ตัดสินจากเกจแม่น้ำ RID ที่<tspan font-weight="700"> อิสระ</tspan>จากดาวเทียม GISTDA ที่เป็นเฉลย</text>
+  <text x="46" y="410" font-size="12.5" fill="#3a2f22">• EVENT_ID เปลี่ยนได้ 4 ปี (2022/2021/2024/2023) — โครงกราฟเดิม เปลี่ยนแค่ gold + overflow ต่อปี → เทียบข้ามปียุติธรรม</text>
+  <text x="46" y="431" font-size="12.5" fill="#3a2f22">• ทุก edge มี evidence ชี้กลับ source (สถานี/timestamp/dataset) → เป็นรากของ "ตอบแล้วตรวจย้อนได้"</text>
+</svg>

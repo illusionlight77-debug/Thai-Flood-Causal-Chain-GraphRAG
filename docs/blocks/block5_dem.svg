@@ -1,0 +1,44 @@
+<svg viewBox="0 0 980 450" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker></defs>
+  <rect width="980" height="450" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#efe3cc"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">⑤ DEM Validation — ตรวจว่าน้ำไหลตามที่กราฟบอกจริง</text>
+  <text x="30" y="50" font-size="13.5" fill="#8a6d3b">src/geo/dem_*.py — เอาความสูงพื้นดินจริงจากดาวเทียมมายืนยันทิศ FLOWS_TO (การตรวจสอบอิสระ)</text>
+
+  <text x="30" y="88" font-size="13" font-weight="700" fill="#2f6b8a">ข้อมูลเข้า</text>
+  <g font-size="12" fill="#3a2f22">
+    <rect x="30" y="100" width="240" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="121">ความสูงพื้นดิน<tspan fill="#a58a5a"> Copernicus GLO-90</tspan></text>
+    <rect x="30" y="140" width="240" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="161">edge FLOWS_TO จากกราฟ ①</text>
+  </g>
+  <path d="M275,140 L318,140" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a5)"/>
+
+  <!-- 3 checks -->
+  <rect x="325" y="86" width="300" height="52" rx="9" fill="#eef3ec" stroke="#2f7d4a" stroke-width="1.8"/>
+  <text x="340" y="107" font-size="12.5" font-weight="700" fill="#245c37">1. Topology check</text>
+  <text x="340" y="126" font-size="11.5" fill="#3a2f22">ทุก edge ต้องไหลจากที่สูง → ที่ต่ำ</text>
+
+  <rect x="325" y="144" width="300" height="52" rx="9" fill="#eef3ec" stroke="#2f7d4a" stroke-width="1.8"/>
+  <text x="340" y="165" font-size="12.5" font-weight="700" fill="#245c37">2. Flow accumulation (pysheds)</text>
+  <text x="340" y="184" font-size="11.5" fill="#3a2f22">fill → flowdir → accumulate บน grid</text>
+
+  <rect x="325" y="202" width="300" height="52" rx="9" fill="#eef3ec" stroke="#2f7d4a" stroke-width="1.8"/>
+  <text x="340" y="223" font-size="12.5" font-weight="700" fill="#245c37">3. Route check (D8)</text>
+  <text x="340" y="242" font-size="11.5" fill="#3a2f22">เส้นทางน้ำ D8 ตรงกับสายในกราฟไหม</text>
+
+  <path d="M628,170 L672,170" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a5)"/>
+  <g>
+    <polygon points="700,120 875,120 856,220 681,220" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.8"/>
+    <text x="778" y="150" font-size="13" font-weight="700" fill="#3a2f22" text-anchor="middle">ผลตรวจ</text>
+    <text x="778" y="173" font-size="12" fill="#245c37" text-anchor="middle">flow-accum 11/11 ✓</text>
+    <text x="778" y="192" font-size="12" fill="#8a6d3b" text-anchor="middle">routing 8/11</text>
+    <text x="778" y="209" font-size="10.5" fill="#a58a5a" text-anchor="middle">(ที่ราบน้ำท่วม แบน = D8 กำกวม)</text>
+  </g>
+
+  <rect x="30" y="280" width="820" height="150" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="304" font-size="13" font-weight="700" fill="#8a6d3b">ทำไมทำ / น่าเชื่อถือยังไง</text>
+  <text x="46" y="326" font-size="12.5" fill="#3a2f22">• โครงกราฟใน ① วางมือ — จึงเสี่ยงต่อคำถาม "แน่ใจได้ไงว่าทิศน้ำถูก?" นี่คือคำตอบด้วย<tspan font-weight="700"> ข้อมูลฟิสิกส์อิสระ</tspan></text>
+  <text x="46" y="347" font-size="12.5" fill="#3a2f22">• ความสูงพื้นดินมาจาก<tspan font-weight="700"> ดาวเทียมจริง</tspan> (Copernicus) — ถ้ามี edge ไหลผิดทิศ การตรวจจะจับได้ทันที</text>
+  <text x="46" y="368" font-size="12.5" fill="#3a2f22">• เปลี่ยน "topology วางมือ ยังไม่ได้ยืนยัน" → "topology วางมือ<tspan font-weight="700"> ผ่านการยืนยันด้วย DEM</tspan>"</text>
+  <text x="46" y="389" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700" fill="#c0492f">รายงานตรง:</tspan> routing ผ่าน 8/11 ไม่ใช่ 11/11 — เพราะที่ราบน้ำท่วมเจ้าพระยาแบนมาก D8 กำกวมตามธรรมชาติ</text>
+  <text x="46" y="410" font-size="12.5" fill="#3a2f22">• cache ค่าความสูงไว้ → ตรวจซ้ำได้ offline (reproducible)</text>
+</svg>

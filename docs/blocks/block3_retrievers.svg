@@ -1,0 +1,41 @@
+<svg viewBox="0 0 980 560" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a3" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6a5a42"/></marker></defs>
+  <rect width="980" height="560" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#e6efe6"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#245c37" font-family="Georgia,serif">③ 3 Retrievers — หัวใจงาน (contribution) ★</text>
+  <text x="30" y="50" font-size="13.5" fill="#5a7a5a">src/rag/*.py — คำถามเดียวกันเข้า 3 ระบบ แต่ "คิด" คนละแบบ → รูปคำตอบต่างกัน</text>
+
+  <!-- shared question -->
+  <rect x="30" y="80" width="230" height="60" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="145" y="106" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">คำถามเดียวกัน</text>
+  <text x="145" y="126" font-size="12" fill="#8a6d3b" text-anchor="middle">"ทำไมจังหวัด X ท่วม?"</text>
+  <path d="M262,110 L300,110" stroke="#6a5a42" stroke-width="2" fill="none"/>
+  <path d="M300,110 L300,175 L326,175" stroke="#6a5a42" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+  <path d="M300,110 L300,320 L326,320" stroke="#6a5a42" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+  <path d="M300,110 L300,435 L326,435" stroke="#6a5a42" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+
+  <!-- lane 1: causal (ours) -->
+  <rect x="330" y="150" width="620" height="100" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2.4"/>
+  <text x="346" y="174" font-size="14.5" font-weight="700" fill="#245c37">causal-graphrag <tspan font-size="11" fill="#7a8a5a">(ของเรา)</tspan></text>
+  <text x="346" y="196" font-size="12" fill="#3a2f22">Cypher เดินตามทิศน้ำจริง <tspan font-family="monospace" fill="#2f6b8a">*2..8</tspan> · gate: ลำน้ำ overflow + จังหวัดไม่มีคันกั้น</text>
+  <text x="346" y="216" font-size="12" fill="#3a2f22">→ ชุดจังหวัดท่วม + <tspan font-weight="700">chain เต็มสาย</tspan> (ฝน→เขื่อน→แม่น้ำ→จว.) + <tspan font-weight="700" fill="#c0492f">evidence[]</tspan></text>
+  <text x="346" y="238" font-size="12" fill="#245c37" font-weight="700">✓ ตรวจย้อนได้ (traceable) · ✓ ชี้ต้นเหตุเจาะจง (specific)</text>
+
+  <!-- lane 2: entity -->
+  <rect x="330" y="266" width="620" height="94" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="346" y="290" font-size="14.5" font-weight="700" fill="#3a2f22">entity-graphrag <tspan font-size="11" fill="#a58a5a">(baseline relational)</tspan></text>
+  <text x="346" y="311" font-size="12" fill="#3a2f22">เดินกราฟ <tspan font-weight="700">ไม่สนทิศ</tspan> <tspan font-family="monospace">*2..4</tspan> — "จังหวัดที่เชื่อมโยงกัน" (ไม่กรอง threshold)</text>
+  <text x="346" y="331" font-size="12" fill="#3a2f22">→ ได้จังหวัดเกินจริง (รวมต้นน้ำ/จว.ไม่ท่วม) · chain เป็น relational ไม่ใช่เหตุ-ผล</text>
+  <text x="346" y="351" font-size="12" fill="#a5583f">✗ ไม่มี evidence → traceability = 0</text>
+
+  <!-- lane 3: vector -->
+  <rect x="330" y="376" width="620" height="94" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="346" y="400" font-size="14.5" font-weight="700" fill="#3a2f22">vector-rag <tspan font-size="11" fill="#a58a5a">(baseline)</tspan></text>
+  <text x="346" y="421" font-size="12" fill="#3a2f22">TF-IDF (char n-gram, ไทยไม่เว้นวรรค) หาข่าวคล้ายสุด top-k → สกัดชื่อจังหวัด</text>
+  <text x="346" y="441" font-size="12" fill="#3a2f22">→ ได้เฉพาะจังหวัดที่ "ข่าวรายงานถึง" (จว.ใหญ่เด่น, ปลายสายมักหลุด)</text>
+  <text x="346" y="461" font-size="12" fill="#a5583f">✗ ไม่มี chain/evidence → traceability = 0</text>
+
+  <rect x="30" y="490" width="920" height="56" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="512" font-size="12.8" fill="#3a2f22">• ทั้ง 3 ระบบตอบ "จังหวัดไหนท่วม" ได้ (วัด F1 ได้เท่ากัน) — <tspan font-weight="700" fill="#245c37">แต่มีแค่ causal ที่บอก "เพราะอะไร" พร้อมหลักฐานได้</tspan></text>
+  <text x="46" y="533" font-size="12.8" fill="#3a2f22">• chain ของ causal มาจาก <tspan font-weight="700">Cypher เท่านั้น</tspan> ไม่ให้ LLM เดา → ผล reproducible (คำอธิบายเป็น deterministic)</text>
+</svg>

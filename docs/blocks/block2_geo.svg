@@ -1,0 +1,47 @@
+<svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker></defs>
+  <rect width="980" height="470" fill="#f6efe1"/>
+  <rect x="0" y="0" width="980" height="58" fill="#efe3cc"/>
+  <text x="30" y="30" font-size="21" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">② Geo Mapping — basin → province</text>
+  <text x="30" y="50" font-size="13.5" fill="#8a6d3b">src/geo/basin_to_province.py — GeoPandas point-in-polygon: ปลายลำน้ำ → จังหวัดท้ายน้ำ + วางเฉลยจากภาพน้ำท่วม</text>
+
+  <text x="30" y="90" font-size="13" font-weight="700" fill="#2f6b8a">ข้อมูลเข้า (ชั้นภูมิสารสนเทศ)</text>
+  <g font-size="12" fill="#3a2f22">
+    <rect x="30" y="102" width="240" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="123">จุดปลายลำน้ำ<tspan fill="#a58a5a"> reach_outlets.geojson</tspan></text>
+    <rect x="30" y="142" width="240" height="34" rx="6" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.4"/><text x="42" y="163">ขอบเขตจังหวัด<tspan fill="#a58a5a"> provinces.geojson</tspan></text>
+    <rect x="30" y="182" width="240" height="34" rx="6" fill="#fbeee9" stroke="#c0492f" stroke-width="1.4"/><text x="42" y="203">พื้นที่น้ำท่วมจริง<tspan fill="#a5583f"> GISTDA extent</tspan></text>
+  </g>
+
+  <path d="M275,160 L320,160" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a2)"/>
+
+  <!-- two processes -->
+  <rect x="325" y="96" width="300" height="90" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+  <text x="475" y="120" font-size="13.5" font-weight="700" fill="#245c37" text-anchor="middle">reproject → sjoin (within)</text>
+  <text x="340" y="142" font-size="11.5" fill="#3a2f22">ทุกชั้นเป็น EPSG:32647 ก่อน join</text>
+  <text x="340" y="160" font-size="11.5" fill="#3a2f22">จุดปลายน้ำตกในจังหวัดไหน → INUNDATES</text>
+  <text x="340" y="178" font-size="11" fill="#c0492f">กติกา: ห้ามมี outlet หลุด polygon (raise)</text>
+
+  <rect x="325" y="200" width="300" height="86" rx="10" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="475" y="224" font-size="13.5" font-weight="700" fill="#3a2f22" text-anchor="middle">overlay flood × province</text>
+  <text x="340" y="246" font-size="11.5" fill="#3a2f22">ทับซ้อน ≥ 50% ของพื้นที่จังหวัด</text>
+  <text x="340" y="264" font-size="11.5" fill="#3a2f22">→ จังหวัด "ท่วมจริง" = gold (เฉลย)</text>
+  <text x="340" y="281" font-size="11" fill="#a58a5a">กัน sliver ตามแนวเขตแดน polygon จริง</text>
+
+  <path d="M628,140 L672,140" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a2)"/>
+  <path d="M628,243 L672,243" stroke="#8a6d3b" stroke-width="2" fill="none" marker-end="url(#a2)"/>
+  <g font-size="12">
+    <polygon points="700,118 855,118 838,162 683,162" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.6"/>
+    <text x="770" y="138" font-weight="700" fill="#3a2f22" text-anchor="middle">inundates_edges.json</text>
+    <text x="770" y="154" fill="#8a6d3b" text-anchor="middle" font-size="11">→ ต่อกราฟใน ①</text>
+    <polygon points="700,221 855,221 838,265 683,265" fill="#fbeee9" stroke="#c0492f" stroke-width="1.6"/>
+    <text x="770" y="241" font-weight="700" fill="#c0492f" text-anchor="middle">gold_provinces.json</text>
+    <text x="770" y="257" fill="#a5583f" text-anchor="middle" font-size="11">→ เฉลยให้ eval ④</text>
+  </g>
+
+  <rect x="30" y="322" width="820" height="118" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="346" font-size="13" font-weight="700" fill="#8a6d3b">ทำไมทำแบบนี้ / น่าเชื่อถือยังไง</text>
+  <text x="46" y="368" font-size="12.5" fill="#3a2f22">• จับคู่ลำน้ำ→จังหวัดด้วย point-in-polygon บนขอบเขตจริง — ไม่ได้ระบุเองว่าลำน้ำไหนท่วมจังหวัดไหน</text>
+  <text x="46" y="389" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700" fill="#c0492f">CRS ต้องตรงกันก่อน join</tspan> (EPSG:32647) — ถ้าไม่ reproject จะจับจังหวัดผิด → บังคับตรวจ ไม่ยอมให้จุดหลุดขอบ</text>
+  <text x="46" y="410" font-size="12.5" fill="#3a2f22">• เฉลย (gold) มาจาก<tspan font-weight="700"> ภาพถ่ายดาวเทียม</tspan> ล้วน ๆ — เป็นความจริงภายนอกที่โมเดลไม่เคยเห็น</text>
+  <text x="46" y="431" font-size="12.5" fill="#3a2f22">• เกณฑ์ทับซ้อน ≥ 50% เลือกเพื่อกัน "เศษ polygon" ตามแนวเขตแดน ไม่ใช่จูนให้ผลสวย</text>
+</svg>
