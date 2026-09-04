@@ -98,6 +98,34 @@
         "CSI": 0.696,
         "missed_rate": 0.0
       }
+    },
+    "2024": {
+      "causal-graphrag": {
+        "POD": 0.737,
+        "FAR": 0.125,
+        "CSI": 0.667,
+        "missed_rate": 0.263
+      },
+      "entity-graphrag": {
+        "POD": 1.0,
+        "FAR": 0.174,
+        "CSI": 0.826,
+        "missed_rate": 0.0
+      }
+    },
+    "2023": {
+      "causal-graphrag": {
+        "POD": 0.933,
+        "FAR": 0.125,
+        "CSI": 0.824,
+        "missed_rate": 0.067
+      },
+      "entity-graphrag": {
+        "POD": 1.0,
+        "FAR": 0.348,
+        "CSI": 0.652,
+        "missed_rate": 0.0
+      }
     }
   }
 }

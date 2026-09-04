@@ -79,6 +79,33 @@ def early_warning(overflowing: str = ""):
         return {"available": False, "error": str(exc), "subbasins": _SUBBASINS, "warnings": []}
 
 
+@app.get("/api/report")
+def report():
+    """รวมผลการทดลองทั้งหมด (ทุก metric, 4-5 เหตุการณ์) สำหรับหน้า /lab แสดงละเอียดทีละส่วน."""
+    out = {}
+    for name in ("mcnemar", "pooled_significance", "discrimination", "lead_validation",
+                 "blind_test", "dem_flow_accumulation", "dem_route_check", "dem_topology_check"):
+        f = PROCESSED / f"{name}.json"
+        out[name] = json.loads(f.read_text("utf-8")) if f.exists() else None
+    # per-event summary (F1/POD/FAR/specificity/traceability + ablation)
+    events = {}
+    for y, lbl in EVENTS:
+        f = WEB / f"ui_data_{y}.json"
+        if not f.exists():
+            continue
+        d = json.loads(f.read_text("utf-8"))
+        c = d["confusion"]["causal-graphrag"]
+        tp, fp, fn = c["tp"], c["fp"], c["fn"]
+        events[y] = {"label": lbl, "gold": sum(1 for p in d["provinces"] if d["per_province"][p]["is_gold"]),
+                     "n": len(d["provinces"]),
+                     "results": d.get("results"), "confusion": d.get("confusion"),
+                     "ablation": d.get("ablation"), "faithfulness": d.get("faithfulness"),
+                     "pod": round(tp / (tp + fn), 3) if (tp + fn) else 0,
+                     "far": round(fp / (tp + fp), 3) if (tp + fp) else 0}
+    out["events"] = events
+    return out
+
+
 @app.get("/api/config")
 def config():
     events = [{"year": y, "label": lbl} for y, lbl in EVENTS
