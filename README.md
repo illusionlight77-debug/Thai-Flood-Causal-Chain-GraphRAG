@@ -6,6 +6,8 @@
 
 > A flood-explanation system that walks a *real causal chain* and measures how much more verifiable its answers are than vector search over news, scored by **F1 per causal-hop length**.
 
+📘 **เอกสาร:** [เล่มโครงงาน (วิธีการ+ผลครบ)](docs/PROJECT_REPORT.md) · [methodology (freeze)](eval/METHODOLOGY.md) · [references](docs/REFERENCES.md) · [history + bug log](docs/HISTORY.md)
+
 ---
 
 ## 📑 สารบัญ / Table of Contents
@@ -75,38 +77,30 @@
 > 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง **+ validate ด้วย DEM flow-accumulation จริง (Copernicus/pysheds, 11/11 เส้น)**. methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · related work: [`docs/REFERENCES.md`](docs/REFERENCES.md).
 > **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **5 เหตุการณ์** (เจ้าพระยา 2565/2564/2566/2567 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
 
-### 🖥️ หน้าจอทั้งหมด / UI windows tour
+### 🖥️ หน้าจอระบบ / UI (แยก 2 ส่วนชัดเจน)
 
-**ภาพจริงจากหน้า `http://localhost:8501`** (แคปด้วย Chrome headless จากแอปที่รันจริง, อัปเดต 2026-09-04).
+ระบบมี **2 identity แยกกัน** (ออกแบบใหม่ 2026-09-04, ฟอนต์ Trirong + IBM Plex Sans Thai/Mono, ลาย contour แผนที่ — ไม่ใช้ template สำเร็จรูป):
 
-#### หน้าที่ 1 — ใช้งานง่าย (`/`)
-คำถาม: *"ทำไมจังหวัดนครสวรรค์ถึงน้ำท่วมในเหตุการณ์ลุ่มเจ้าพระยาปี 2565?"* (เคส **4-hop** ข้ามลุ่มน้ำ):
+---
+#### 🅰️ หน้า USER (`/`) — "รายงานภาคสนาม" (โทนกระดาษอุ่น) — สำหรับประชาชน/ผู้ใช้ทั่วไป
 
-![หน้าใช้งานง่าย — ผลจริง 5 เหตุการณ์](docs/ui-friendly.png)
+![หน้า user — field report](docs/ui-friendly.png)
 
-**อ่านภาพตามส่วน:**
-- **① แท็บเหตุการณ์** — เจ้าพระยา 2565 / 2564 / โขง-อีสาน (live) + ปุ่มไป **หน้าวัดผล/วิจัย**.
-- **② ชิปเลือกจังหวัด** — วงกลม 🔵 = ท่วมจริงตาม GISTDA; เลือกได้ทุกจังหวัด (รวม negative control).
-- **③ การ์ดคำอธิบาย (HERO)** — **คำอธิบาย LLM (Groq/qwen, grounded)** ภาษาไทยที่ผูกกับ chain จริง + ป้าย `GISTDA: ท่วมจริง` · `ระบบอธิบายได้ ✓` · `เตือนล่วงหน้า ~72 ชม.` · `4-hop`.
-- **④ Causal chain** — สถานีฝนปิงตอนบน → ปิงท้ายเขื่อนภูมิพล → ปากน้ำโพ → เจ้าพระยาตอนบน → Nakhon Sawan (เริ่มจาก *ฝน→runoff*, มาจาก Cypher เท่านั้น) + หลักฐาน 4 จุดตรวจย้อนได้.
-- **⑤ แผนที่ GISTDA จริง** — basemap ดาวเทียม (proxy) 🔵 ท่วมจริง · 🟢 ทำนายถูก · 🔴 ทำนายเกิน.
-- **⑥ Live flood panel** — น้ำท่วม*ปัจจุบัน*รายจังหวัดจาก GISTDA disaster API (real-time Sentinel-1).
-- **⑦ เทียบ 3 ระบบ (ย่อ)** — causal **0.91** (prec 94% · trace ✓) · entity 0.64 (trace ✗) · vector 0.14 (trace ✗) + ลิงก์ไปผลเต็ม.
+เลือกจังหวัด → **การ์ดรายงาน**อธิบายเหตุน้ำท่วมด้วยภาษาไทยธรรมชาติ (คำอธิบาย LLM grounded, drop-cap) + ป้ายสถานะ (GISTDA ท่วมจริง · อธิบายได้ · เตือนล่วงหน้า · hop) + **สายเหตุ-ผลแบบ stepped** + หลักฐานตรวจย้อนได้ + **แผนที่ GISTDA จริง** (🔵ท่วมจริง 🟢ทำนายถูก 🔴เกิน) + น้ำท่วม real-time + เทียบ 3 ระบบย่อ. เข้าใจง่าย ใช้งานได้ทุกฟังก์ชัน.
 
-#### หน้าที่ 2 — วิจัย/วัดผล (`/lab`) — 📊 รายงานผลการทดลองทั้งหมด
-![หน้าวิจัย/วัดผล — ผลการทดลองครบ](docs/ui-lab.png)
+---
+#### 🅱️ หน้า BACKEND (`/lab`) — "Research Console" (โทนเข้ม เครื่องมือวัด) — ดูผลการทดลองละเอียด
 
-**อ่านภาพตามส่วน:**
-- **① สถานะข้อมูล** — ground truth/geometry/dam-spec/gauge/vector/LLM/**topology (DEM-validated)** = ✅จริง.
-- **② เส้นทาง F1 ซื่อสัตย์** — `1.000 (fixture) → 0.545 (ground truth จริง N=10) → 0.769 (runoff+gauge N=10) → 0.909 (ลุ่มน้ำเต็ม 8 สาขา N=23)`.
-- **③ KPI** — F1 causal **0.909** · Traceability **88%** · Precision(neg-ctrl) **0.938** · Specificity **0.833** · คำอธิบาย faithful **70%**.
-- **④ กราฟ F1-by-hop** (2/3/4/5-hop, 3 ระบบ) + **กราฟ Ablation** (ปิดกลไก → F1 เปลี่ยน).
-- **⑤ ตาราง eval 3 ระบบ** · **ablation** (−runoff = ตกมากสุด) · **confusion** (causal specificity 0.833, entity/vector = 0) · **ทุกจังหวัด × 3 ระบบ + lead-time**.
+![หน้า research console — ผลการทดลองครบ](docs/ui-lab.png)
 
-#### หน้าที่ 3 — 🚨 เตือนภัยล่วงหน้า (`/warn`) — early-warning
-กลับด้านกราฟเหตุ-ผลมาใช้ **ทำนายล่วงหน้า**: ตั้งว่าลุ่มน้ำต้นน้ำใดกำลังล้น (จาก river-gauge) → ระบบเดินสายเหตุ-ผลไปเตือน **จังหวัดปลายน้ำที่จะท่วม + เวลาที่เหลือ (lead-time)** เรียงตามด่วนสุด พร้อม chain ที่ตรวจย้อนได้.
+**แดชบอร์ดวิจัยครบทุก metric อ่านทีละส่วนจากเมนูซ้าย (11 ส่วน):** สถานะข้อมูล · เส้นทาง F1 · KPI · ผลหลัก 3 ระบบ (+กราฟ F1-by-hop & ablation) · **นัยสำคัญ McNemar 4 เหตุการณ์ + bootstrap** · negative-control confusion · **discrimination (ได้เปรียบเมื่อไหร่)** · **lead-time skill (MAE/RMSE + POD/FAR/CSI)** · **topology 4 วิธี** · **blind test** · ทุกจังหวัด × 3 ระบบ. ดึงจาก `/api/report`.
 
-![หน้าเตือนภัยล่วงหน้า](docs/ui-warn.png)
+---
+#### 🧩 Extension (`/warn`) — พยากรณ์ & เตือนภัยล่วงหน้า
+
+![หน้า extension — เตือนภัย + ที่มาของตัวเลข](docs/ui-warn.png)
+
+กลับด้านกราฟเหตุ-ผลมา**ทำนายล่วงหน้า**: ตั้งว่าลุ่มน้ำใดล้น → เตือนจังหวัดปลายน้ำ + **โอกาสท่วม % · ระดับเสี่ยง (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence** เรียงตามความเสี่ยง. มีส่วน **"ที่มาของตัวเลข & ทำไมอาจไม่เกิด"** (ตามหลัก EFAS/NOAA/risk-index) — โปร่งใสว่าค่ามาจากอะไรและความไม่แน่นอนอยู่ตรงไหน.
 
 แต่ละคำเตือนมี **โอกาสท่วม % (จาก precision จริง) · risk level (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence · ประชากรเสี่ยง** เรียงตาม risk (#4). ตัวอย่าง NORU 2565: นครสวรรค์ risk **สูงมาก** 94% → เพชรบูรณ์/พิษณุโลก **ด่วนมาก ~24h** → อยุธยา ~42h → กรุงเทพ-ปริมณฑล. ลำดับตรงกับ timeline 2554 (ρ≈0.76). API: `/api/early-warning`.
 
