@@ -11,12 +11,12 @@
 ---
 
 ## 📑 สารบัญ / Table of Contents
-1. [System Tour](#-system-tour)
-2. [System — All Links](#-system--all-links)
-3. [Test UI (หน้าทดสอบใช้งาน)](#-test-ui-หน้าทดสอบใช้งาน)
-4. [Results (ผลลัพธ์)](#-results-ผลลัพธ์)
-5. [Bugs & Fixes (บั๊คที่เจอ)](#-bugs--fixes-บั๊คที่เจอ)
-6. [Research Conclusions (ข้อสรุปงานวิจัย)](#-research-conclusions-ข้อสรุปงานวิจัย)
+1. [System Tour + เจาะทีละก้อน](#-system-tour)
+2. [UI — 3 หน้า (User / Research / Warning)](#-หน้าจอระบบ--ui--3-หน้าแยกกันชัดเจน)
+3. [System — All Links](#-system--all-links)
+4. [ผลการทดลอง / Experiment Report](#-รายงานผลการทดลอง-experiment-report)
+5. [ข้อจำกัด + Integrity](#-ข้อจำกัดปัจจุบัน--integrity-current-limitations)
+6. [Research Conclusions](#-research-conclusions-ข้อสรุปงานวิจัย)
 7. [Aha Moments](#-aha-moments)
 8. [Quickstart](#-quickstart)
 
@@ -26,56 +26,11 @@
 
 ไล่จากข้อมูล**จริง** → กราฟเหตุผล (มี path ฝน→น้ำท่า) → 3 ระบบตอบคำถาม → วัดผลกับ GISTDA จริง → หน้าเว็บ.
 
-```
- แหล่งข้อมูลจริง (cited)                    ┌──────────────────────────────────────────────┐
-  data.go.th CKAN (ฝน/ระดับน้ำ) ──┐        │  INGEST (src/ingest)                          │
-  dam_specs.json (EGAT/RID)  ─────┼───────▶│  fixtures + connectors + scrape_news          │
-  river_gauges_*.json (RID)  ─────┤        │  → nodes + edges (แนบ evidence ทุกเส้น)       │
-  GISTDA satellite (thaiwater) ───┤        │  → ground_truth_{2022,2021}.json (gold จริง)  │
-  GADM4.1 (ขอบเขตจังหวัดจริง) ─────┘        └───────────────┬──────────────────────────────┘
-                                                           │
-                          ┌────────────────────────────────▼─────────────────┐
-                          │  GEO (src/geo)  GeoPandas point-in-polygon (GADM)  │
-                          │  reach outlet → จังหวัด → INUNDATES ; flood overlay │
-                          └────────────────────────────────┬─────────────────┘
-                                                           │
-              ┌────────────────────────────────────────────▼───────────────────────┐
-              │  Neo4j causal graph (schema จริงตามกลไก)                             │
-              │    RainStation ─FEEDS→ Reservoir ─OVERFLOWS_TO→ RiverReach           │
-              │    RainStation ─RUNOFF_TO────────────────────▶ RiverReach  ◀ ใหม่!   │
-              │    RiverReach ─FLOWS_TO→ Confluence ─FLOWS_TO→ RiverReach ─INUNDATES→ │
-              │    Province   · reach.overflow มาจาก river-gauge จริง (C.2/C.13)      │
-              └───┬──────────────────────────┬──────────────────────────┬───────────┘
-                  │                          │                          │
-        ┌─────────▼──────┐          ┌────────▼──────┐          ┌────────▼─────┐
-        │ causal-graphrag│          │entity-graphrag│          │  vector-rag  │
-        │  (ของเรา)      │          │  (baseline)   │          │ (194 ข่าวจริง)│
-        └─────────┬──────┘          └────────┬──────┘          └────────┬─────┘
-                  └──────────────────────────┼──────────────────────────┘
-                                             ▼
-                     ┌───────────────────────────────────────────────┐
-                     │  EVAL (src/eval)  F1-by-hop + Traceability      │
-                     │  ground truth = GISTDA satellite จริง           │
-                     │  4 เหตุการณ์เจ้าพระยา 2565-2567 + โขง (EVENT_ID)│
-                     └───────────────────────┬───────────────────────┘
-                                             ▼
-                     ┌───────────────────────────────────────────────┐
-                     │  FastAPI + MapLibre (2 หน้า)                    │
-                     │   /     = ใช้งานง่าย "ทำไมจังหวัดนี้ถึงน้ำท่วม"   │
-                     │   /lab  = วิจัย/วัดผล (ผลการทดลองทั้งหมด)        │
-                     └───────────────────────────────────────────────┘
-```
+> 📈 **สถานะปัจจุบัน:** universe ลุ่มเจ้าพระยา **23 จังหวัด (8 ลุ่มน้ำสาขา)** · **5 เหตุการณ์** (เจ้าพระยา 2565/2564/2566/2567 + โขง/อีสาน live) · **3 หน้า UI** (`/` user · `/lab` research · `/warn` warning).
+> **ข้อมูลจริง:** ground truth ✅GISTDA satellite · geometry ✅GADM4.1 · dam specs ✅EGAT/RID · **reach.overflow ✅RID SWOC gauge (อิสระจาก gold)** · vector corpus ✅194 ข่าว. โครง node/edge = hand-built จาก topology จริง **+ validate ด้วย DEM (Copernicus/pysheds)**.
+> **ฟีเจอร์:** คำอธิบาย LLM (grounded) · ablation · negative-control · McNemar + bootstrap · lead-time · risk layer · blind test. freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · refs: [`docs/REFERENCES.md`](docs/REFERENCES.md).
 
-**เดินระบบทีละสถานี / walk the pipeline:**
-1. **Ingest** — ดึงข้อมูลจริง (D1 CKAN สด, dam_specs/river_gauges/GISTDA/GADM จาก cited sources) → สร้าง node/edge. กติกา: ทุก edge มี `evidence`.
-2. **Geo** — GeoPandas PIP บน polygon จังหวัด **GADM จริง** → `INUNDATES` edges; overlay flood extent GISTDA → gold.
-3. **Graph** — โหลดเข้า Neo4j; schema มี **`RUNOFF_TO` (ฝน→น้ำท่า bypass เขื่อน)**; `reach.overflow` จาก river-gauge จริง; Cypher `*2..4` วัด hop.
-4. **Retrievers** — 3 ตัว, อินเทอร์เฟซเดียว, eval set เดียวกัน. causal เริ่มจาก "ต้นเหตุ active" (เขื่อนล้น *หรือ* ฝน→runoff).
-5. **Eval** — F1-by-hop + traceability เทียบ **GISTDA จริง**, รัน **4 เหตุการณ์เจ้าพระยา + โขง** แยกกัน (`EVENT_ID`), รายงานแยกไม่เฉลี่ยรวม.
-6. **UI** — FastAPI 2 หน้า: `/` (ใช้งานง่าย: คำอธิบาย LLM + chain + evidence + lead-time + แผนที่ GISTDA + live flood) และ `/lab` (วิจัย: ผลการทดลองทั้งหมด — F1-by-hop, ablation, confusion, bootstrap).
-
-> 📈 **สถานะปัจจุบัน:** ข้อมูลจริงเกือบทั้งหมด — **universe ลุ่มเจ้าพระยา 23 จังหวัด (8 ลุ่มน้ำสาขา)** · สเปกเขื่อน ✅ · vector corpus ✅194 ข่าว · ground truth ✅GISTDA satellite (53 จว.) · geometry ✅GADM · **reach.overflow ✅RID SWOC gauge (อิสระจาก satellite gold)** · คันกั้นน้ำ ✅. โครง node/edge = hand-built จาก topology ลุ่มน้ำจริง **+ validate ด้วย DEM flow-accumulation จริง (Copernicus/pysheds, 11/11 เส้น)**. methodology freeze: [`eval/METHODOLOGY.md`](eval/METHODOLOGY.md) · related work: [`docs/REFERENCES.md`](docs/REFERENCES.md).
-> **ฟีเจอร์เพิ่ม:** #1 คำอธิบาย LLM (Groq/qwen, grounded) · #2 ablation · #3 negative-control · #4 bootstrap CI · #6 early-warning (lead-time). **5 เหตุการณ์** (เจ้าพระยา 2565/2564/2566/2567 + โขง/อีสาน live). **2 หน้า UI:** `/` ใช้งานง่าย · `/lab` วิจัย/วัดผล.
+รายละเอียดแต่ละขั้นตอน (input → process → output → ทำไมเชื่อถือได้) ดูที่ **[เจาะทีละก้อน](#-system-overview--ภาพรวม--เจาะทีละก้อน)** ด้านล่าง.
 
 ### 🧭 System Overview — ภาพรวม + เจาะทีละก้อน
 
@@ -166,9 +121,9 @@
 </details>
 
 ---
-### 🖥️ หน้าจอระบบ / UI (แยก 2 ส่วนชัดเจน)
+### 🖥️ หน้าจอระบบ / UI — 3 หน้าแยกกันชัดเจน
 
-ระบบมี **2 identity แยกกัน** (ออกแบบใหม่ 2026-09-04, ฟอนต์ Trirong + IBM Plex Sans Thai/Mono, ลาย contour แผนที่ — ไม่ใช้ template สำเร็จรูป):
+FastAPI ([`src/web/server.py`](src/web/server.py)) เสิร์ฟ 3 หน้า (Tailwind + MapLibre GL + Chart.js) ที่ **http://localhost:8501** — API keys (GISTDA) อยู่ **ฝั่ง server** (proxy) ไม่หลุดไป client. ออกแบบเอง 2026-09-04 (ฟอนต์ Trirong + IBM Plex Sans Thai/Mono, ลาย contour แผนที่ — ไม่ใช้ template สำเร็จรูป):
 
 ---
 #### 🅰️ หน้า USER (`/`) — "รายงานภาคสนาม" (โทนกระดาษอุ่น) — สำหรับประชาชน/ผู้ใช้ทั่วไป
@@ -189,9 +144,9 @@
 
 ![หน้า extension — เตือนภัย + ที่มาของตัวเลข](docs/ui-warn.png)
 
-กลับด้านกราฟเหตุ-ผลมา**ทำนายล่วงหน้า**: ตั้งว่าลุ่มน้ำใดล้น → เตือนจังหวัดปลายน้ำ + **โอกาสท่วม % · ระดับเสี่ยง (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence** เรียงตามความเสี่ยง. มีส่วน **"ที่มาของตัวเลข & ทำไมอาจไม่เกิด"** (ตามหลัก EFAS/NOAA/risk-index) — โปร่งใสว่าค่ามาจากอะไรและความไม่แน่นอนอยู่ตรงไหน.
+กลับด้านกราฟเหตุ-ผลมา**ทำนายล่วงหน้า**: ตั้งว่าลุ่มน้ำใดล้น → เตือนจังหวัดปลายน้ำ พร้อม **โอกาสท่วม % (จาก precision จริง) · ระดับเสี่ยง (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence · ประชากรเสี่ยง** เรียงตามความเสี่ยง. มีส่วน **"ที่มาของตัวเลข & ทำไมอาจไม่เกิด"** (ตามหลัก EFAS/NOAA/risk-index) — โปร่งใสว่าค่ามาจากอะไรและความไม่แน่นอนอยู่ตรงไหน.
 
-แต่ละคำเตือนมี **โอกาสท่วม % (จาก precision จริง) · risk level (Hazard×Exposure×Vulnerability) · ช่วงเวลา · confidence · ประชากรเสี่ยง** เรียงตาม risk (#4). ตัวอย่าง NORU 2565: นครสวรรค์ risk **สูงมาก** 94% → เพชรบูรณ์/พิษณุโลก **ด่วนมาก ~24h** → อยุธยา ~42h → กรุงเทพ-ปริมณฑล. ลำดับตรงกับ timeline 2554 (ρ≈0.76). API: `/api/early-warning`.
+**ตัวอย่าง NORU 2565:** นครสวรรค์ risk **สูงมาก** 94% → เพชรบูรณ์/พิษณุโลก **ด่วนมาก ~24h** → อยุธยา ~42h → กรุงเทพ-ปริมณฑล (ลำดับตรงกับ timeline 2554, ρ≈0.76). API: `/api/early-warning`.
 
 > อีกหน้าต่างนอกแอป: **Neo4j Browser** `http://localhost:7476` (user `neo4j` / pass `floodgraph123`) —
 > รัน `MATCH p=(src {active:true})-[:FEEDS|OVERFLOWS_TO|FLOWS_TO|RUNOFF_TO|INUNDATES*2..4]->(:Province) RETURN p`
@@ -228,14 +183,14 @@
 | Tool | Link |
 |---|---|
 | Neo4j (Docker) | http://localhost:7476 (Browser) · `bolt://localhost:7689` |
-| Web UI (FastAPI) | http://localhost:8501 (`/` ใช้งานง่าย · `/lab` วิจัย/วัดผล) |
+| Web UI (FastAPI) | http://localhost:8501 (`/` user · `/lab` research · `/warn` warning) |
 
 > **พอร์ต host เลือกเลี่ยงการชนกับ container อื่นในเครื่องนี้** (สำรวจด้วย `docker ps` ตอนเฟส 0):
 > Neo4j default `7474/7475/7687/7688` ถูกจองแล้ว → โปรเจกต์นี้ใช้ **HTTP 7476 · Bolt 7689 · FastAPI UI 8501**.
 > ค่าเหล่านี้ตั้งใน `.env` (`NEO4J_HTTP_PORT` / `NEO4J_BOLT_PORT` / `STREAMLIT_PORT`) และ `docker-compose.yml` อ่านต่อ.
-| LlamaIndex PropertyGraph | https://docs.llamaindex.ai |
-| GeoPandas | https://geopandas.org |
-| ragas (eval) | https://docs.ragas.io |
+| GeoPandas (basin→province PIP) | https://geopandas.org |
+| scikit-learn (TF-IDF vector baseline) | https://scikit-learn.org |
+| pysheds (DEM flow-accumulation) | https://mattbartos.com/pysheds |
 
 ### ภายใน repo / Internal
 | ไฟล์ | หน้าที่ |
@@ -265,25 +220,6 @@
 | `data/processed/eval_results{,_2022,_2021}.json` | ผล eval รายเหตุการณ์ |
 
 > ⚠️ ยืนยัน endpoint ที่แน่นอนของ STAC/CKAN ตอน ingest จริง (โครงสร้าง API อาจเปลี่ยน) แล้วอัปเดตตารางนี้.
-
----
-
-## 🖥️ Test UI (หน้าทดสอบใช้งาน) — FastAPI + MapLibre
-
-UI ใหม่ = **FastAPI** ([`src/web/server.py`](src/web/server.py)) เสิร์ฟหน้า [`web/index.html`](web/index.html)
-(Tailwind + MapLibre GL + Chart.js). มากับ stack (`docker compose up`) ที่ **http://localhost:8501**.
-API keys ทั้งหมด (GISTDA) อยู่ **ฝั่ง server** (proxy) ไม่หลุดไป client.
-
-**3 หน้า** (ภาพจริงอยู่ใน [System Tour](#-system-tour) — [ui-friendly.png](docs/ui-friendly.png) · [ui-lab.png](docs/ui-lab.png) · [ui-warn.png](docs/ui-warn.png)):
-
-**หน้า `/` (ใช้งานง่าย):** แท็บ 5 เหตุการณ์ · ชิปเลือกจังหวัด (🔵 ท่วมจริง) · การ์ดคำอธิบาย LLM (grounded) + chain + evidence + lead-time · แผนที่ GISTDA satellite จริง + 🛰️ Live flood · เทียบ 3 ระบบ.
-
-**หน้า `/lab` (วิจัย/วัดผล):** สถานะข้อมูล · เส้นทาง F1 · KPI (รวม faithfulness) · กราฟ F1-by-hop + ablation · ตาราง eval/ablation/confusion/bootstrap + ทุกจังหวัด × 3 ระบบ + lead-time.
-
-**หน้า `/warn` (🚨 เตือนภัยล่วงหน้า):** ตั้งว่าลุ่มน้ำต้นน้ำใดล้น → เตือนจังหวัดปลายน้ำ + lead-time เรียงตามด่วนสุด (กลับด้านกราฟมาใช้ early-warning). API: `/api/early-warning`.
-
-> สร้างข้อมูล UI: `python -m src.eval.build_ui_data` (ต่อ event ตั้ง `EVENT_ID`) → `web/ui_data_{year}.json`;
-> ลุ่มน้ำที่ 2: `python -m src.ingest.mekong_ne`.
 
 ---
 
@@ -408,8 +344,6 @@ lead-time (ชม.) เทียบกับ **ลำดับน้ำท่ว
 
 **#5 Blind / out-of-sample** ([`src/eval/blind_test.py`](src/eval/blind_test.py)) — โมเดล **มี learned parameter = 0** (โครงสร้างจาก hydrology, gate จาก RID gauge อิสระ, gold ใช้*ให้คะแนน*เท่านั้น) → **ทุกเหตุการณ์เป็น out-of-sample โดยโครงสร้าง, leakage เป็นไปไม่ได้เชิงโครงสร้าง**. เหตุการณ์โขง/อีสาน = **prospective live blind** (freeze GISTDA live → ทำนาย → เทียบ). แต่ละน้ำท่วมใหม่ในอนาคต = blind test อีกครั้ง (กลไก `mekong_ne.py`).
 
-**#1 เพิ่มเหตุการณ์ (แก้แล้ว):** เจอว่า thaiwater YearlyReport มี **Excel ระดับตำบล** (ในโฟลเดอร์ `img/`) → รวมเป็นพื้นที่ท่วมรายจังหวัด (ไร่) ได้ → เพิ่ม **เจ้าพระยา 2566/2567** เป็นเหตุการณ์ให้คะแนน (รวม 4 เหตุการณ์ N=92). gate ปี 2566/2567 ตายตัวจาก bulletin 2565 (out-of-sample). 2554 ยังเพิ่มไม่ได้ (agricultural subset + ท่วมหมด = non-discriminating, ดู [discrimination](#7½)).
-
 📚 **งานที่เกี่ยวข้อง/อ้างอิง:** ดู [`docs/REFERENCES.md`](docs/REFERENCES.md) — GraphRAG multi-hop (arXiv:2502.11371 ฐานของ H1), causal river-network (Danube, arXiv:1907.03555), flood-KG+LLM+GIS (IJGIS 2024), McNemar, RAGAS ฯลฯ.
 
 ### 6) #2 Ablation (N=23) — อะไรทำให้ causal ทำงาน
@@ -447,8 +381,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 `1.000 (fixture+tuned)` → `0.545 (ground truth GISTDA จริง, N=10)` → `0.769 (runoff+gauge จริง, N=10)` → `0.909 (ลุ่มน้ำเต็ม 8 สาขา, N=23)`
 ทุกก้าวมาจากข้อมูลจริง/แก้ schema — ไม่เคย hardcode/tune ให้ตรง gold; การตกที่ 0.545 คือความจริงที่ fixture เดิมปิดบัง, การขึ้นที่ 0.909 ยืนบน N ใหญ่ขึ้น + gate อิสระ.
 
-> 📜 **ประวัติการยกระดับแบบเต็ม** (F1 journey 1.000→0.545→0.909, milestone Item 1–4, และ bug log ครบ) ย้ายไป [`docs/HISTORY.md`](docs/HISTORY.md) เพื่อความ clean — ไม่มีอะไรถูกซ่อน.
-> สรุปสั้น: causal F1 **ตก**จาก 1.000 (fixture) เหลือ 0.545 เมื่อใช้ ground truth จริง (เผยจุดอ่อน schema) แล้ว**ฟื้น**เป็น 0.909 บนโครงสร้างที่ถูก + N ใหญ่ขึ้น — ทุกก้าวจากข้อมูลจริง ไม่เคย tune ให้ตรง gold.
+> 📜 **ประวัติการยกระดับแบบเต็ม** (milestone Item 1–4 + bug log ครบ) ย้ายไป [`docs/HISTORY.md`](docs/HISTORY.md) เพื่อความ clean — ไม่มีอะไรถูกซ่อน.
 
 ### เหตุการณ์ที่ทดสอบ / Test events (universe ลุ่มเจ้าพระยา 23 จังหวัด)
 | Event | ลุ่มน้ำ | ช่วงเวลา | gold/รวม | ground truth | causal F1 |
@@ -490,7 +423,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 - **F1 (backtest 4 เหตุการณ์เจ้าพระยา, N=92): causal ชนะ entity อย่างมีนัยสำคัญ (one-sided).** causal นำ F1 บน 3/4 เหตุการณ์ (0.909/0.938/0.903) แต่ **แพ้ปี 2567** (gate ตายตัวพลาดลุ่มปิง) — **McNemar pooled one-sided p=0.044 (SIG)** vs vector p<0.001. การเพิ่มเหตุการณ์ทำให้ผล*ทน*ขึ้น (รวมเหตุการณ์ที่ไม่เข้าข้าง) ไม่ใช่แค่ดูดีขึ้น. จุดขายที่เด็ดขาดยังคือ **traceability + specificity (0 ของ baseline)**.
 - **Generalization:** causal พลาดเฉพาะจังหวัด **local-rain** สม่ำเสมอ (ลุ่มปิง ตาก/กำแพงเพชร ↔ อีสานในแผ่นดิน สกลนคร/อุดร/กาฬสินธุ์) จับ mainstem/สาขาที่ลำน้ำล้นได้ครบ → schema คงเส้นคงวาข้ามลุ่มน้ำ.
 - **เส้นทาง F1 ซื่อสัตย์:** `1.000 (fixture) → 0.545 (ground truth จริง N=10) → 0.769 (runoff+gauge N=10) → 0.909 (ลุ่มน้ำเต็ม 8 สาขา N=23)` — การตกที่ 0.545 คือความจริงที่ fixture ปิดบัง; การขึ้นที่ 0.909 ยืนบน N ใหญ่ + gate อิสระ (RID gauge) ไม่เคย tune ให้ตรง gold.
-- **ข้อจำกัดที่เหลือ:** ดูสรุปสั้นที่ [ข้อจำกัดปัจจุบัน](#️-ข้อจำกัดปัจจุบัน--integrity-current-limitations) — หลัก ๆ คือ N ยังจำกัด (significance แตะเส้น 95%) และโครง node/edge ยัง hand-built (แม้ DEM-validated แล้ว).
+- **ข้อจำกัดที่เหลือ:** ดูสรุปสั้นที่ [ข้อจำกัดปัจจุบัน](#-ข้อจำกัดปัจจุบัน--integrity-current-limitations) — หลัก ๆ คือ N ยังจำกัด (significance แตะเส้น 95%) และโครง node/edge ยัง hand-built (แม้ DEM-validated แล้ว).
 - **ต่อยอด (เรียงความสำคัญ):** (1) หาเหตุการณ์เพิ่ม/ข้อมูล 2554 รายจังหวัด → ดัน significance ให้ผ่านเต็ม, (2) auto-delineate ลำน้ำจาก DEM grid ละเอียด (full flow-accumulation), (3) เพิ่มลุ่มน้ำอื่นนอกเจ้าพระยา/โขง, (4) early-warning dashboard แบบ real-time (climate-resilience / NECTEC).
 
 ---
