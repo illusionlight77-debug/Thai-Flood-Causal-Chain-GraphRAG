@@ -1,0 +1,74 @@
+<svg viewBox="0 0 1180 620" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2f6b8a"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="620" fill="#f6efe1"/>
+  <text x="34" y="42" font-size="23" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">Multi-hop reasoning — เดินสายเหตุ-ผลทีละ hop</text>
+  <text x="34" y="65" font-size="13.5" fill="#8a6d3b">Cypher <tspan font-family="monospace" fill="#c0492f">MATCH (rain:RainStation)-[:RUNOFF_TO|FLOWS_TO|INUNDATES*2..8]->(p:Province)</tspan> — แต่ละ hop มี lag + evidence จริง → ตอบได้ว่า "เพราะอะไร"</text>
+
+  <!-- ===== 4-hop chain (cross-basin via confluence) ===== -->
+  <text x="34" y="112" font-size="14" font-weight="700" fill="#2f6b8a">▸ 4-hop — ข้ามลุ่มน้ำผ่านจุดบรรจบ (ลุ่มปิง → ปากน้ำโพ → นครสวรรค์)</text>
+
+  <!-- nodes -->
+  <g text-anchor="middle" font-weight="700">
+    <g><rect x="34" y="132" width="150" height="58" rx="12" fill="#FFC454"/><text x="109" y="156" font-size="12.5" fill="#3a2f22">ฝนต้นน้ำปิง</text><text x="109" y="174" font-size="10.5" fill="#6a4a12" font-family="monospace">RS-PING</text></g>
+    <g><rect x="278" y="132" width="160" height="58" rx="12" fill="#4C8EDA"/><text x="358" y="156" font-size="12.5" fill="#fff">ปิงท้ายเขื่อน</text><text x="358" y="174" font-size="10.5" fill="#e6f0fb" font-family="monospace">RR-PING</text></g>
+    <g><rect x="532" y="132" width="160" height="58" rx="12" fill="#8DCC93"/><text x="612" y="156" font-size="12.5" fill="#17402a">ปากน้ำโพ</text><text x="612" y="174" font-size="10.5" fill="#265c3b" font-family="monospace">CONF-PAKNAMPHO</text></g>
+    <g><rect x="786" y="132" width="170" height="58" rx="12" fill="#4C8EDA"/><text x="871" y="156" font-size="12.5" fill="#fff">เจ้าพระยาตอนบน</text><text x="871" y="174" font-size="10.5" fill="#e6f0fb" font-family="monospace">RR-CP-UPPER</text></g>
+    <g><rect x="1006" y="132" width="150" height="58" rx="12" fill="#F16667"/><text x="1081" y="150" font-size="12.5" fill="#fff">นครสวรรค์</text><text x="1081" y="167" font-size="10" fill="#ffe1e0">Nakhon Sawan</text><text x="1081" y="182" font-size="10" fill="#ffe1e0" font-weight="700">hop = 4</text></g>
+  </g>
+  <!-- arrows + rel/lag -->
+  <g stroke="#2f6b8a" stroke-width="2.2" fill="none">
+    <path d="M184,161 L276,161" marker-end="url(#mh)"/>
+    <path d="M438,161 L530,161" marker-end="url(#mh)"/>
+    <path d="M692,161 L784,161" marker-end="url(#mh)"/>
+    <path d="M956,161 L1004,161" marker-end="url(#mh)"/>
+  </g>
+  <g font-size="10.5" text-anchor="middle" font-family="monospace" fill="#4a5f7a">
+    <text x="230" y="150">RUNOFF_TO</text><text x="230" y="184" fill="#a5583f">24h</text>
+    <text x="484" y="150">FLOWS_TO</text><text x="484" y="184" fill="#a5583f">36h</text>
+    <text x="738" y="150">FLOWS_TO</text><text x="738" y="184" fill="#a5583f">12h</text>
+    <text x="980" y="150">INUNDATES</text>
+  </g>
+  <!-- evidence tags -->
+  <g font-size="9.5" text-anchor="middle" fill="#8a6d3b">
+    <text x="230" y="205">evidence: D1 rain/runoff</text>
+    <text x="484" y="205">evidence: RID gauge C.2</text>
+    <text x="738" y="205">evidence: confluence pt</text>
+    <text x="881" y="205">evidence: reach overflow=✔</text>
+  </g>
+
+  <line x1="34" y1="238" x2="1146" y2="238" stroke="#e0d3ba" stroke-width="1.4"/>
+
+  <!-- ===== 2-hop chain (single subbasin) ===== -->
+  <text x="34" y="278" font-size="14" font-weight="700" fill="#2f6b8a">▸ 2-hop — ในลุ่มน้ำสาขาเดียว (ลุ่มยม → สุโขทัย)</text>
+  <g text-anchor="middle" font-weight="700">
+    <g><rect x="34" y="298" width="150" height="58" rx="12" fill="#FFC454"/><text x="109" y="322" font-size="12.5" fill="#3a2f22">ฝนต้นน้ำยม</text><text x="109" y="340" font-size="10.5" fill="#6a4a12" font-family="monospace">RS-YOM</text></g>
+    <g><rect x="278" y="298" width="160" height="58" rx="12" fill="#4C8EDA"/><text x="358" y="322" font-size="12.5" fill="#fff">ลำน้ำยม</text><text x="358" y="340" font-size="10.5" fill="#e6f0fb" font-family="monospace">RR-YOM</text></g>
+    <g><rect x="532" y="298" width="150" height="58" rx="12" fill="#F16667"/><text x="607" y="316" font-size="12.5" fill="#fff">สุโขทัย</text><text x="607" y="333" font-size="10" fill="#ffe1e0">Sukhothai</text><text x="607" y="348" font-size="10" fill="#ffe1e0" font-weight="700">hop = 2</text></g>
+  </g>
+  <g stroke="#2f6b8a" stroke-width="2.2" fill="none">
+    <path d="M184,327 L276,327" marker-end="url(#mh)"/>
+    <path d="M438,327 L530,327" marker-end="url(#mh)"/>
+  </g>
+  <g font-size="10.5" text-anchor="middle" font-family="monospace" fill="#4a5f7a">
+    <text x="230" y="316">RUNOFF_TO</text><text x="230" y="350" fill="#a5583f">24h</text>
+    <text x="484" y="316">INUNDATES</text>
+  </g>
+  <g font-size="9.5" text-anchor="middle" fill="#8a6d3b">
+    <text x="230" y="371">evidence: D1 rain/runoff</text>
+    <text x="484" y="371">evidence: reach overflow=✔</text>
+  </g>
+
+  <!-- ===== why it matters ===== -->
+  <rect x="34" y="404" width="1112" height="184" rx="12" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.3"/>
+  <text x="50" y="430" font-size="14" font-weight="700" fill="#8a6d3b">การให้เหตุผลผ่านหลาย hop ทำงานยังไง / ทำไมสำคัญ</text>
+  <text x="50" y="456" font-size="12.5" fill="#3a2f22">1. <tspan font-weight="700">เดินทีละ edge:</tspan> เริ่มจากต้นเหตุ (ฝน) → เดินตามทิศน้ำจริง สะสม lag รวม = lead-time → หยุดที่ <tspan font-family="monospace">INUNDATES</tspan> จังหวัด. hop = จำนวน edge บนสายสั้นสุด.</text>
+  <text x="50" y="480" font-size="12.5" fill="#3a2f22">2. <tspan font-weight="700">gate ที่ทำให้ "ทำนายว่าท่วม":</tspan> ลำน้ำสุดท้าย <tspan font-family="monospace" fill="#c0492f">overflow=true</tspan> (จาก RID gauge อิสระ) และจังหวัด <tspan font-family="monospace">protected=false</tspan> — ไม่ใช่ threshold ตั้งเอง.</text>
+  <text x="50" y="504" font-size="12.5" fill="#3a2f22">3. <tspan font-weight="700">ทุก hop พก evidence</tspan> → คำตอบ "ตรวจย้อนกลับได้ทุกก้าว" (H1). สายยาว (4-hop ข้ามลุ่ม) กับสายสั้น (2-hop) อธิบายได้เท่ากัน.</text>
+  <text x="50" y="528" font-size="12.5" fill="#3a2f22">4. <tspan font-weight="700">ทน hop (H2):</tspan> causal F1 คงที่ข้าม 2/3/4/5-hop (ΔF1 = 0) — ต่างจาก entity ที่ยิ่ง hop ยาวยิ่งดูดจังหวัด<tspan font-style="italic">ต้นน้ำที่ไม่ท่วม</tspan>เข้ามา (precision ตก).</text>
+  <text x="50" y="556" font-size="11.5" fill="#6a5a42">2-hop = จังหวัดต้นน้ำในลุ่มสาขา · 4-hop = จังหวัดที่ต้องข้ามลุ่มน้ำผ่านจุดบรรจบปากน้ำโพ → "causal hop" เป็นมิติใหม่ (ข้ามลุ่มน้ำจริง) ไม่ใช่แค่ระยะทางในกราฟ.</text>
+  <text x="50" y="576" font-size="11.5" fill="#6a5a42">(ค่า node/lag ทั้งหมดมาจาก <tspan font-family="monospace">src/ingest/fixtures.py</tspan> จริง — lag จากระยะลำน้ำ/ความเร็วคลื่นน้ำ ไม่ใช่จากวันน้ำท่วม.)</text>
+</svg>

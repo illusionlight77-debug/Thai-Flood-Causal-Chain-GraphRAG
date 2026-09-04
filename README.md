@@ -11,11 +11,11 @@
 ---
 
 ## 📑 สารบัญ / Table of Contents
-1. [System Tour + เจาะทีละก้อน](#-system-tour)
-2. [UI — 3 หน้า (User / Research / Warning)](#-หน้าจอระบบ--ui--3-หน้าแยกกันชัดเจน)
+1. [System Tour + เจาะทีละก้อน](#️-system-tour)
+2. [UI — 3 หน้า (User / Research / Warning)](#️-หน้าจอระบบ--ui--3-หน้าแยกกันชัดเจน)
 3. [System — All Links](#-system--all-links)
 4. [ผลการทดลอง / Experiment Report](#-รายงานผลการทดลอง-experiment-report)
-5. [ข้อจำกัด + Integrity](#-ข้อจำกัดปัจจุบัน--integrity-current-limitations)
+5. [ข้อจำกัด + Integrity](#️-ข้อจำกัดปัจจุบัน--integrity-current-limitations)
 6. [Research Conclusions](#-research-conclusions-ข้อสรุปงานวิจัย)
 7. [Aha Moments](#-aha-moments)
 8. [Quickstart](#-quickstart)
@@ -119,6 +119,18 @@
 
 ![⑥ Extension](docs/blocks/block6_extension_en.svg)
 </details>
+
+### 🕸️ โครงสร้างกราฟ (Neo4j schema) + ตัวอย่าง multi-hop
+
+โครงสร้าง label/relationship ของ causal graph — เทียบเท่าผลของ `CALL db.schema.visualization()` ใน Neo4j Browser (**5 labels · 5 relationship types**, ทิศลูกศร = ทิศการไหลของน้ำ):
+
+![Neo4j schema](docs/neo4j_schema.svg)
+
+> ดูของจริงบน **Neo4j Browser** (`http://localhost:7476`): รัน `CALL db.schema.visualization()` เพื่อดู schema นี้สด ๆ (หรือดูเส้นทางจริงด้วย query ใน [Extension `/warn`](#️-หน้าจอระบบ--ui--3-หน้าแยกกันชัดเจน) ด้านล่าง).
+
+**การให้เหตุผลผ่านหลาย hop (multi-hop reasoning)** — เดินตามสายเหตุ-ผลทีละ hop สะสม `lag` + `evidence` จนถึงจังหวัด (2-hop = ในลุ่มน้ำสาขาเดียว · 4-hop = ข้ามลุ่มน้ำผ่านจุดบรรจบปากน้ำโพ):
+
+![Multi-hop reasoning](docs/multihop_reasoning.svg)
 
 ---
 ### 🖥️ หน้าจอระบบ / UI — 3 หน้าแยกกันชัดเจน
@@ -423,7 +435,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 - **F1 (backtest 4 เหตุการณ์เจ้าพระยา, N=92): causal ชนะ entity อย่างมีนัยสำคัญ (one-sided).** causal นำ F1 บน 3/4 เหตุการณ์ (0.909/0.938/0.903) แต่ **แพ้ปี 2567** (gate ตายตัวพลาดลุ่มปิง) — **McNemar pooled one-sided p=0.044 (SIG)** vs vector p<0.001. การเพิ่มเหตุการณ์ทำให้ผล*ทน*ขึ้น (รวมเหตุการณ์ที่ไม่เข้าข้าง) ไม่ใช่แค่ดูดีขึ้น. จุดขายที่เด็ดขาดยังคือ **traceability + specificity (0 ของ baseline)**.
 - **Generalization:** causal พลาดเฉพาะจังหวัด **local-rain** สม่ำเสมอ (ลุ่มปิง ตาก/กำแพงเพชร ↔ อีสานในแผ่นดิน สกลนคร/อุดร/กาฬสินธุ์) จับ mainstem/สาขาที่ลำน้ำล้นได้ครบ → schema คงเส้นคงวาข้ามลุ่มน้ำ.
 - **เส้นทาง F1 ซื่อสัตย์:** `1.000 (fixture) → 0.545 (ground truth จริง N=10) → 0.769 (runoff+gauge N=10) → 0.909 (ลุ่มน้ำเต็ม 8 สาขา N=23)` — การตกที่ 0.545 คือความจริงที่ fixture ปิดบัง; การขึ้นที่ 0.909 ยืนบน N ใหญ่ + gate อิสระ (RID gauge) ไม่เคย tune ให้ตรง gold.
-- **ข้อจำกัดที่เหลือ:** ดูสรุปสั้นที่ [ข้อจำกัดปัจจุบัน](#-ข้อจำกัดปัจจุบัน--integrity-current-limitations) — หลัก ๆ คือ N ยังจำกัด (significance แตะเส้น 95%) และโครง node/edge ยัง hand-built (แม้ DEM-validated แล้ว).
+- **ข้อจำกัดที่เหลือ:** ดูสรุปสั้นที่ [ข้อจำกัดปัจจุบัน](#️-ข้อจำกัดปัจจุบัน--integrity-current-limitations) — หลัก ๆ คือ N ยังจำกัด (significance แตะเส้น 95%) และโครง node/edge ยัง hand-built (แม้ DEM-validated แล้ว).
 - **ต่อยอด (เรียงความสำคัญ):** (1) หาเหตุการณ์เพิ่ม/ข้อมูล 2554 รายจังหวัด → ดัน significance ให้ผ่านเต็ม, (2) auto-delineate ลำน้ำจาก DEM grid ละเอียด (full flow-accumulation), (3) เพิ่มลุ่มน้ำอื่นนอกเจ้าพระยา/โขง, (4) early-warning dashboard แบบ real-time (climate-resilience / NECTEC).
 
 ---

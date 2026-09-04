@@ -1,0 +1,55 @@
+<svg viewBox="0 0 920 560" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="rh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/>
+    </marker>
+  </defs>
+  <rect width="920" height="560" fill="#f6efe1"/>
+  <text x="30" y="40" font-size="22" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">Neo4j Schema — causal flood graph</text>
+  <text x="30" y="62" font-size="13" fill="#8a6d3b">ผลแบบ <tspan font-family="monospace" fill="#c0492f">CALL db.schema.visualization()</tspan> — 5 labels · 5 relationship types (ทิศ = ทิศการไหลของน้ำ)</text>
+
+  <!-- edges (draw first, under nodes) -->
+  <g stroke="#9aa7b4" stroke-width="2.2" fill="none">
+    <!-- RainStation -> Reservoir : FEEDS -->
+    <path d="M188,168 L360,120" marker-end="url(#rh)"/>
+    <!-- RainStation -> RiverReach : RUNOFF_TO -->
+    <path d="M182,200 L392,300" marker-end="url(#rh)"/>
+    <!-- Reservoir -> RiverReach : OVERFLOWS_TO -->
+    <path d="M424,166 L446,250" marker-end="url(#rh)"/>
+    <!-- RiverReach -> Confluence : FLOWS_TO (bow left) -->
+    <path d="M415,344 C370,390 340,400 320,392" marker-end="url(#rh)"/>
+    <!-- Confluence -> RiverReach : FLOWS_TO (bow right, back up) -->
+    <path d="M352,410 C420,410 452,392 458,356" marker-end="url(#rh)"/>
+    <!-- RiverReach -> Province : INUNDATES -->
+    <path d="M506,306 L700,306" marker-end="url(#rh)"/>
+    <!-- RiverReach self-loop : FLOWS_TO -->
+    <path d="M488,268 C540,236 560,300 512,322" marker-end="url(#rh)"/>
+  </g>
+
+  <!-- relationship type labels -->
+  <g font-family="monospace" font-size="12" font-weight="700">
+    <g><rect x="238" y="122" width="62" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="269" y="136" fill="#4a5f7a" text-anchor="middle">FEEDS</text></g>
+    <g><rect x="214" y="240" width="92" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="260" y="254" fill="#4a5f7a" text-anchor="middle">RUNOFF_TO</text></g>
+    <g><rect x="356" y="196" width="112" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="412" y="210" fill="#4a5f7a" text-anchor="middle">OVERFLOWS_TO</text></g>
+    <g><rect x="300" y="416" width="82" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="341" y="430" fill="#4a5f7a" text-anchor="middle">FLOWS_TO</text></g>
+    <g><rect x="560" y="284" width="82" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="601" y="298" fill="#4a5f7a" text-anchor="middle">INUNDATES</text></g>
+    <g><rect x="556" y="250" width="82" height="20" rx="10" fill="#fff" stroke="#cdbfa2"/><text x="597" y="264" fill="#4a5f7a" text-anchor="middle">FLOWS_TO</text></g>
+  </g>
+
+  <!-- nodes (Neo4j-style solid circles) -->
+  <g font-weight="700" text-anchor="middle">
+    <circle cx="135" cy="185" r="52" fill="#FFC454"/><text x="135" y="182" font-size="13" fill="#3a2f22">Rain</text><text x="135" y="198" font-size="13" fill="#3a2f22">Station</text>
+    <circle cx="410" cy="120" r="52" fill="#57C7E3"/><text x="410" y="125" font-size="13" fill="#134b57">Reservoir</text>
+    <circle cx="475" cy="300" r="54" fill="#4C8EDA"/><text x="475" y="297" font-size="13" fill="#fff">River</text><text x="475" y="313" font-size="13" fill="#fff">Reach</text>
+    <circle cx="315" cy="430" r="50" fill="#8DCC93"/><text x="315" y="435" font-size="13" fill="#17402a">Confluence</text>
+    <circle cx="755" cy="306" r="52" fill="#F16667"/><text x="755" y="311" font-size="13" fill="#fff">Province</text>
+  </g>
+
+  <!-- properties note -->
+  <g font-size="11.5" fill="#6a5a42">
+    <rect x="30" y="470" width="860" height="70" rx="10" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.2"/>
+    <text x="44" y="492" font-weight="700" fill="#8a6d3b" font-size="12.5">Properties (ย่อ):</text>
+    <text x="44" y="512">• ทุก relationship มี <tspan font-family="monospace" fill="#c0492f">evidence</tspan> (JSON string → station/timestamp/dataset) + <tspan font-family="monospace">lag_hours</tspan> · RiverReach มี <tspan font-family="monospace">subbasin</tspan>, <tspan font-family="monospace">overflow</tspan> (จาก RID gauge)</text>
+    <text x="44" y="530">• Province มี <tspan font-family="monospace">protected</tspan> (คันกั้นน้ำ) · ทำนายเมื่อ last_reach.overflow=true และ protected=false · hop = <tspan font-family="monospace">*2..8</tspan> จาก RainStation</text>
+  </g>
+</svg>
