@@ -82,3 +82,20 @@ real-distance lags).
 - **Lead-time** captures downstream ordering (ρ≈0.76) but the 2011 basin filled partly
   non-sequentially, which a downstream-ordered model cannot fully reproduce.
 - **Tha Chin / Samut Prakan / Samut Sakhon** not itemized in some source tables.
+
+---
+
+### 2026-09-05 — Roadmap B (forecasting) strengthened + verified
+
+- **Survey ก่อนลงมือ** (WebSearch) → เลือกวิธี: Murphy(1973) Brier decomposition · BSS vs climatology
+  (Pappenberger 2015) · ECE (Naeini 2015) · Platt ปลอดภัยกว่า isotonic เมื่อข้อมูลน้อย (Niculescu-Mizil 2005).
+- **สร้าง** `src/eval/{case_bank,calibration,warning_verification}.py` — เก็บเคสถูก/ผิด (92 เคส: POD 0.866 /
+  FAR 0.094 / CSI 0.795), calibrate ความน่าจะเป็นแบบ LOEO (prequential, ไม่แตะกราฟ/gate).
+- **ผลหลัก:** calibrate ตาม causal-hop มี skill (**BSS +0.147**, Brier 0.086→0.0725) ขณะค่าคงที่/climatology ไม่มี.
+- **แก้วิธี CI:** case-level bootstrap [−0.38,0.34] (ผิดวิธี เพราะ province-cases correlated) →
+  **event-level cluster bootstrap [0.07,0.29]** + per-event LOEO ทุกเหตุการณ์ BSS>0 (skill คงเส้นคงวา).
+  หมายเหตุซื่อสัตย์: **4 clusters ยังน้อยเกินเคลม significance มั่นใจ** → ต้องเพิ่มเหตุการณ์.
+- **prospective log:** `add_prospective()`/`resolve_prospective()` — log คำเตือนก่อนรู้ผล + เติมผลภายหลัง
+  (ทางเดียวที่ทำให้ N โต/CI แคบอย่างซื่อสัตย์). **ไม่ scrape ข้อมูลปีใหม่แบบมั่ว** (ไม่มีข้อมูลจริงในเครื่อง = ไม่ปั้น).
+- **drift monitor:** CSI 2021→2024 = .882/.833/.824/.667 (จับการเสื่อมปี 2567). track-record ในหน้า `/warn`.
+- อ้างอิงเพิ่ม: ดู `docs/REFERENCES.md` (Probabilistic warning verification). สรุปเตรียมเล่ม: `docs/THESIS_B_SUMMARY.md`.

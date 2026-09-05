@@ -59,8 +59,14 @@
 
 - **finding หลัก:** calibrate ตาม **causal-hop มี skill จริง (BSS +0.147)** ขณะที่ค่าคงที่/climatology **ไม่มี** (BSS ≈ 0)
   → ความลึกของสายเหตุ-ผลเป็นสัญญาณ calibrate ที่มีความหมาย
-- **ซื่อสัตย์:** bootstrap **CI95 ของ BSS = [−0.38, 0.34] คร่อม 0** → ด้วยแค่ 4 เหตุการณ์ยัง *ไม่ significant*
-  → ทางที่จะทำให้แข็ง = **เพิ่มเหตุการณ์** (ไม่ใช่จูน)
+- **ความไม่แน่นอน (วัดให้ถูกวิธี):**
+  - *case-level* bootstrap: BSS CI95 = **[−0.38, 0.34]** (คร่อม 0) — *แคบเกินจริง/ผิดวิธี* เพราะ province-cases
+    ในเหตุการณ์เดียวกัน correlated
+  - *event-level (cluster) bootstrap* (ถูกต้องกว่า): BSS CI95 = **[0.07, 0.29]** (ไม่คร่อม 0)
+  - *per-event LOEO*: ทุกเหตุการณ์ BSS **เป็นบวก** (2021 .23 · 2022 .23 · 2023 .09 · 2024 .09) = skill **คงเส้นคงวา**
+  - **สรุปตรง:** หลักฐานเชิง consistency + cluster CI *หนุนว่ามี skill* แต่ **4 clusters ยังน้อยเกินจะเคลม
+    significance แบบมั่นใจ** (cluster bootstrap กับ cluster น้อยไม่เสถียร) → ทางที่จะปิดจ็อบคือ **เพิ่มเหตุการณ์**
+    (ผ่าน prospective log) *ไม่ใช่จูน*
 - **Platt/isotonic ไม่ชนะ empirical** — ตรงกับ survey: ข้อมูลน้อย **isotonic เสี่ยง overfit, Platt ก็ยังไม่พอ**
   (Niculescu-Mizil & Caruana 2005) → empirical-by-hop (LOEO) เหมาะสุดกับสเกลข้อมูลนี้
 
@@ -87,10 +93,12 @@ Gneiting et al. (2007) · Niculescu-Mizil & Caruana (2005) · Gama et al. (2014)
 ---
 
 ## 6. ข้อจำกัด + สิ่งที่ต้องทำต่อ (เพื่อให้ B เป็นเล่มที่แข็ง)
-- [ ] **เพิ่มเหตุการณ์** (>4) → ทำให้ BSS CI แคบลงจนมีนัยสำคัญ (ปัจจัยสำคัญสุด)
-- [ ] **real-time prospective log** จริง (`case_bank.add_prospective` + timestamp ก่อนรู้ผล เช่นสระบุรี)
+- [x] **วัด CI ให้ถูกวิธี** — เพิ่ม event-level cluster bootstrap + per-event LOEO (เห็น skill คงเส้นคงวา)
+- [x] **prospective log pipeline** — `case_bank.add_prospective()` (log ก่อนรู้ผล) + `resolve_prospective()` (เติมผลภายหลัง)
+- [ ] **เพิ่มเหตุการณ์จริง (>4)** → ทำให้ CI แน่นพอเคลม significance ได้ (ปัจจัยสำคัญสุด — ต้องมีข้อมูล GISTDA ปีใหม่)
+- [ ] เดินเครื่อง prospective จริง (log เหตุการณ์ที่กำลังจะเกิด → เก็บผล → เพิ่ม N ตามเวลา)
 - [ ] **calibrate magnitude ของ lead-time** (ต้องมี onset ของเหตุการณ์ปกติหลายเหตุการณ์)
-- [ ] ขยายฟีเจอร์ calibrate (subbasin/#overflow) เมื่อข้อมูลมากพอ (ตอนนี้ hop เพียงพอ/ปลอดภัยสุด)
+- [ ] ขยายฟีเจอร์ calibrate (subbasin/#overflow) เมื่อข้อมูลมากพอ (ตอนนี้ hop ปลอดภัยสุด)
 
 ---
 

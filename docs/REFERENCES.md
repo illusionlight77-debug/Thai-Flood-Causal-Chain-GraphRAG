@@ -146,3 +146,8 @@ Full source links + endpoint status: README → *System — All Links*.
 - **Wilks (2011)** — *Statistical Methods in the Atmospheric Sciences*, 3rd ed. → มาตรฐาน verification.
 - **WWRP/WGNE Joint Working Group on Forecast Verification** (cawcr.gov.au/projects/verification) →
   นิยาม POD/FAR/CSI, reliability, sharpness, BSS ที่ใช้อ้าง.
+- **Davison & Hinkley (1997)** — *Bootstrap Methods and their Application.* Cambridge Univ. Press.
+  → **cluster/block bootstrap** (resample ทั้งเหตุการณ์ เมื่อ case ภายในเหตุการณ์ correlated).
+- **Cameron, Gelbach & Miller (2008)** — *Bootstrap-based improvements for inference with clustered
+  errors.* Review of Economics and Statistics 90(3). → ข้อควรระวัง: **cluster bootstrap กับจำนวน cluster
+  น้อยไม่เสถียร** (เหตุผลที่เราไม่เคลม significance จาก 4 เหตุการณ์).

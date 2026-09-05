@@ -163,7 +163,7 @@ async function loadTrackRecord(){
     document.getElementById("trk-calib").innerHTML=
       `<b>Verification (probabilistic):</b> BSS เทียบ climatology — ค่าคงที่ ${M.const.bss_vs_climatology} `+
       `vs calibrate ตาม hop <b>${b.bss_vs_climatology}</b> (Brier ${b.brier}, ECE ${b.ece}) · `+
-      `<span style="color:var(--muted)">CI95 BSS [${ver.best_ci.bss_ci95.join(", ")}] — N=${ver.n_warned} ยังกว้าง (ต้องเพิ่มเหตุการณ์)</span>`+
+      `<span style="color:var(--muted)">BSS CI95 (event-level) [${ver.best_ci_event_level.bss_ci95.join(", ")}] · ทุกเหตุการณ์ BSS>0 — 4 เหตุการณ์ยังน้อย ต้องเพิ่ม</span>`+
       `<br><span style="font-size:11.5px;color:var(--muted)">drift CSI ตามปี: ${drift} · Murphy decomp + Brier Skill Score (Pappenberger 2015)</span>`;
   } else if(cal && cal.models){ const m=cal.models;
     document.getElementById("trk-calib").innerHTML=

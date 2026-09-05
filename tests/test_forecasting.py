@@ -41,3 +41,6 @@ def test_verification_bss_and_decomp():
     # calibrate-by-hop ควรมี skill (BSS) เหนือค่าคงที่ (รายงานตรง แม้ CI จะกว้าง)
     assert m["by_hop"]["bss_vs_climatology"] > m["const"]["bss_vs_climatology"]
     assert len(r["drift_csi_by_event"]) == 4
+    # event-level (cluster) bootstrap + per-event consistency reported
+    assert "bss_ci95" in r["best_ci_event_level"]
+    assert len(r["per_event_loeo"]) == 4

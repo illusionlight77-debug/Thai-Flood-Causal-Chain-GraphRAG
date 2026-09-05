@@ -119,7 +119,7 @@
     }
   },
   "best_by_bss": "by_hop",
-  "best_ci": {
+  "best_ci_case_level": {
     "brier_ci95": [
       0.0301,
       0.1238
@@ -129,16 +129,48 @@
       0.336
     ]
   },
-  "const_ci": {
+  "best_ci_event_level": {
     "brier_ci95": [
-      0.0312,
-      0.1544
+      0.042,
+      0.0978
     ],
     "bss_ci95": [
-      -0.103,
-      -0.0
-    ]
+      0.067,
+      0.289
+    ],
+    "n_events": 4,
+    "method": "event-level cluster bootstrap"
   },
+  "per_event_loeo": [
+    {
+      "event": "2021",
+      "n_warned": 16,
+      "brier": 0.0451,
+      "obs_rate": 0.938,
+      "bss": 0.23
+    },
+    {
+      "event": "2022",
+      "n_warned": 16,
+      "brier": 0.0451,
+      "obs_rate": 0.938,
+      "bss": 0.23
+    },
+    {
+      "event": "2023",
+      "n_warned": 16,
+      "brier": 0.0998,
+      "obs_rate": 0.875,
+      "bss": 0.087
+    },
+    {
+      "event": "2024",
+      "n_warned": 16,
+      "brier": 0.0998,
+      "obs_rate": 0.875,
+      "bss": 0.087
+    }
+  ],
   "drift_csi_by_event": [
     {
       "event": "2021",
@@ -161,5 +193,6 @@
       "alarm": false
     }
   ],
-  "caveat": "ข้อมูลน้อย (~64 คำเตือน) → isotonic เสี่ยง overfit, Platt/empirical ปลอดภัยกว่า (Niculescu-Mizil 2005); รายงานทุก calibrator ตรง ๆ"
+  "ci_note": "รายงาน CI สองแบบ: case-level (แคบเกินจริงเพราะ province-cases correlated) และ event-level cluster bootstrap (ถูกต้องกว่า, กว้างกว่า) — ใช้ event-level เป็นหลัก",
+  "caveat": "ข้อมูลน้อย (64 คำเตือน / 4 เหตุการณ์) → CI ยังกว้าง; ทางแก้ที่ซื่อสัตย์คือ 'เพิ่มเหตุการณ์' (ผ่าน prospective log) ไม่ใช่จูน. isotonic เสี่ยง overfit → empirical/Platt ปลอดภัยกว่า (Niculescu-Mizil 2005)"
 }

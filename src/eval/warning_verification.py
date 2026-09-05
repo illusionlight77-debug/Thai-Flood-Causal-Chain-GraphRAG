@@ -138,6 +138,48 @@ def _bootstrap_ci(cases, method, B=2000):
             "bss_ci95": [round(q(bsss, .025), 3), round(q(bsss, .975), 3)]}
 
 
+def _event_bootstrap(cases, method, B=3000):
+    """CI แบบ cluster/event-level: resample 'ทั้งเหตุการณ์' (ถูกต้องกว่าเมื่อ province-cases
+    ภายในเหตุการณ์เดียวกัน correlated) — Davison & Hinkley 1997 cluster bootstrap. มักได้ CI *กว้างกว่า*
+    case-level = ซื่อสัตย์กว่าสำหรับ N เหตุการณ์น้อย."""
+    by_ev: dict[str, list] = {}
+    for c in cases:
+        by_ev.setdefault(c["event"], []).append(c)
+    evs = list(by_ev)
+    briers, bsss = [], []
+    for _ in range(B):
+        pick = [by_ev[evs[random.randrange(len(evs))]] for _ in range(len(evs))]
+        pool = [c for grp in pick for c in grp]
+        ps = _loeo_predict(pool, method)
+        gs = [c["gold"] for c in pool]
+        b = _brier(ps, gs); briers.append(b)
+        ob = sum(gs) / len(gs); u = ob * (1 - ob)
+        bsss.append((u - b) / u if u else 0.0)
+    briers.sort(); bsss.sort()
+    q = lambda a, lo: a[min(len(a) - 1, int(lo * len(a)))]
+    return {"brier_ci95": [round(q(briers, .025), 4), round(q(briers, .975), 4)],
+            "bss_ci95": [round(q(bsss, .025), 3), round(q(bsss, .975), 3)],
+            "n_events": len(evs), "method": "event-level cluster bootstrap"}
+
+
+def _per_event_loeo(cases, method="by_hop"):
+    """สกิลของแต่ละเหตุการณ์เมื่อ calibrate ด้วย 'อีก 3 เหตุการณ์' (แสดงความคงเส้นคงวา)."""
+    rows = []
+    for y in _YEAR_ORDER:
+        ev = [c for c in cases if c["event"] == y and c["predicted"]]
+        if not ev:
+            continue
+        ps = _loeo_predict([c for c in cases if c["predicted"]], method)
+        # map เฉพาะ case ของ event นี้
+        idx = [i for i, c in enumerate([c for c in cases if c["predicted"]]) if c["event"] == y]
+        pe = [ps[i] for i in idx]; ge = [ev[k]["gold"] for k in range(len(ev))]
+        ob = sum(ge) / len(ge); u = ob * (1 - ob)
+        rows.append({"event": y, "n_warned": len(ev), "brier": round(_brier(pe, ge), 4),
+                     "obs_rate": round(ob, 3),
+                     "bss": round((u - _brier(pe, ge)) / u, 3) if u else None})
+    return rows
+
+
 def _drift(cases):
     """CSI ต่อเหตุการณ์ตามลำดับเวลา (จากทุก scored case ไม่ใช่แค่ warned)."""
     out = []
@@ -171,11 +213,15 @@ def run() -> dict:
         "note": "verify คำเตือนความน่าจะเป็น (Brier decomp + BSS + ECE) · calibrate LOEO (กัน overfit) · ไม่แตะกราฟ/gate",
         "n_warned": len(warned), "base_rate": round(sum(gs) / len(gs), 3),
         "models": models, "best_by_bss": best,
-        "best_ci": _bootstrap_ci(warned, best),
-        "const_ci": _bootstrap_ci(warned, "const"),
+        "best_ci_case_level": _bootstrap_ci(warned, best),
+        "best_ci_event_level": _event_bootstrap(warned, best),
+        "per_event_loeo": _per_event_loeo(scored, best),
         "drift_csi_by_event": _drift(scored),
-        "caveat": ("ข้อมูลน้อย (~%d คำเตือน) → isotonic เสี่ยง overfit, Platt/empirical ปลอดภัยกว่า "
-                   "(Niculescu-Mizil 2005); รายงานทุก calibrator ตรง ๆ" % len(warned)),
+        "ci_note": ("รายงาน CI สองแบบ: case-level (แคบเกินจริงเพราะ province-cases correlated) และ "
+                    "event-level cluster bootstrap (ถูกต้องกว่า, กว้างกว่า) — ใช้ event-level เป็นหลัก"),
+        "caveat": ("ข้อมูลน้อย (%d คำเตือน / %d เหตุการณ์) → CI ยังกว้าง; ทางแก้ที่ซื่อสัตย์คือ 'เพิ่มเหตุการณ์' "
+                   "(ผ่าน prospective log) ไม่ใช่จูน. isotonic เสี่ยง overfit → empirical/Platt ปลอดภัยกว่า "
+                   "(Niculescu-Mizil 2005)" % (len(warned), len({c["event"] for c in scored}))),
     }
 
 
@@ -187,9 +233,11 @@ def main() -> None:
     for k, m in r["models"].items():
         print(f"{k:13s} {m['brier']:>7.4f} {m['bss_vs_climatology']:>6.3f} {m['ece']:>6.3f} "
               f"{m['sharpness_sd']:>6.3f} {m['reliability']:>6.4f} {m['resolution']:>6.4f}")
-    print(f"best_by_bss={r['best_by_bss']}  Brier CI95={r['best_ci']['brier_ci95']}  "
-          f"BSS CI95={r['best_ci']['bss_ci95']}")
-    print("drift CSI:", [(d["event"], d["csi"]) for d in r["drift_csi_by_event"]])
+    print(f"best_by_bss={r['best_by_bss']}")
+    print(f"  BSS CI95 case-level  = {r['best_ci_case_level']['bss_ci95']}")
+    print(f"  BSS CI95 event-level = {r['best_ci_event_level']['bss_ci95']}  (ใช้เป็นหลัก)")
+    print("  per-event LOEO:", [(x["event"], x["bss"]) for x in r["per_event_loeo"]])
+    print("  drift CSI:", [(d["event"], d["csi"]) for d in r["drift_csi_by_event"]])
 
 
 if __name__ == "__main__":

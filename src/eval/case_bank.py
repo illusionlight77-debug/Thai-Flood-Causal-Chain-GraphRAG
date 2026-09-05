@@ -137,6 +137,18 @@ def add_prospective(event: str, province: str, predicted: bool, timestamp: str,
     _PROSPECTIVE.write_text(json.dumps(data, ensure_ascii=False, indent=2), "utf-8")
 
 
+def resolve_prospective(event: str, province: str, gold: bool) -> None:
+    """เติมผลจริงให้เคส prospective ที่เคย log ไว้ 'ก่อนรู้ผล' → ป้าย TP/FP/FN/TN."""
+    if not _PROSPECTIVE.exists():
+        return
+    data = json.loads(_PROSPECTIVE.read_text("utf-8"))
+    for c in data.get("cases", []):
+        if c["event"] == event and c["province"] == province:
+            c["gold"] = bool(gold)
+            c["outcome"] = _label(bool(c["predicted"]), bool(gold))
+    _PROSPECTIVE.write_text(json.dumps(data, ensure_ascii=False, indent=2), "utf-8")
+
+
 def main() -> None:
     bank = build()
     _OUT.write_text(json.dumps(bank, ensure_ascii=False, indent=2), "utf-8")

@@ -472,7 +472,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
-> ✅ **ทำแล้ว (ระบบรวม):** [`case_bank.py`](src/eval/case_bank.py) (92 เคส · POD 0.866 · FAR 0.094 · CSI 0.795) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) — verify เต็ม (Brier decomposition · **BSS vs climatology** · ECE · bootstrap CI · drift): calibrate ตาม causal-hop **มี skill (BSS +0.147)** ขณะค่าคงที่ไม่มี (−0.012), Brier 0.086→**0.0725** — *แต่ CI ยังกว้าง (N=4 เหตุการณ์) รายงานตรง* · track-record ใน `/warn` · `tests/test_forecasting.py` (4 ผ่าน).
+> ✅ **ทำแล้ว (ระบบรวม):** [`case_bank.py`](src/eval/case_bank.py) (92 เคส · POD 0.866 · FAR 0.094 · CSI 0.795) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) — verify เต็ม (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift): calibrate ตาม causal-hop **มี skill (BSS +0.147)** ขณะค่าคงที่ไม่มี (−0.012), Brier 0.086→**0.0725**; **event-level CI [0.07, 0.29]** + ทุกเหตุการณ์ BSS>0 (skill คงเส้นคงวา) — *แต่ 4 เหตุการณ์ยังน้อยเกินเคลม significance มั่นใจ (รายงานตรง)* · prospective log + track-record ใน `/warn` · `tests` (4 ผ่าน).
 > 📗 **สรุปเตรียมทำเล่ม B:** [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md)
 
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
