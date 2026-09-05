@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1500 920" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+<svg viewBox="0 0 1500 1010" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker>
     <marker id="arw" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6b8a"/></marker>
@@ -127,4 +127,11 @@
     <polygon points="745,-13 783,-13 777,5 739,5" fill="#f3ece0" stroke="#8a6d3b" stroke-width="1.6"/>
     <text x="791" y="0" font-size="12.5" fill="#6a5a42">data in / out</text>
   </g>
+
+  <!-- provenance / credits strip (what we used) -->
+  <rect x="30" y="895" width="1440" height="98" rx="12" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="920" font-size="14" font-weight="700" fill="#8a6d3b">What we used (data · tools · LLM)</text>
+  <text x="46" y="944" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">Real data:</tspan> ground truth = GISTDA satellite · geometry = GADM 4.1 · river-gauge = RID SWOC (independent gate) · DEM = Copernicus GLO-90 · basemap = GISTDA sphere · vector = 194 real news</text>
+  <text x="46" y="965" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">Tools:</tspan> Neo4j (graph) · GeoPandas (PIP) · scikit-learn TF-IDF (vector) · pysheds/D8 (DEM) · FastAPI+MapLibre+Chart.js (UI) · <tspan font-weight="700" fill="#c0492f">human-readable explanation = LLM groq/qwen</tspan> (grounded; LLM off in eval for reproducibility)</text>
+  <text x="46" y="986" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">Events:</tspan> Chao Phraya 2022/2021/2023/2024/2025 (GISTDA) + Mekong/NE live · node/edge skeleton hand-built from real topology (0 learned params)</text>
 </svg>

@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1500 920" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+<svg viewBox="0 0 1500 1010" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/>
@@ -172,4 +172,11 @@
     <polygon points="790,-13 828,-13 822,5 784,5" fill="#f3ece0" stroke="#8a6d3b" stroke-width="1.6"/>
     <text x="836" y="0" font-size="12.5" fill="#6a5a42">ข้อมูลเข้า/ผลออก</text>
   </g>
+
+  <!-- provenance / credits strip (ใช้อะไรมาทำบ้าง) -->
+  <rect x="30" y="895" width="1440" height="98" rx="12" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="46" y="920" font-size="14" font-weight="700" fill="#8a6d3b">ใช้อะไรมาทำบ้าง (ข้อมูล · เครื่องมือ · LLM)</text>
+  <text x="46" y="944" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">ข้อมูลจริง:</tspan> ground truth = GISTDA satellite · geometry = GADM 4.1 · river-gauge = RID SWOC (gate อิสระ) · DEM = Copernicus GLO-90 · basemap = GISTDA sphere · vector = ข่าวจริง 194 ชิ้น</text>
+  <text x="46" y="965" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">เครื่องมือ:</tspan> Neo4j (กราฟ) · GeoPandas (PIP) · scikit-learn TF-IDF (vector) · pysheds/D8 (DEM) · FastAPI+MapLibre+Chart.js (UI) · <tspan font-weight="700" fill="#c0492f">คำอธิบายภาษาคน = LLM groq/qwen</tspan> (grounded; eval ปิด LLM ให้ reproducible)</text>
+  <text x="46" y="986" font-size="12.5" fill="#3a2f22"><tspan font-weight="700">เหตุการณ์:</tspan> เจ้าพระยา 2565/2564/2566/2567/2568 (GISTDA) + โขง/อีสาน live · โครง node/edge วางมือจาก topology จริง (0 learned params)</text>
 </svg>
