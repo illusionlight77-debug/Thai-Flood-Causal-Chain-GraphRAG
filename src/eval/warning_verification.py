@@ -31,6 +31,7 @@ _PROC = settings.data_processed_dir
 _BANK = _PROC / "case_bank.json"
 _OUT = _PROC / "warning_verification.json"
 P_CONST = 0.938
+SHRINK = 5.0   # empirical-Bayes pseudo-count: shrink per-stratum hit-rate → global base (กัน overfit เมื่อ N น้อย)
 _YEAR_ORDER = ["2021", "2022", "2023", "2024", "2025"]   # chronological (+2568 GISTDA)
 random.seed(20260905)
 
@@ -96,6 +97,12 @@ def _loeo_predict(cases, method):
         elif method == "by_hop":
             strat = [x["gold"] for x in others if x["hop"] == c["hop"]]
             ps.append(sum(strat) / len(strat) if len(strat) >= 3 else base)
+        elif method == "by_hop_shrunk":
+            strat = [x["gold"] for x in others if x["predicted"] and x["hop"] == c["hop"]]
+            ps.append((sum(strat) + SHRINK * base) / (len(strat) + SHRINK))
+        elif method == "by_subbasin_shrunk":
+            strat = [x["gold"] for x in others if x["predicted"] and x["subbasin"] == c.get("subbasin")]
+            ps.append((sum(strat) + SHRINK * base) / (len(strat) + SHRINK))
         elif method in ("platt", "isotonic"):
             ps.append(_fit_predict(others, c, method, base))
     return ps
@@ -200,7 +207,8 @@ def run() -> dict:
     warned = [c for c in scored if c["predicted"]]
     gs = [c["gold"] for c in warned]
 
-    methods = ["const", "climatology", "by_hop", "platt", "isotonic"]
+    methods = ["const", "climatology", "by_hop", "by_hop_shrunk", "by_subbasin_shrunk",
+               "platt", "isotonic"]
     models = {}
     for m in methods:
         ps = _loeo_predict(warned, m)
@@ -208,11 +216,15 @@ def run() -> dict:
     # best = สูงสุดตาม BSS (ยกเว้น climatology ที่เป็น reference)
     cand = {k: v for k, v in models.items() if k != "climatology"}
     best = max(cand, key=lambda k: cand[k]["bss_vs_climatology"])
+    # แนะนำใช้จริง: shrinkage (empirical-Bayes) — BSS ใกล้ best แต่ ECE ต่ำกว่า + ไม่ over-confident
+    #   (robust กว่าเมื่อ N น้อย) ถ้ามีอยู่ ไม่งั้นใช้ best
+    recommended = "by_hop_shrunk" if "by_hop_shrunk" in models else best
 
     return {
         "note": "verify คำเตือนความน่าจะเป็น (Brier decomp + BSS + ECE) · calibrate LOEO (กัน overfit) · ไม่แตะกราฟ/gate",
         "n_warned": len(warned), "base_rate": round(sum(gs) / len(gs), 3),
-        "models": models, "best_by_bss": best,
+        "models": models, "best_by_bss": best, "recommended": recommended,
+        "recommended_reason": "empirical-Bayes shrinkage: BSS ≈ best แต่ ECE ต่ำกว่า + ไม่ over-confident → robust กว่าเมื่อ N น้อย",
         "best_ci_case_level": _bootstrap_ci(warned, best),
         "best_ci_event_level": _event_bootstrap(warned, best),
         "per_event_loeo": _per_event_loeo(scored, best),

@@ -56,8 +56,17 @@
 | const (0.938) | 0.0805 | **−0.008** | 0.025 | 0.000 |
 | climatology (ref) | 0.0804 | −0.007 | 0.000 | 0.008 |
 | **empirical by-hop** | **0.0743** | **+0.069** | 0.025 | 0.094 |
+| **by-hop + shrinkage** (แนะนำใช้) | 0.0744 | +0.068 | **0.020** | 0.066 |
+| by-subbasin + shrinkage | 0.0771 | +0.034 | 0.001 | 0.063 |
 | Platt (logistic) | 0.0810 | −0.015 | 0.008 | 0.019 |
 | isotonic | 0.0794 | +0.006 | 0.000 | 0.034 |
+
+- **ลอง calibrator ที่ทนกว่า hop (step 3):** empirical-Bayes **shrinkage** (ดึง per-hop hit-rate เข้าหา base rate,
+  กัน variance เมื่อ N น้อย) → BSS ≈ เท่า by-hop (0.068) แต่ **ECE ดีกว่า (0.025→0.020) + ไม่ over-confident**
+  (sharpness 0.094→0.066) → **แนะนำใช้ตัวนี้จริง** (robust กว่า). subbasin ไม่ช่วย (reliability แย่ลง).
+- **root cause ของ 2568 BSS ลบ (วิเคราะห์แล้ว):** ไม่ใช่ตัว calibrator — 2568 ท่วมหนักฝั่ง **ลุ่มปิง/ต้นน้ำ**
+  (กำแพงเพชร/อุตรดิตถ์) ที่ **gate ตายตัวจับไม่ได้ = FN** (จุดอ่อนเดียวกับ 2567) → probability ต่ำแต่ท่วมจริง โดนหัก
+  → แก้ที่ calibrator ไม่ได้ ต้องแก้ **gate ให้รับ local-rain/ต้นน้ำ** (งานหลัก, future) หรือเพิ่มเหตุการณ์
 
 - **finding หลัก:** calibrate ตาม **causal-hop ยังมี skill เป็นบวก (BSS +0.069)** เหนือค่าคงที่/climatology (≈0)
   → ความลึกสายเหตุ-ผลยังเป็นสัญญาณที่มีความหมาย

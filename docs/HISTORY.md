@@ -117,3 +117,17 @@ real-distance lags).
   → **การเพิ่มข้อมูลจริงเผยว่า calibration ยังไม่ robust** (4 เหตุการณ์เดิมดูดีเกิน) — รายงานตรง ไม่ revert
   (คู่ขนานกับบทเรียน F1 1.000→0.545: ยิ่งใช้ข้อมูลจริง ยิ่งเห็นความจริง)
 - **prospective log CLI** พร้อมใช้ (`--log`/`--resolve`) — ไฟล์ prospective ว่างไว้ (ไม่ ship demo ที่อาจเข้าใจผิด)
+
+---
+
+### 2026-09-05 (ต่อ 2) — B step: robust calibrator (shrinkage) + วิเคราะห์ root cause
+
+- **step 3 (calibrator ทนกว่า hop):** เพิ่ม empirical-Bayes **shrinkage** (`by_hop_shrunk`, `by_subbasin_shrunk`,
+  pseudo-count m=5) ใน `warning_verification.py`. ผล: by-hop+shrinkage → BSS 0.068 (≈ by-hop) แต่ **ECE
+  0.025→0.020 + ไม่ over-confident (sharp 0.094→0.066)** = robust กว่า → ตั้งเป็น `recommended`. subbasin ไม่ช่วย.
+- **step 1 (gold 2568 เป็น rai-cutoff):** หา rai รายจังหวัดครบ 17 จว. ไม่ได้จากแหล่งข่าว (ให้แต่ยอดรวม/subset)
+  → **ไม่ปั้น** เก็บ gold แบบ list + caveat. พบว่า base rate 17/23 ≈ 2565 อยู่แล้ว (ไม่ใช่ต้นเหตุ).
+- **root cause ของ 2568 BSS ลบ:** ไม่ใช่ calibrator — 2568 ท่วมหนักฝั่ง **ลุ่มปิง/ต้นน้ำ** (กำแพงเพชร/อุตรดิตถ์)
+  ที่ gate ตายตัวจับไม่ได้ (**FN** จุดอ่อนเดียวกับ 2567) → probability ต่ำแต่ท่วมจริง. แก้ที่ calibrator ไม่ได้ —
+  ต้องแก้ gate ให้รับ local-rain (งานหลัก/future) หรือเพิ่มเหตุการณ์.
+- **สรุป B:** binary skill แข็ง (5 เหตุการณ์จริง), probabilistic calibration มี skill บวกแต่ยังไม่ robust/ยังไม่ significant.
