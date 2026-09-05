@@ -187,6 +187,54 @@ def _per_event_loeo(cases, method="by_hop"):
     return rows
 
 
+def _skill_significance(cases, method, B=5000):
+    """ทดสอบ 'มี skill จริงไหม' ระดับเหตุการณ์: per-event BSS → one-sample (mean>0?)
+    ด้วย t-CI (df=n-1) + bootstrap p(mean<=0). ซื่อสัตย์กว่า case-level bootstrap."""
+    rows = _per_event_loeo(cases, method)
+    vals = [r["bss"] for r in rows if r["bss"] is not None]
+    n = len(vals)
+    if n < 2:
+        return {"per_event_bss": vals, "mean": None}
+    mean = sum(vals) / n
+    sd = (sum((v - mean) ** 2 for v in vals) / (n - 1)) ** 0.5
+    t975 = {2: 12.71, 3: 4.303, 4: 3.182, 5: 2.776, 6: 2.571}.get(n, 2.776)
+    half = t975 * sd / (n ** 0.5)
+    # bootstrap over events: p = สัดส่วน resample ที่ mean <= 0
+    cnt = 0
+    for _ in range(B):
+        m = sum(vals[random.randrange(n)] for _ in range(n)) / n
+        cnt += (m <= 0)
+    return {"per_event_bss": [round(v, 3) for v in vals], "mean_bss": round(mean, 3),
+            "sd": round(sd, 3), "ci95_t": [round(mean - half, 3), round(mean + half, 3)],
+            "boot_p_le0": round(cnt / B, 3), "n_events": n,
+            "verdict": ("skill > 0 (p<0.05)" if cnt / B < 0.05 else "ยังสรุป skill>0 ไม่ได้ (p≥0.05)")}
+
+
+def _shrink_sweep(cases):
+    """เลือก pseudo-count m ของ shrinkage ที่ pooled Brier ต่ำสุด (robustness tuning)."""
+    global SHRINK
+    gs = [c["gold"] for c in cases]
+    out = []
+    keep = SHRINK
+    for m in (2.0, 5.0, 10.0, 20.0):
+        SHRINK = m
+        ps = _loeo_predict(cases, "by_hop_shrunk")
+        out.append({"m": m, "brier": round(_brier(ps, gs), 4)})
+    SHRINK = keep
+    best = min(out, key=lambda x: x["brier"])
+    return {"sweep": out, "best_m": best["m"]}
+
+
+def _fn_analysis(cases):
+    """lever-1: FN เกิดที่ไหน (subbasin) — ยืนยันว่าเป็น local-rain/ต้นน้ำที่ gate ตายตัวจับไม่ได้."""
+    fn = [c for c in cases if c["outcome"] == "FN"]
+    by_sub: dict[str, int] = {}
+    for c in fn:
+        by_sub[c.get("subbasin") or "?"] = by_sub.get(c.get("subbasin") or "?", 0) + 1
+    return {"n_fn": len(fn), "by_subbasin": dict(sorted(by_sub.items(), key=lambda x: -x[1])),
+            "note": "FN กระจุกที่ต้นน้ำ (Ping ฯลฯ) = จุดอ่อน gate ตายตัวไม่รับ local-rain — แก้ต้องมี gauge/ฝนต้นน้ำจริงต่อเหตุการณ์ (ไม่ tune กับ gold)"}
+
+
 def _drift(cases):
     """CSI ต่อเหตุการณ์ตามลำดับเวลา (จากทุก scored case ไม่ใช่แค่ warned)."""
     out = []
@@ -228,6 +276,9 @@ def run() -> dict:
         "best_ci_case_level": _bootstrap_ci(warned, best),
         "best_ci_event_level": _event_bootstrap(warned, best),
         "per_event_loeo": _per_event_loeo(scored, best),
+        "skill_significance": _skill_significance(warned, recommended),
+        "shrinkage_tuning": _shrink_sweep(warned),
+        "fn_analysis": _fn_analysis(scored),
         "drift_csi_by_event": _drift(scored),
         "ci_note": ("รายงาน CI สองแบบ: case-level (แคบเกินจริงเพราะ province-cases correlated) และ "
                     "event-level cluster bootstrap (ถูกต้องกว่า, กว้างกว่า) — ใช้ event-level เป็นหลัก"),
@@ -249,6 +300,10 @@ def main() -> None:
     print(f"  BSS CI95 case-level  = {r['best_ci_case_level']['bss_ci95']}")
     print(f"  BSS CI95 event-level = {r['best_ci_event_level']['bss_ci95']}  (ใช้เป็นหลัก)")
     print("  per-event LOEO:", [(x["event"], x["bss"]) for x in r["per_event_loeo"]])
+    sig = r["skill_significance"]
+    print(f"  skill sig (recommended={r['recommended']}): mean BSS={sig.get('mean_bss')} "
+          f"CI95={sig.get('ci95_t')} p(≤0)={sig.get('boot_p_le0')} → {sig.get('verdict')}")
+    print(f"  shrinkage best m={r['shrinkage_tuning']['best_m']}  FN by subbasin={r['fn_analysis']['by_subbasin']}")
     print("  drift CSI:", [(d["event"], d["csi"]) for d in r["drift_csi_by_event"]])
 
 

@@ -246,6 +246,54 @@
       "bss": -0.322
     }
   ],
+  "skill_significance": {
+    "per_event_bss": [
+      0.155,
+      0.155,
+      0.07,
+      0.07,
+      -0.189
+    ],
+    "mean_bss": 0.052,
+    "sd": 0.141,
+    "ci95_t": [
+      -0.123,
+      0.228
+    ],
+    "boot_p_le0": 0.161,
+    "n_events": 5,
+    "verdict": "ยังสรุป skill>0 ไม่ได้ (p≥0.05)"
+  },
+  "shrinkage_tuning": {
+    "sweep": [
+      {
+        "m": 2.0,
+        "brier": 0.0742
+      },
+      {
+        "m": 5.0,
+        "brier": 0.0744
+      },
+      {
+        "m": 10.0,
+        "brier": 0.0751
+      },
+      {
+        "m": 20.0,
+        "brier": 0.0763
+      }
+    ],
+    "best_m": 2.0
+  },
+  "fn_analysis": {
+    "n_fn": 11,
+    "by_subbasin": {
+      "Ping": 9,
+      "Wang": 1,
+      "ChaoPhraya": 1
+    },
+    "note": "FN กระจุกที่ต้นน้ำ (Ping ฯลฯ) = จุดอ่อน gate ตายตัวไม่รับ local-rain — แก้ต้องมี gauge/ฝนต้นน้ำจริงต่อเหตุการณ์ (ไม่ tune กับ gold)"
+  },
   "drift_csi_by_event": [
     {
       "event": "2021",

@@ -131,3 +131,13 @@ real-distance lags).
   ที่ gate ตายตัวจับไม่ได้ (**FN** จุดอ่อนเดียวกับ 2567) → probability ต่ำแต่ท่วมจริง. แก้ที่ calibrator ไม่ได้ —
   ต้องแก้ gate ให้รับ local-rain (งานหลัก/future) หรือเพิ่มเหตุการณ์.
 - **สรุป B:** binary skill แข็ง (5 เหตุการณ์จริง), probabilistic calibration มี skill บวกแต่ยังไม่ robust/ยังไม่ significant.
+
+---
+
+### 2026-09-05 (ต่อ 3) — ลอง 3 levers เต็มกรอบ integrity → ผลซื่อสัตย์
+
+- **Lever 1 (FN/gate):** เพิ่ม FN analysis → **9/11 FN = ลุ่มปิง** (Ping 9 · Wang 1 · ChaoPhraya 1) = ยืนยัน
+  จุดอ่อนคือ gate ตายตัวไม่รับ local-rain ต้นน้ำ. แก้ต้องมี gauge/ฝนต้นน้ำจริงต่อเหตุการณ์ (data-blocked; ห้าม tune gold).
+- **Lever 2 (significance):** one-sample test per-event BSS → mean 0.052, CI95 [−0.12,0.23], **p(≤0)=0.16 → ยัง sig ไม่ได้**.
+- **Lever 3 (calibrator):** shrinkage best m=2 (ECE ดีขึ้น) — ไม่เปลี่ยนขีดจำกัดหลัก.
+- **สรุป:** ทำครบทั้ง 3 แต่**ตัวเลขไม่พุ่ง** เพราะขีดจำกัดคือข้อมูล + gate ต้นน้ำ ไม่ใช่ระเบียบวิธี — เลือกความจริงเหนือเลขสวย.
