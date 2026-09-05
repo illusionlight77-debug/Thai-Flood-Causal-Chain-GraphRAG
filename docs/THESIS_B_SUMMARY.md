@@ -82,9 +82,13 @@
 ### 4.3 ผลของ 3 levers ที่ลองแก้ (ซื่อสัตย์)
 - **Lever 3 (calibrator ทนกว่า hop):** empirical-Bayes shrinkage → ECE 0.025→0.020, ไม่ over-confident (แนะนำใช้); m ที่ดีสุด = 2
 - **Lever 2 (significance ระดับเหตุการณ์):** one-sample test บน per-event BSS (5 ค่า) → **mean 0.052 · CI95 [−0.12, 0.23] · p(BSS≤0)=0.16 → ยังสรุป skill>0 ไม่ได้** (ซื่อสัตย์)
-- **Lever 1 (แก้ FN/gate):** วิเคราะห์ FN เชิงโครงสร้าง → **9/11 เป็นลุ่มปิง** (ต้นน้ำ local-rain) → ยืนยันว่า
-  จุดอ่อนคือ **gate ตายตัวไม่รับ local-rain** — *แก้ที่ calibrator ไม่ได้* ต้องมี **gauge/ฝนต้นน้ำจริงต่อเหตุการณ์**
-  (ไม่มีในเครื่อง → data-blocked; ห้าม tune กับ gold) = **งานหลักที่ต้องแตะโมเดล (future)**
+- **Lever 1 (แก้ FN/gate) — ทำแล้ว (unblocked):** พบว่า thaiwater API v3 ให้ **เกจย้อนหลัง + qmax** (ไม่ต้อง key)
+  → เขียน `thaiwater_gauge.py --mode reach` สร้าง gate จาก **control gauge ต่อ reach** (discharge>qmax สายหลัก /
+  stage>bank สาขา, อิสระจาก gold — survey: NHDPlus snapping, NWS index gauge, C.13 control). **ผล: reproduce
+  ผล validated เป๊ะทั้ง 5 เหตุการณ์** (0.938/0.909/0.903/0.800/0.909) → ยกระดับทุกเหตุการณ์เป็น**เกจจริงต่อเหตุการณ์
+  อัตโนมัติ + reproducible** (แทน assumption) และ **validate** bulletin ผู้เชี่ยวชาญ. **แต่ตัวเลข B ไม่เปลี่ยน** เพราะ
+  FN 9/11 = ลุ่มปิง เป็น **local-rain จริง** (P.7A ปิงตอนล่างไม่ล้นจริง) ที่ gate สายหลักจับไม่ได้ตามธรรมชาติ —
+  ไม่ใช่ gate ผิด และแก้ด้วย calibrator ไม่ได้ (ต้องเพิ่มกลไก local-rain = งานหลัก/future)
 - **ข้อสรุปตรง:** ทำ 3 levers เต็มที่ในกรอบ integrity แล้ว → **ตัวเลขไม่พุ่ง** เพราะขีดจำกัดจริงคือ *ข้อมูล (5 เหตุการณ์)*
   + *gate ต้นน้ำ* ไม่ใช่ระเบียบวิธี. การวินิจฉัยชัด (9/11 FN = ปิง) เป็น**ผลลัพธ์ที่มีค่าเชิงวิชาการ** (บอกทางแก้ที่ถูก)
 - **Platt/isotonic ไม่ชนะ empirical** — ตรงกับ survey: ข้อมูลน้อย **isotonic เสี่ยง overfit, Platt ก็ยังไม่พอ**

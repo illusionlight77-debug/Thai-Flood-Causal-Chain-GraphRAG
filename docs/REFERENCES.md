@@ -151,3 +151,18 @@ Full source links + endpoint status: README → *System — All Links*.
 - **Cameron, Gelbach & Miller (2008)** — *Bootstrap-based improvements for inference with clustered
   errors.* Review of Economics and Statistics 90(3). → ข้อควรระวัง: **cluster bootstrap กับจำนวน cluster
   น้อยไม่เสถียร** (เหตุผลที่เราไม่เคลม significance จาก 4 เหตุการณ์).
+
+### Gauge → reach mapping / control-station gate (lever-1 refine)
+
+- **Shin, Choi, et al. (2020)** — *Developing the hydrological dependency structure between
+  streamgage and reservoir networks.* Scientific Data 7. → snapping stream gauges to the
+  nearest river reach (NHDPlus flowline) by ComID.
+- **Tyers (2020), `riverdist` R package** — snapping XY points to the closest river-network
+  segment/vertex (`xy2segvert`). → basis for "one control gauge per reach".
+- **NWS/NOAA — Stream Gage Networks & Selection of Gaging Station** (nws.noaa.gov SHManual;
+  kacv.net NWS lesson 3). → index/control gauge selection for reach forecasting.
+- **Chao Phraya control stations (RID):** **C.2 (Nakhon Sawan)** = master control governing
+  Nakhon Sawan→Bangkok; **C.13 (Chao Phraya Dam, Chai Nat)** release threshold (~2,800 m³/s;
+  API `qmax`=2720) = operational downstream flood-warning gate. (nationthailand / thethaiger 2025.)
+- **Gate rule used:** main-stream reaches → *discharge > qmax* (published channel capacity, not
+  gold); tributary reaches → *stage > min_bank*. All from thaiwater API v3 (`waterlevel_graph`).

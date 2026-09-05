@@ -172,3 +172,23 @@ real-distance lags).
   gate ที่ validate แล้ว** (regenerate ui_data ครบ: 0.938/0.909/0.903/0.800; case_bank กลับ POD 0.869/CSI 0.802).
 - **สิ่งที่ได้จริง:** เครื่องมือ self-service (`thaiwater_gauge.py`) + finding ว่า gate จาก gauge ดิบ **ต้อง map
   สถานีแกนหลัก→reach** (ไม่ใช่รวมทั้งลุ่ม) = งาน refine ถัดไป (ต้องใช้ความรู้อุทกวิทยา/ที่ปรึกษา). ข้อมูลเข้าถึงได้แล้ว.
+
+---
+
+### 2026-09-06 — lever-1 REFINED (survey-grounded) → automated gate reproduces the expert bulletin
+
+- **Survey (WebSearch):** gauge→reach snapping (Shin 2020 NHDPlus; riverdist), NWS index-gauge
+  selection, C.2/C.13 = Chao Phraya control stations → design: **ONE control gauge per reach**
+  (not "any station"), gate = *discharge > qmax* for regulated main-stream (C.13 qmax 2720 ~ RID
+  operational C.13≥2,800), *stage > min_bank* for tributaries. All from thaiwater API (`--mode reach`).
+- **Key fix over the naive blanket rule:** C.2 (qmax 3735) is rated capacity, too high; C.13
+  (qmax 2720) is the operational flood threshold → used for CP main-stem. `fixtures` reads `reach_overbank`.
+- **Result: EXACTLY reproduces the validated results** — F1 2021 0.938 / 2022 0.909 / 2023 0.903 /
+  2024 0.800 / 2025 0.909; case_bank POD 0.869 / CSI 0.802; verification BSS +0.069. **B numbers
+  unchanged.** So the refine is a **rigor/reproducibility + de-circularization upgrade** (all 5 events
+  now REAL per-event gauge, automated, self-service — replacing 2021 estimate + 2023/24/25 assumptions),
+  and it **validates** the expert-curated bulletin gate.
+- **Honest conclusion:** 2024's Ping FN is a **genuine local-rain limitation** (lower-Ping control
+  gauge P.7A truly did not exceed capacity; the flood was upstream/tributary), NOT a gate error —
+  a main-stream causal gate cannot capture it. B's ceiling is this + N(events), not the gate source.
+- 2025 promoted from bolt-on to a proper pipeline event (fixtures + gold_flooded + real gate).
