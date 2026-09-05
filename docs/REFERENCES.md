@@ -129,3 +129,20 @@ Full source links + endpoint status: README → *System — All Links*.
   บริบทพยากรณ์น้ำท่วมเชิงปฏิบัติการ + post-processing.
 - **Liu et al. (2012)** — *Advancing data assimilation in operational hydrologic forecasting.*
   HESS 16. → อัปเดตพยากรณ์จากข้อมูลจริง (เชิงหลักการ).
+
+### Probabilistic warning verification (Thesis B — ทำ B ให้แข็ง)
+
+- **Brier (1950)** — *Verification of forecasts expressed in terms of probability.* Monthly Weather
+  Review 78(1):1–3. → Brier score.
+- **Murphy (1973)** — *A new vector partition of the probability score.* J. Applied Meteorology 12(4).
+  → **Brier decomposition** reliability − resolution + uncertainty (ใช้ในโค้ด).
+- **Pappenberger, Ramos, Cloke et al. (2015)** — *How do I know if my forecasts are better? Using
+  benchmarks in hydrological ensemble prediction.* J. Hydrology 522:697–713. → **Brier Skill Score
+  เทียบ climatology/naïve** (กัน "naïve skill").
+- **Naeini, Cooper & Hauskrecht (2015)** — *Obtaining Well Calibrated Probabilities Using Bayesian
+  Binning.* AAAI. → **Expected Calibration Error (ECE)**.
+- **Bröcker & Smith (2007)** — *Increasing the reliability of reliability diagrams.* Weather and
+  Forecasting 22(3). → วิธีอ่าน/สร้าง reliability diagram ที่เชื่อถือได้.
+- **Wilks (2011)** — *Statistical Methods in the Atmospheric Sciences*, 3rd ed. → มาตรฐาน verification.
+- **WWRP/WGNE Joint Working Group on Forecast Verification** (cawcr.gov.au/projects/verification) →
+  นิยาม POD/FAR/CSI, reliability, sharpness, BSS ที่ใช้อ้าง.

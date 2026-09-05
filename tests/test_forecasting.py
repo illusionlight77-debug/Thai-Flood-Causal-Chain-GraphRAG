@@ -1,5 +1,5 @@
 """Roadmap B — tests for case_bank + calibration (offline, อ่านจาก ui_data/case_bank JSON)."""
-from src.eval import calibration, case_bank
+from src.eval import calibration, case_bank, warning_verification
 
 
 def test_outcome_labels():
@@ -28,3 +28,16 @@ def test_calibration_prequential():
     # baseline คงที่ → sharpness = 0; LOEO ต้อง sharp กว่า (>0)
     assert r["models"]["baseline_const"]["sharpness_sd"] == 0.0
     assert r["models"]["loeo_by_hop"]["sharpness_sd"] > 0.0
+
+
+def test_verification_bss_and_decomp():
+    r = warning_verification.run()
+    assert r["n_warned"] > 0
+    m = r["models"]
+    # Murphy identity: BS ~= reliability - resolution + uncertainty
+    for v in m.values():
+        approx = v["reliability"] - v["resolution"] + v["uncertainty"]
+        assert abs(approx - v["brier"]) < 1e-2
+    # calibrate-by-hop ควรมี skill (BSS) เหนือค่าคงที่ (รายงานตรง แม้ CI จะกว้าง)
+    assert m["by_hop"]["bss_vs_climatology"] > m["const"]["bss_vs_climatology"]
+    assert len(r["drift_csi_by_event"]) == 4

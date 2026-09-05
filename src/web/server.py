@@ -113,7 +113,8 @@ def track_record():
     def _load(name):
         f = PROCESSED / f"{name}.json"
         return json.loads(f.read_text("utf-8")) if f.exists() else None
-    return {"case_bank": _load("case_bank"), "calibration": _load("calibration")}
+    return {"case_bank": _load("case_bank"), "calibration": _load("calibration"),
+            "verification": _load("warning_verification")}
 
 
 @app.get("/api/config")

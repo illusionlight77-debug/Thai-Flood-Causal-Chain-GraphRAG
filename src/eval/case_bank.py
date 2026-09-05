@@ -26,6 +26,23 @@ _PROC = settings.data_processed_dir
 _OUT = _PROC / "case_bank.json"
 _PROSPECTIVE = _PROC / "case_bank_prospective.json"
 
+# province (gadm) -> subbasin (โครงสร้าง ไม่ได้มาจากเฉลย) สำหรับ calibration/analysis
+_BASIN_F = _PROC / "chao_phraya_basin_provinces.json"
+
+
+def _norm(s: str) -> str:
+    return "".join(str(s).split()).lower()
+
+
+def _subbasin_map() -> dict[str, str]:
+    if not _BASIN_F.exists():
+        return {}
+    prov = json.loads(_BASIN_F.read_text("utf-8")).get("provinces", {})
+    return {_norm(v.get("gadm", "")): v.get("subbasin") for v in prov.values()}
+
+
+_SUB = _subbasin_map()
+
 # เหตุการณ์ที่ "ให้คะแนน" (ลุ่มเจ้าพระยา, มี negative จริง) — ne2026 เป็น generalization แยก
 SCORED = ["2022", "2021", "2024", "2023"]
 _LABEL = {"2022": "เจ้าพระยา 2565 (โนรู)", "2021": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
@@ -51,7 +68,8 @@ def _cases_for_event(year: str) -> list[dict]:
         pred = p in predicted
         gold = bool(pp["is_gold"])
         out.append({"event": year, "label": _LABEL.get(year, year), "province": p,
-                    "hop": pp.get("hop"), "predicted": pred, "gold": gold,
+                    "hop": pp.get("hop"), "subbasin": _SUB.get(_norm(p)),
+                    "predicted": pred, "gold": gold,
                     "outcome": _label(pred, gold), "scored": year in SCORED})
     return out
 

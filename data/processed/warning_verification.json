@@ -1,0 +1,165 @@
+{
+  "note": "verify คำเตือนความน่าจะเป็น (Brier decomp + BSS + ECE) · calibrate LOEO (กัน overfit) · ไม่แตะกราฟ/gate",
+  "n_warned": 64,
+  "base_rate": 0.906,
+  "models": {
+    "const": {
+      "brier": 0.086,
+      "ece": 0.0317,
+      "sharpness_sd": 0.0,
+      "mean_prob": 0.938,
+      "reliability": 0.001,
+      "resolution": 0.0,
+      "uncertainty": 0.085,
+      "bss_vs_climatology": -0.012,
+      "reliability_bins": [
+        {
+          "bin": "0.85-0.95",
+          "n": 64,
+          "mean_pred": 0.938,
+          "obs_freq": 0.906
+        }
+      ]
+    },
+    "climatology": {
+      "brier": 0.0857,
+      "ece": 0.0,
+      "sharpness_sd": 0.0104,
+      "mean_prob": 0.9062,
+      "reliability": 0.0017,
+      "resolution": 0.001,
+      "uncertainty": 0.085,
+      "bss_vs_climatology": -0.009,
+      "reliability_bins": [
+        {
+          "bin": "0.85-0.95",
+          "n": 64,
+          "mean_pred": 0.906,
+          "obs_freq": 0.906
+        }
+      ]
+    },
+    "by_hop": {
+      "brier": 0.0725,
+      "ece": 0.0417,
+      "sharpness_sd": 0.1192,
+      "mean_prob": 0.9062,
+      "reliability": 0.0034,
+      "resolution": 0.016,
+      "uncertainty": 0.085,
+      "bss_vs_climatology": 0.147,
+      "reliability_bins": [
+        {
+          "bin": "0.00-0.70",
+          "n": 12,
+          "mean_pred": 0.667,
+          "obs_freq": 0.667
+        },
+        {
+          "bin": "0.85-0.95",
+          "n": 16,
+          "mean_pred": 0.917,
+          "obs_freq": 1.0
+        },
+        {
+          "bin": "0.95-1.01",
+          "n": 36,
+          "mean_pred": 0.981,
+          "obs_freq": 0.944
+        }
+      ]
+    },
+    "platt": {
+      "brier": 0.0853,
+      "ece": 0.0199,
+      "sharpness_sd": 0.0313,
+      "mean_prob": 0.9062,
+      "reliability": 0.0163,
+      "resolution": 0.016,
+      "uncertainty": 0.085,
+      "bss_vs_climatology": -0.004,
+      "reliability_bins": [
+        {
+          "bin": "0.70-0.85",
+          "n": 4,
+          "mean_pred": 0.841,
+          "obs_freq": 1.0
+        },
+        {
+          "bin": "0.85-0.95",
+          "n": 60,
+          "mean_pred": 0.911,
+          "obs_freq": 0.9
+        }
+      ]
+    },
+    "isotonic": {
+      "brier": 0.0846,
+      "ece": 0.0,
+      "sharpness_sd": 0.0371,
+      "mean_prob": 0.9062,
+      "reliability": 0.002,
+      "resolution": 0.0024,
+      "uncertainty": 0.085,
+      "bss_vs_climatology": 0.004,
+      "reliability_bins": [
+        {
+          "bin": "0.85-0.95",
+          "n": 56,
+          "mean_pred": 0.893,
+          "obs_freq": 0.893
+        },
+        {
+          "bin": "0.95-1.01",
+          "n": 8,
+          "mean_pred": 1.0,
+          "obs_freq": 1.0
+        }
+      ]
+    }
+  },
+  "best_by_bss": "by_hop",
+  "best_ci": {
+    "brier_ci95": [
+      0.0301,
+      0.1238
+    ],
+    "bss_ci95": [
+      -0.381,
+      0.336
+    ]
+  },
+  "const_ci": {
+    "brier_ci95": [
+      0.0312,
+      0.1544
+    ],
+    "bss_ci95": [
+      -0.103,
+      -0.0
+    ]
+  },
+  "drift_csi_by_event": [
+    {
+      "event": "2021",
+      "csi": 0.882,
+      "alarm": false
+    },
+    {
+      "event": "2022",
+      "csi": 0.833,
+      "alarm": false
+    },
+    {
+      "event": "2023",
+      "csi": 0.824,
+      "alarm": false
+    },
+    {
+      "event": "2024",
+      "csi": 0.667,
+      "alarm": false
+    }
+  ],
+  "caveat": "ข้อมูลน้อย (~64 คำเตือน) → isotonic เสี่ยง overfit, Platt/empirical ปลอดภัยกว่า (Niculescu-Mizil 2005); รายงานทุก calibrator ตรง ๆ"
+}
