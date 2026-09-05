@@ -155,3 +155,20 @@ real-distance lags).
 - **ติดที่:** ไม่มี **archive bulletin รายวันที่** ของเหตุการณ์ 2567/2568 (news dir 403 · Wayback ไม่มี snapshot)
   → parser พร้อม แต่**ต้องได้ไฟล์ bulletin วันที่พีค**มาป้อน (ไม่ scrape มั่ว/ไม่ปั้น)
 - **สรุป:** key/ดาวน์โหลดที่ทำเองได้ = ข้อมูล *ปัจจุบัน* เท่านั้น; ข้อมูล CP *ย้อนหลัง* ที่ B ต้องใช้ยังต้องได้จากคุณ
+
+---
+
+### 2026-09-05 (ต่อ 5) — SELF-SERVICE unblock lever 1 + ผลการทดลอง gate จริง (ซื่อสัตย์)
+
+- **ปลดล็อกได้เอง (ไม่ต้องรอผู้ใช้):** พบว่า thaiwater SPA เรียก API สาธารณะ (ไม่ต้อง key)
+  `api-v3.thaiwater.net/.../public/waterlevel_graph` → **timeseries ย้อนหลัง + min_bank** ต่อสถานี
+  → เขียน `src/ingest/thaiwater_gauge.py` ดึง over-bank จริงต่อเหตุการณ์ (peak vs min_bank, อิสระจาก gold).
+- **derive gate จริง 2564-2568:** 2565 (API) = ครบ 6 ลุ่ม → **validate bulletin เดิม** (full-basin flood). แต่ละปีต่างกันจริง.
+- **ทดลองใช้ + re-run pipeline (Neo4j) ทั้ง 4 เหตุการณ์:** ผล **ตรงข้ามกับที่หวัง (รายงานตรง):**
+  2564 F1 0.938→0.688 · 2565 0.909→0.800 · 2566 0.903→0.741 · 2567 0.800→**0.857**↑
+- **สาเหตุ:** กฎรวม "สถานีใดในลุ่มน้ำล้น → ทั้งลุ่ม overflow" **หลวมเกินไป** (8 สถานี/ลุ่ม → flag ง่าย)
+  → over-predict → specificity ตก. bulletin 2565 เดิมใช้ **สถานีแกนหลักเจาะจง** (C.2/C.13/N.7A) ไม่ใช่ "any station".
+- **ตัดสินใจ:** **ไม่เก็บ gate หลวม** (ทำ headline แย่ลงจากกฎที่ผิด + ห้าม cherry-pick 2567) → **revert กลับ
+  gate ที่ validate แล้ว** (regenerate ui_data ครบ: 0.938/0.909/0.903/0.800; case_bank กลับ POD 0.869/CSI 0.802).
+- **สิ่งที่ได้จริง:** เครื่องมือ self-service (`thaiwater_gauge.py`) + finding ว่า gate จาก gauge ดิบ **ต้อง map
+  สถานีแกนหลัก→reach** (ไม่ใช่รวมทั้งลุ่ม) = งาน refine ถัดไป (ต้องใช้ความรู้อุทกวิทยา/ที่ปรึกษา). ข้อมูลเข้าถึงได้แล้ว.

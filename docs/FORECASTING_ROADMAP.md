@@ -183,3 +183,8 @@
 **เครื่องมือพร้อมแล้ว:** `src/ingest/rid_bulletin.py` — พอได้ **bulletin RID วันที่พีคของ 2567 (ต.ค.) / 2568 (พ.ย.)**
 มาป้อน (`--pdf ... --event 2024 --write`) → ได้ `river_reach_overbank_{year}.json` (overflow ต่อลุ่มน้ำ อิสระจาก gold)
 → อัปเดต gate ลุ่มปิงแบบ out-of-sample → ลด FN → รัน verification ใหม่. **ต้องการจากผู้ใช้: ไฟล์ bulletin วันที่เท่านั้น.**
+
+**อัปเดต 2026-09-05 (ต่อ):** ปลดล็อกแหล่ง gauge ย้อนหลังได้เอง → `src/ingest/thaiwater_gauge.py`
+(thaiwater API v3, ไม่ต้อง key). แต่การแปลง gauge→gate ด้วยกฎ "any station over-bank → subbasin overflow"
+**หลวมเกินไป → over-predict → F1 ตก** (2564 .938→.688 ฯลฯ) จึง revert. **refine ถัดไป:** map สถานีแกนหลัก→reach
+(เหมือน bulletin 2565 ที่ใช้ C.2/C.13/N.7A) แล้วค่อยใช้ gauge จริงต่อเหตุการณ์ = lever 1 ที่ถูกต้อง.
