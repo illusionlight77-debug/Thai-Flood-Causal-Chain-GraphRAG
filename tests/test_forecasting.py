@@ -1,5 +1,17 @@
 """Roadmap B — tests for case_bank + calibration (offline, อ่านจาก ui_data/case_bank JSON)."""
 from src.eval import calibration, case_bank, warning_verification
+from src.ingest import rid_bulletin
+
+
+def test_rid_bulletin_parser():
+    """lever-1 tool: RID bulletin prose → per-sub-basin over-bank (independent of gold)."""
+    txt = ("แม่น้ำปิง สถานี P.7A ปริมาณน้ำไหลผ่าน 900 ลบ.ม./วินาที ระดับน้ำ สูงกว่าตลิ่ง 1.20 เมตร "
+           "แม่น้ำเจ้าพระยา สถานี C.2 ปริมาณน้ำไหลผ่าน 766 ลบ.ม./วินาที ระดับน้ำ ต่ำกว่าตลิ่ง 6.73 เมตร")
+    st = {s["station"]: s for s in rid_bulletin.parse_stations(txt)}
+    assert st["P.7A"]["subbasin"] == "Ping" and st["P.7A"]["over_bank"] is True
+    assert st["C.2"]["subbasin"] == "ChaoPhraya" and st["C.2"]["over_bank"] is False
+    res = rid_bulletin.to_overbank_json(list(st.values()), "unit", "test")
+    assert res["overflow"]["Ping"] is True and res["overflow"]["ChaoPhraya"] is False
 
 
 def test_outcome_labels():

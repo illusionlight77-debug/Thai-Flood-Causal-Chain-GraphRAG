@@ -168,3 +168,18 @@
 "ไปได้แน่นอน" เพราะ (ก) โค้ด+ผลมีอยู่จริง (case_bank/calibration/track-record), (ข) ยืนบนโครงเดียวกับงานหลัก
 (0 learned params), (ค) ทุกตัวเลขวัดได้ + มี paper รองรับ. รายงานข้อจำกัดตรง ๆ (N, magnitude) ตามกติกา integrity —
 ซึ่ง *เพิ่ม* ความน่าเชื่อถือ ไม่ลด.
+
+---
+
+## 7. สถานะแหล่งข้อมูลภายนอก (อัปเดต 2026-09-05 หลังลองดึงเอง)
+
+| แหล่ง | ผมทำเองได้ไหม | ผล |
+|---|---|---|
+| GISTDA gateway API (key ใน .env) | ✅ เรียกได้ | **flood ปัจจุบันเท่านั้น** (ตอนนี้=อีสาน/โขง) — ไม่ใช่ CP ย้อนหลัง |
+| GISTDA STAC (ย้อนหลัง) | ❌ timeout/บล็อก | ดึง per-province rai ย้อนหลังไม่ได้ |
+| RID bulletin (`water.rid.go.th`) | ✅ ดาวน์โหลด+parse ได้ (`rid_bulletin.py`) | ได้แต่ **bulletin ปัจจุบัน** — ไม่มี archive รายวันที่ของ 2567/2568 |
+| thaiwater flood_area.html | ✅ อ่านได้ (browser) | ให้ **รายชื่อจังหวัด (gold)** ไม่ใช่ overflow อิสระ; ไร่รายจังหวัดอยู่หลัง detail-link |
+
+**เครื่องมือพร้อมแล้ว:** `src/ingest/rid_bulletin.py` — พอได้ **bulletin RID วันที่พีคของ 2567 (ต.ค.) / 2568 (พ.ย.)**
+มาป้อน (`--pdf ... --event 2024 --write`) → ได้ `river_reach_overbank_{year}.json` (overflow ต่อลุ่มน้ำ อิสระจาก gold)
+→ อัปเดต gate ลุ่มปิงแบบ out-of-sample → ลด FN → รัน verification ใหม่. **ต้องการจากผู้ใช้: ไฟล์ bulletin วันที่เท่านั้น.**
