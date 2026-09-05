@@ -154,17 +154,22 @@ async function loadTrackRecord(){
   let d; try{ d=await j("/api/track-record"); }catch(e){ return; }
   const cb=d.case_bank, cal=d.calibration; if(!cb) return;
   const c=cb.cumulative_scored;
-  document.getElementById("trk-skill").innerHTML=
-    `จาก <b>${cb.n_cases_scored} เคส</b> (4 เหตุการณ์เจ้าพระยา): TP ${c.tp} · FP ${c.fp} · FN ${c.fn} · TN ${c.tn} — `+
-    `POD <b>${c.pod}</b> · FAR <b>${c.far}</b> · CSI <b>${c.csi}</b>`;
   const ver=d.verification;
-  if(ver && ver.models){ const M=ver.models, b=ver.models[ver.best_by_bss];
+  const nEv=(ver&&ver.drift_csi_by_event)?ver.drift_csi_by_event.length:"—";
+  const mut='style="color:var(--muted)"';
+  document.getElementById("trk-skill").innerHTML=
+    `จาก <b>${cb.n_cases_scored} เคส</b> (${nEv} เหตุการณ์เจ้าพระยาจริง): TP ${c.tp} · FP ${c.fp} · FN ${c.fn} · TN ${c.tn} — `+
+    `POD <b>${c.pod}</b> · FAR <b>${c.far}</b> · CSI <b>${c.csi}</b>`;
+  if(ver && ver.models){
+    const rec=ver.recommended||ver.best_by_bss, b=ver.models[rec]||{}, M=ver.models;
+    const sig=ver.skill_significance||{}, fn=ver.fn_analysis||{};
+    const fnStr=fn.by_subbasin?Object.entries(fn.by_subbasin).map(([k,v])=>`${k} ${v}`).join(" · "):"";
     const drift=(ver.drift_csi_by_event||[]).map(x=>`${x.event}:${x.csi}${x.alarm?"⚠":""}`).join(" · ");
     document.getElementById("trk-calib").innerHTML=
-      `<b>Verification (probabilistic):</b> BSS เทียบ climatology — ค่าคงที่ ${M.const.bss_vs_climatology} `+
-      `vs calibrate ตาม hop <b>${b.bss_vs_climatology}</b> (Brier ${b.brier}, ECE ${b.ece}) · `+
-      `<span style="color:var(--muted)">BSS CI95 (event-level) [${ver.best_ci_event_level.bss_ci95.join(", ")}] · ทุกเหตุการณ์ BSS>0 — 4 เหตุการณ์ยังน้อย ต้องเพิ่ม</span>`+
-      `<br><span style="font-size:11.5px;color:var(--muted)">drift CSI ตามปี: ${drift} · Murphy decomp + Brier Skill Score (Pappenberger 2015)</span>`;
+      `<b>Calibrate ความน่าจะเป็น (${rec}):</b> BSS เทียบ climatology ค่าคงที่ ${M.const.bss_vs_climatology} → <b>${b.bss_vs_climatology}</b> (Brier ${b.brier}, ECE ${b.ece})`+
+      `<br><b>มี skill จริงไหม?</b> mean BSS ${sig.mean_bss} · p(≤0) ${sig.boot_p_le0} → <b>${sig.verdict||"—"}</b> <span ${mut}>(${nEv} เหตุการณ์ยังน้อย ต้องเพิ่ม)</span>`+
+      `<br><b>จุดอ่อนหลัก (FN ${fn.n_fn}):</b> ${fnStr} <span ${mut}>→ ต้นน้ำ/local-rain ที่ gate ตายตัวไม่รับ — แก้ต้องมี gauge ต้นน้ำจริงต่อเหตุการณ์ (ไม่ tune กับเฉลย)</span>`+
+      `<br><span style="font-size:11.5px;color:var(--muted)">drift CSI: ${drift} · Murphy decomp + BSS (Pappenberger 2015) · calibrate แบบ LOEO กัน overfit</span>`;
   } else if(cal && cal.models){ const m=cal.models;
     document.getElementById("trk-calib").innerHTML=
       `<b>Calibration (LOEO):</b> Brier คงที่ ${m.baseline_const.brier} → แยกตาม hop <b>${m.loeo_by_hop.brier}</b> · ${cal.interpret}`;
