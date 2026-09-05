@@ -138,3 +138,17 @@ Gneiting et al. (2007) · Niculescu-Mizil & Caruana (2005) · Gama et al. (2014)
 
 > **สถานะประเมิน:** ตอนนี้ B = "ดี/รันได้จริง + ระเบียบวิธีแน่น" แต่ยัง **ไม่ significant (CI กว้าง)** →
 > ต้องเพิ่มเหตุการณ์ก่อนจะเป็นเล่มเดี่ยวที่แข็งเต็มที่. ระหว่างนี้ใช้เป็น **บท extension ของเล่ม A** ได้ทันที (social-good).
+
+---
+
+## 8. สรุปสิ่งที่ค้นพบทั้งหมด (key discoveries — ไว้เขียนบท "ผล/อภิปราย")
+
+1. **Binary early-warning แข็งและ generalize** ข้าม 5 เหตุการณ์จริง (POD 0.869 · FAR 0.087 · CSI 0.802; per-event CSI 0.67–0.88). จุดอ่อนอยู่ที่ *การ calibrate ความน่าจะเป็น* ไม่ใช่การตัดสินใจเตือน.
+2. **Calibrate ตาม causal-hop มี skill** เหนือ climatology (BSS +0.069 vs ค่าคงที่ −0.008) — แต่ **ยังไม่ significant** (event-level test p=0.16, N=5).
+3. **Empirical-Bayes shrinkage เหมาะสุดกับข้อมูลน้อย** (ECE 0.025→0.020, ไม่ over-confident); **Platt/isotonic ไม่ชนะ** (ตรง Niculescu-Mizil 2005: isotonic overfit เมื่อ N น้อย).
+4. **Gate สร้างอัตโนมัติจากเกจน้ำจริงได้** (thaiwater API v3, *discharge > qmax* ที่ control station เช่น C.13, อิสระจาก GISTDA gold) — และ **reproduce gate ที่ผู้เชี่ยวชาญ RID คัดมือเป๊ะ** (F1 0.938/0.909/0.903/0.800/0.909) → de-circularized + reproducible + self-service. *(ref: Shin 2020 gauge→reach snapping; NWS index gauge; C.2/C.13 CP control.)*
+5. **การเพิ่มข้อมูลจริงเผยความจริง (ซื่อสัตย์):** เพิ่มเหตุการณ์ 2568 → pooled BSS ตก +0.147→+0.069 (2568 per-event BSS −0.32) → calibration ยังไม่ robust — *รายงานตรง ไม่ revert*.
+6. **FN กระจุกที่ลุ่มปิง (9/11) = local-rain จริง** ยืนยันด้วยเกจ (P.7A ปิงตอนล่างไม่ล้นปี 2567) → เป็นข้อจำกัดเชิงกลไก **ไม่ใช่ gate ผิด และ calibrator แก้ไม่ได้**.
+7. **กัน overfitting ตลอด:** 0 learned structural params · ปรับแค่ชั้น calibration · prequential (LOEO) · ไม่เคย tune กับ gold.
+
+**ตัวปลดล็อก B ที่แท้จริง (บท future work):** (a) เพิ่ม **กลไก local-rain** จับ FN ลุ่มปิง · (b) **เพิ่มเหตุการณ์** ให้ significance ผ่าน — *ไม่ใช่ระเบียบวิธี (แน่นแล้ว)*.

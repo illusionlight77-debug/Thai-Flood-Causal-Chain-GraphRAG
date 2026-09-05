@@ -472,7 +472,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
-> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **POD 0.869 · FAR 0.087 · CSI 0.802**) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) — verify เต็ม (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **เพิ่มเหตุการณ์จริงที่ 5** (เจ้าพระยา 2568 จาก GISTDA, [`add_gistda_2025.py`](src/ingest/add_gistda_2025.py), gate ตายตัวจาก 2022 = out-of-sample). **ผลซื่อสัตย์:** calibrate ตาม hop มี skill บวก (BSS +0.069) แต่ **ตกจาก +0.147 (4 เหตุการณ์)** เมื่อเพิ่ม 2568 (per-event BSS −0.32) → calibration *ยังไม่ robust* (รายงานตรง, ไม่ revert) · binary skill ยังแข็งทั้ง 5 · prospective log CLI + track-record ใน `/warn` · `tests` (4 ผ่าน).
+> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์จริง):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **POD 0.869 · FAR 0.087 · CSI 0.802**) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **Gate อัตโนมัติจากเกจจริง** ([`thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py), discharge>qmax ที่ control station, อิสระจาก gold) — **reproduce bulletin ผู้เชี่ยวชาญเป๊ะทั้ง 5 เหตุการณ์** · prospective log CLI + track-record ใน `/warn` · `tests` (5 ผ่าน).
 > 📗 **สรุปเตรียมทำเล่ม B:** [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md)
 
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
@@ -480,6 +480,29 @@ finding ที่ได้จากการพยายามเพิ่มม
 - **กัน overfitting:** ตรึงโมเดลฟิสิกส์ (0 learned params) ไว้ — **ห้ามแก้กราฟ/gate/lag จากผล** ปรับได้เฉพาะชั้น calibration บาง ๆ (isotonic/Platt บน rolling holdout) + ประเมินแบบ prequential (เทรนอดีต→ทดสอบอนาคต)
 - **กลยุทธ์ thesis:** ระบบเดียว (รวม+ปรับปรุง) แต่เขียน **2 เปเปอร์ claim คมแยกกัน** (B อ้าง A) — ได้เครดิตรวมมากกว่าเปเปอร์เดียวที่ claim เบลอ
 - **paper แนวทาง improve แบบไม่ overfit:** Aamodt&Plaza 1994 (case-based) · Gama et al. 2014 (concept drift) · Niculescu-Mizil&Caruana 2005 / Guo et al. 2017 (calibration) · Gneiting et al. 2007 (calibration+sharpness) · Cloke&Pappenberger 2009 (ensemble flood forecasting) — [รายการเต็ม](docs/REFERENCES.md)
+
+### 🧪 ผลการทดลอง + สิ่งที่ค้นพบ (Extension B — forecasting findings)
+
+![Forecasting findings](docs/forecasting_findings.svg)
+
+**ทำอะไรมาบ้าง:** Case Bank (เก็บเคสถูก/ผิด vs GISTDA) → Calibration (LOEO, กัน overfit) → Verification เต็มรูป (Brier decomposition · BSS vs climatology · ECE · cluster bootstrap · drift) → Gate อัตโนมัติจากเกจจริง (thaiwater API) → track-record ในหน้า `/warn`.
+
+**ผลหลัก (5 เหตุการณ์เจ้าพระยา · 115 province-cases):**
+| ตัวชี้วัด | ค่า | อ่านว่า |
+|---|---|---|
+| Warning skill (binary) | **CSI 0.802 · POD 0.869 · FAR 0.087** | แข็ง + generalize ทั้ง 5 เหตุการณ์ (CSI 0.67–0.88) |
+| Calibration skill | **BSS +0.069** (ค่าคงที่ −0.008) · ECE 0.020 | มี skill แต่ **p=0.16 → ยังไม่ significant** (N=5) |
+| Gate อัตโนมัติ | discharge>qmax ที่ control station | **reproduce bulletin ผู้เชี่ยวชาญเป๊ะ** (F1 0.938/0.909/0.903/0.800/0.909) |
+| จุดอ่อน (FN) | **9/11 = ลุ่มปิง** | local-rain จริง (P.7A ปิงตอนล่างไม่ล้น) — ไม่ใช่ gate ผิด |
+
+**ค้นพบอะไรบ้าง (key discoveries):**
+1. **binary early-warning แข็ง + generalize** ข้าม 5 เหตุการณ์จริง — จุดอ่อนอยู่ที่ *การ calibrate ความน่าจะเป็น* ไม่ใช่การตัดสินใจเตือน
+2. **calibrate ตาม causal-hop มี skill** เหนือ climatology · **empirical-Bayes shrinkage** คุม overfit ดีสุด (Platt/isotonic แพ้เพราะข้อมูลน้อย — ตรง Niculescu-Mizil 2005)
+3. **gate สร้างอัตโนมัติจากเกจจริงได้ = ที่ผู้เชี่ยวชาญคัดมือ** (discharge>qmax ที่ control station เช่น C.13; อิสระจาก gold) → **de-circularized + reproducible + self-service** (thaiwater API)
+4. **การเพิ่มข้อมูลจริง (2568) ทำให้ BSS ตก +0.147→+0.069** = calibration ยังไม่ robust จริง (4 เหตุการณ์เดิมดูดีเกิน) — *ซื่อสัตย์ขึ้น ไม่ใช่ overfit* (คู่ขนานบทเรียน F1 1.000→0.545 ของงานหลัก)
+5. **FN กระจุกที่ลุ่มปิง (local-rain)** ที่ gate สายหลักจับไม่ได้ตามธรรมชาติ — **ตัวปลดล็อก B ที่แท้จริง** = (a) เพิ่มกลไก local-rain, (b) เพิ่มเหตุการณ์ให้ significance — *ไม่ใช่ระเบียบวิธี (แน่นแล้ว)*
+
+> **กัน overfitting ตลอด:** 0 learned params (โมเดลฟิสิกส์ตรึง) · calibrate แค่ชั้นบางแบบ prequential · ไม่เคย tune กับ gold · gate จากเกจ RID (อิสระจากดาวเทียม). รายละเอียด + finding เต็ม: [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md) · [`docs/HISTORY.md`](docs/HISTORY.md)
 
 ---
 
@@ -517,3 +540,43 @@ pytest
 ```
 
 แก้โค้ดใน `src/` แล้ว uvicorn reload อัตโนมัติ (mount ไว้ใน compose, dev mode).
+
+---
+
+## 📄 License
+
+**Copyright (c) 2026 Hally Palalay. All rights reserved.** (ดูไฟล์ [`LICENSE`](LICENSE))
+
+repo นี้เปิดให้ **ดู / อ้างอิง / ประเมินผลงาน** เท่านั้น (เช่น ให้ผู้ว่าจ้างหรือผู้ร่วมงานพิจารณาความสามารถของผู้เขียน) — **ไม่ได้ให้สิทธิ์ใช้งาน/คัดลอก/ดัดแปลง/เผยแพร่ซ้ำ/นำไป deploy** ไม่ว่าเชิงพาณิชย์หรือไม่ โดยไม่ได้รับอนุญาตเป็นลายลักษณ์อักษรจากเจ้าของลิขสิทธิ์.
+
+```
+Copyright (c) 2026 Hally Palalay. All rights reserved.
+
+This repository and its source code are made publicly available for VIEWING,
+REFERENCE, and EVALUATION purposes only — for example, so that potential
+employers and collaborators can review the author's work and skills.
+
+You MAY:
+  - View and read the source code and documentation.
+  - Reference this work when evaluating the author's abilities and experience.
+
+You MAY NOT, without prior written permission from the copyright holder:
+  - Use this code, in whole or in part, in any project, product, or service,
+    whether commercial or non-commercial.
+  - Copy, reproduce, modify, adapt, translate, or create derivative works.
+  - Redistribute, republish, mirror, sublicense, or sell it.
+  - Deploy or host it as a public or private service.
+
+No license or right — express or implied — is granted to any copyright, patent,
+trademark, or other intellectual property, except the limited permission to view
+and reference stated above. All other rights are reserved by the copyright holder.
+
+To request permission for any other use, contact the copyright holder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+```

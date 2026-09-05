@@ -1,0 +1,64 @@
+<svg viewBox="0 0 1180 720" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <rect width="1180" height="720" fill="#f6efe1"/>
+  <text x="34" y="44" font-size="23" font-weight="700" fill="#8a6d3b" font-family="Georgia,serif">ผลการทดลองส่วนพยากรณ์ (Extension B) — สิ่งที่ทำ + ค้นพบ</text>
+  <text x="34" y="67" font-size="13.5" fill="#9a7a3f">Early-warning extension on the causal graph — what we did &amp; what we found (5 เหตุการณ์เจ้าพระยาจริง · 115 province-cases)</text>
+
+  <!-- pipeline of what we did -->
+  <text x="34" y="104" font-size="14" font-weight="700" fill="#2f6b8a">▸ ทำอะไรมาบ้าง (pipeline ของการทดลอง B)</text>
+  <g font-size="11.5" text-anchor="middle">
+    <g><rect x="34" y="116" width="180" height="52" rx="9" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6"/><text x="124" y="138" font-weight="700" fill="#3a2f22">Case Bank</text><text x="124" y="156" fill="#8a6d3b">เก็บเคสถูก/ผิด vs GISTDA</text></g>
+    <g><rect x="248" y="116" width="180" height="52" rx="9" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6"/><text x="338" y="138" font-weight="700" fill="#3a2f22">Calibration (LOEO)</text><text x="338" y="156" fill="#8a6d3b">ปรับความน่าจะเป็น กัน overfit</text></g>
+    <g><rect x="462" y="116" width="200" height="52" rx="9" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.6"/><text x="562" y="138" font-weight="700" fill="#3a2f22">Verification</text><text x="562" y="156" fill="#8a6d3b">Brier decomp · BSS · ECE · CI · drift</text></g>
+    <g><rect x="696" y="116" width="210" height="52" rx="9" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/><text x="801" y="138" font-weight="700" fill="#245c37">Gauge gate (thaiwater API)</text><text x="801" y="156" fill="#2f6b3a">เกจจริง discharge&gt;qmax (อิสระ gold)</text></g>
+    <g><rect x="940" y="116" width="206" height="52" rx="9" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.6"/><text x="1043" y="138" font-weight="700" fill="#8a6d3b">Track record → /warn</text><text x="1043" y="156" fill="#9a7a3f">โปร่งใส + prospective log</text></g>
+  </g>
+  <g stroke="#cdbfa2" stroke-width="2" fill="none"><path d="M214,142 L246,142"/><path d="M428,142 L460,142"/><path d="M662,142 L694,142"/><path d="M906,142 L938,142"/></g>
+
+  <!-- KPI tiles -->
+  <text x="34" y="206" font-size="14" font-weight="700" fill="#2f6b8a">▸ ผลหลัก (KPI)</text>
+  <g>
+    <rect x="34" y="218" width="272" height="96" rx="12" fill="#eef6ef" stroke="#2f7d4a" stroke-width="2"/>
+    <text x="48" y="244" font-size="13.5" font-weight="700" fill="#245c37">Warning skill (binary)</text>
+    <text x="48" y="270" font-size="26" font-weight="800" fill="#2f7d4a" font-family="monospace">CSI 0.802</text>
+    <text x="48" y="294" font-size="12" fill="#3a2f22">POD 0.869 · FAR 0.087 · แข็งทั้ง 5 เหตุการณ์</text>
+    <text x="48" y="309" font-size="11" fill="#5a7a5a">strong &amp; robust across events</text>
+
+    <rect x="318" y="218" width="272" height="96" rx="12" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="2"/>
+    <text x="332" y="244" font-size="13.5" font-weight="700" fill="#3a2f22">Calibration skill</text>
+    <text x="332" y="270" font-size="26" font-weight="800" fill="#8a6d3b" font-family="monospace">BSS +0.069</text>
+    <text x="332" y="294" font-size="12" fill="#3a2f22">vs ค่าคงที่ −0.008 · ECE 0.020 (shrinkage)</text>
+    <text x="332" y="309" font-size="11" fill="#c0492f">แต่ p=0.16 — ยังไม่ significant (N=5)</text>
+
+    <rect x="602" y="218" width="272" height="96" rx="12" fill="#fbeee9" stroke="#c0492f" stroke-width="2"/>
+    <text x="616" y="244" font-size="13.5" font-weight="700" fill="#c0492f">FN diagnosis</text>
+    <text x="616" y="270" font-size="26" font-weight="800" fill="#c0492f" font-family="monospace">9/11 = ลุ่มปิง</text>
+    <text x="616" y="294" font-size="12" fill="#3a2f22">local-rain จริง (ยืนยันด้วยเกจ P.7A ไม่ล้น)</text>
+    <text x="616" y="309" font-size="11" fill="#a5583f">ไม่ใช่ gate ผิด · แก้ด้วย calibrator ไม่ได้</text>
+
+    <rect x="886" y="218" width="260" height="96" rx="12" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+    <text x="900" y="244" font-size="13.5" font-weight="700" fill="#245c37">Gate อัตโนมัติ</text>
+    <text x="900" y="270" font-size="20" font-weight="800" fill="#2f7d4a" font-family="monospace">= bulletin เป๊ะ</text>
+    <text x="900" y="294" font-size="12" fill="#3a2f22">เกจจริงต่อเหตุการณ์ (5 ปี) reproduce</text>
+    <text x="900" y="309" font-size="11" fill="#5a7a5a">expert-curated gate · de-circularized</text>
+  </g>
+
+  <!-- discoveries -->
+  <text x="34" y="356" font-size="14" font-weight="700" fill="#b8801f">▸ ค้นพบอะไรบ้าง (key discoveries)</text>
+  <g font-size="12.5" fill="#3a2f22">
+    <text x="40" y="382">1. <tspan font-weight="700">binary early-warning แข็ง + generalize</tspan> ข้าม 5 เหตุการณ์จริง (CSI 0.67–0.88) — จุดอ่อนอยู่ที่การ calibrate ความน่าจะเป็น ไม่ใช่การตัดสินใจเตือน</text>
+    <text x="40" y="406">2. <tspan font-weight="700">calibrate ตาม causal-hop มี skill</tspan> เหนือ climatology (BSS+) · empirical-Bayes shrinkage คุม overfit ได้ดีสุด — Platt/isotonic ไม่ชนะเพราะข้อมูลน้อย</text>
+    <text x="40" y="430">3. <tspan font-weight="700">gate สร้างอัตโนมัติจากเกจจริง = ที่ผู้เชี่ยวชาญคัดมือ</tspan> (thaiwater API, discharge&gt;qmax ที่ control station, อิสระจาก gold) → reproducible + de-circularized</text>
+    <text x="40" y="454">4. <tspan font-weight="700">การเพิ่มข้อมูลจริง (2568) ทำให้ BSS ตก +0.147→+0.069</tspan> = เห็นว่า calibration ยังไม่ robust จริง (4 เหตุการณ์เดิมดูดีเกิน) — ซื่อสัตย์ขึ้น ไม่ใช่ overfit</text>
+    <text x="40" y="478">5. <tspan font-weight="700">FN กระจุกที่ลุ่มปิง (local-rain)</tspan> ที่ gate สายหลักจับไม่ได้ตามธรรมชาติ — ยืนยันด้วยเกจจริง (P.7A ปิงตอนล่างไม่ล้นปี 2567)</text>
+  </g>
+
+  <!-- anti-overfit + limits banner -->
+  <rect x="34" y="502" width="1112" height="76" rx="12" fill="#fbf3e6" stroke="#b8801f" stroke-width="1.4"/>
+  <text x="48" y="526" font-size="13" font-weight="700" fill="#8a6d3b">กัน overfitting ตลอด · ตัวปลดล็อกที่แท้จริง</text>
+  <text x="48" y="548" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">0 learned params</tspan> (โมเดลฟิสิกส์ตรึง) · calibrate แค่ชั้นบางแบบ LOEO/prequential · <tspan font-weight="700">ไม่เคย tune กับ gold</tspan> · gate จากเกจ RID (อิสระจากดาวเทียม)</text>
+  <text x="48" y="568" font-size="12.5" fill="#3a2f22">• ที่จะดัน B ขึ้นจริง = (1) <tspan font-weight="700">เพิ่มกลไก local-rain</tspan> จับ FN ลุ่มปิง · (2) <tspan font-weight="700">เพิ่มเหตุการณ์</tspan> ให้ significance ผ่าน — <tspan font-style="italic">ไม่ใช่ระเบียบวิธี (แน่นแล้ว)</tspan></text>
+
+  <!-- provenance line -->
+  <text x="34" y="606" font-size="11.5" fill="#6a5a42">ข้อมูล: GISTDA satellite (gold) · RID/thaiwater gauge (gate, อิสระ) · เครื่องมือ: case_bank/calibration/warning_verification/thaiwater_gauge · อ้างอิง: Murphy 1973 · Pappenberger 2015 · Niculescu-Mizil 2005 · Gneiting 2007 · Shin 2020 (gauge→reach) — ดู docs/REFERENCES.md</text>
+  <text x="34" y="628" font-size="11.5" fill="#8a97a8">Thai Flood Causal-Chain GraphRAG · Extension B (forecasting) — ผล ณ 2026-09-06 (validated, reproducible)</text>
+</svg>

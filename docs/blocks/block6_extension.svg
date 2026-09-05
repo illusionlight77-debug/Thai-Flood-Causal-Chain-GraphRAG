@@ -1,4 +1,4 @@
-<svg viewBox="0 0 980 500" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+<svg viewBox="0 0 980 650" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
   <defs><marker id="a6" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8801f"/></marker></defs>
   <rect width="980" height="500" fill="#f6efe1"/>
   <rect x="0" y="0" width="980" height="58" fill="#f4ecd8"/>
@@ -44,4 +44,13 @@
   <text x="46" y="432" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">ไม่กุตัวเลข:</tspan> ความน่าจะเป็น = precision ที่<tspan font-weight="700"> วัดจากผลจริง</tspan>; slowdown = วัดจากเหตุการณ์ 2011</text>
   <text x="46" y="453" font-size="12.5" fill="#3a2f22">• สูตรความเสี่ยงยึด<tspan font-weight="700"> มาตรฐานสากล</tspan> (UNDRR/IPCC) + มีงานอ้างอิง (EFAS, NOAA, Sci.Rep.) ไม่ใช่คิดเอง</text>
   <text x="46" y="474" font-size="12.5" fill="#3a2f22">• วางเป็น "ส่วนเสริม" ชัดเจน — งานหลักคือ<tspan font-weight="700"> วัดความ verify ได้ของคำอธิบาย</tspan> ไม่ใช่แข่งความแม่นพยากรณ์</text>
+
+  <!-- what we did + findings (การทดลอง B) -->
+  <rect x="30" y="494" width="920" height="142" rx="10" fill="#eef3ec" stroke="#2f7d4a" stroke-width="1.6"/>
+  <text x="46" y="518" font-size="13" font-weight="700" fill="#245c37">ทำอะไรมาบ้าง + ค้นพบ (การทดลองส่วนพยากรณ์ B · 5 เหตุการณ์จริง 115 เคส)</text>
+  <text x="46" y="540" font-size="12" fill="#3a2f22"><tspan font-weight="700">pipeline:</tspan> Case Bank (เก็บเคสถูก/ผิด vs GISTDA) → Calibration LOEO (กัน overfit) → Verification (Brier decomp · BSS · ECE · cluster CI · drift) → Gate อัตโนมัติจากเกจจริง</text>
+  <text x="46" y="560" font-size="12" fill="#3a2f22"><tspan font-weight="700">ผล:</tspan> warning skill <tspan font-weight="700">CSI 0.802</tspan> (POD 0.869 · FAR 0.087, แข็งทั้ง 5) · calibrate ตาม hop มี skill <tspan font-weight="700">BSS +0.069</tspan> (แต่ p=0.16 ยังไม่ significant)</text>
+  <text x="46" y="580" font-size="12" fill="#3a2f22"><tspan font-weight="700">ค้นพบ:</tspan> (1) gate สร้าง<tspan font-weight="700">อัตโนมัติจากเกจจริง (discharge&gt;qmax) = ผู้เชี่ยวชาญคัดมือเป๊ะ</tspan> (อิสระ gold, reproducible)</text>
+  <text x="46" y="599" font-size="12" fill="#3a2f22">(2) FN <tspan font-weight="700">9/11 = ลุ่มปิง (local-rain จริง)</tspan> — ไม่ใช่ gate ผิด · (3) เพิ่มข้อมูลจริง(2568) → BSS +0.147→+0.069 = <tspan font-weight="700">ซื่อสัตย์ขึ้น</tspan> ไม่ใช่ overfit</text>
+  <text x="46" y="620" font-size="11.5" fill="#c0492f">ตัวปลดล็อก B ที่แท้จริง = เพิ่มกลไก local-rain (จับ FN ลุ่มปิง) + เพิ่มเหตุการณ์ (ให้ significance) — ไม่ใช่ระเบียบวิธี (แน่นแล้ว)</text>
 </svg>

@@ -105,7 +105,7 @@
     <div class="q">“ทำไมจังหวัดนี้ถึงน้ำท่วม?” — วัดว่า GraphRAG ที่เดินตาม<em style="color:var(--rust);font-style:normal">สายเหตุ-ผลจริง</em> อธิบายได้ตรวจสอบย้อนกลับกว่า vector search แค่ไหน</div>
     <div class="qen">“Why did this province flood?” — measuring whether a real causal-chain GraphRAG explains floods more verifiably than vector search over news.</div>
     <div class="rule"></div>
-    <div class="meta">ลุ่มเจ้าพระยา 8 ลุ่มน้ำสาขา · 23 จังหวัด · 4 เหตุการณ์ (N=92) + โขง/อีสาน live &nbsp;|&nbsp; Chao Phraya basin · 8 sub-basins · 23 provinces · 4 events</div>
+    <div class="meta">ลุ่มเจ้าพระยา 8 ลุ่มน้ำสาขา · 23 จังหวัด · 5 เหตุการณ์จริง (115 cases) + โขง/อีสาน live &nbsp;|&nbsp; Chao Phraya · 8 sub-basins · 23 provinces · 5 real events</div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">01</span></div>
   </section>
 
@@ -205,8 +205,8 @@
     <div class="head"><div class="kicker">⑥ Extension</div>
       <h2>พยากรณ์ / ความเสี่ยง + ทำไมอาจไม่เกิด</h2><h3>Forecasting / risk + why it might not happen</h3></div>
     <div class="fig"><img src="blocks/block6_extension.svg" alt="Extension"></div>
-    <div class="take"><div class="th">ห่อคำเตือนด้วยตัวเลข<b>วัดจริง</b> (precision 0.938) + มาตรฐาน UNDRR/IPCC — ระบุความไม่แน่นอนชัดเจน</div>
-      <div class="en">Wraps warnings with measured numbers (precision 0.938) + UNDRR/IPCC standards — uncertainty stated explicitly.</div></div>
+    <div class="take"><div class="th">การทดลอง B (5 เหตุการณ์): Case Bank → calibration LOEO → verification — <b>CSI 0.802</b>, gate จากเกจจริง = bulletin เป๊ะ (รายละเอียดสไลด์ถัดไป)</div>
+      <div class="en">Experiment B (5 events): Case Bank → LOEO calibration → verification — CSI 0.802; auto gauge-gate reproduces the expert bulletin (details next slide).</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">09</span></div>
   </section>
 
@@ -244,6 +244,16 @@
     <div class="take"><div class="th">งานนี้ไม่ได้บอกว่า GraphRAG ทายแม่นกว่า — แต่บอกว่ามัน <b>อธิบายเหตุผลย้อนกลับไปหาหลักฐานได้ทุกก้าว</b></div>
       <div class="en">This isn't a claim that GraphRAG predicts better — it's that it explains, traceably to evidence, every step of the way.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">12</span></div>
+  </section>
+
+  <!-- 13 · EXTENSION B FINDINGS -->
+  <section class="slide">
+    <div class="head"><div class="kicker">Extension B · Forecasting findings</div>
+      <h2>ผลการทดลองส่วนพยากรณ์ + สิ่งที่ค้นพบ</h2><h3>Early-warning extension — results &amp; discoveries (5 real events)</h3></div>
+    <div class="fig"><img src="forecasting_findings.svg" alt="Forecasting findings"></div>
+    <div class="take"><div class="th">gate อัตโนมัติจากเกจจริง = ผู้เชี่ยวชาญคัดมือ · warning CSI 0.802 · calibrate มี skill (BSS +0.069) แต่ยังไม่ significant · FN 9/11 = ลุ่มปิง (local-rain จริง)</div>
+      <div class="en">Auto gauge-gate reproduces the expert bulletin · warning CSI 0.802 · calibration has skill (BSS +0.069) but not yet significant · FN 9/11 = Ping basin (real local rain).</div></div>
+    <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">13</span></div>
   </section>
 
 </div>
