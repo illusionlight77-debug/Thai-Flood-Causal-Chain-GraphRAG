@@ -110,6 +110,18 @@
     </div>
     <div style="margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted)">อ้างอิง: EFAS (HESS 2009) · NOAA Forecast Verification Glossary · Risk index (UNDRR/IPCC) — ดู docs/REFERENCES.md</div>
   </div>
+
+  <div class="card">
+    <div class="step-lab">ขั้นที่ 4 · สถิติการเตือนย้อนหลัง (track record)</div>
+    <h2>ระบบเคยเตือนถูก/ผิดแค่ไหน — และเรียนรู้จากผลโดยไม่ overfit</h2>
+    <div class="sub">เก็บทุกคำเตือนเทียบผลจริง GISTDA (Case Bank) แล้วปรับ "ความน่าจะเป็น" แบบ leave-one-event-out (prequential) — <b>ไม่แตะกราฟ/gate</b> จึงกัน overfitting. ดู docs/FORECASTING_ROADMAP.md</div>
+    <div id="trk-skill" class="mono" style="font-size:13px;margin:10px 0;padding:10px 12px;background:rgba(0,0,0,.03);border-radius:8px">—</div>
+    <div id="trk-calib" style="font-size:12.5px;color:var(--ink2);margin-bottom:12px">—</div>
+    <div class="why">
+      <div class="from"><h3>ตัวอย่างที่เตือนถูก (TP)</h3><ul id="trk-correct"></ul></div>
+      <div class="not"><h3>ตัวอย่างที่พลาด (FP/FN) — เก็บไว้เรียนรู้</h3><ul id="trk-wrong"></ul></div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -138,7 +150,24 @@ async function predict(){const q=[...ON].join(",");
         <span style="color:var(--muted);font-family:var(--mono);font-size:11px">ประชากรเสี่ยง ~${x.exposure_pop_k||"?"}k · vuln ${x.vulnerability}</span></div>
       <div class="r3">${(x.chain||[]).join(" → ")}</div></div>`;}).join(""):'<div style="color:var(--muted)">— ไม่มีจังหวัดปลายน้ำจากลุ่มที่เลือก —</div>';
 }
-renderSubs();predict();
+async function loadTrackRecord(){
+  let d; try{ d=await j("/api/track-record"); }catch(e){ return; }
+  const cb=d.case_bank, cal=d.calibration; if(!cb) return;
+  const c=cb.cumulative_scored;
+  document.getElementById("trk-skill").innerHTML=
+    `จาก <b>${cb.n_cases_scored} เคส</b> (4 เหตุการณ์เจ้าพระยา): TP ${c.tp} · FP ${c.fp} · FN ${c.fn} · TN ${c.tn} — `+
+    `POD <b>${c.pod}</b> · FAR <b>${c.far}</b> · CSI <b>${c.csi}</b>`;
+  if(cal && cal.models){ const m=cal.models;
+    document.getElementById("trk-calib").innerHTML=
+      `<b>Calibration (LOEO, กัน overfit):</b> Brier คงที่ ${m.baseline_const.brier} → แยกตาม hop <b>${m.loeo_by_hop.brier}</b> `+
+      `(sharpness ${m.loeo_by_hop.sharpness_sd}) · ${cal.interpret}`;
+  }
+  document.getElementById("trk-correct").innerHTML=
+    (cb.notable_correct||[]).map(x=>`<li>${x.province} — ${x.label} (hop ${x.hop})</li>`).join("");
+  document.getElementById("trk-wrong").innerHTML=
+    (cb.notable_wrong||[]).slice(0,6).map(x=>`<li><b>${x.outcome}</b> ${x.province} — ${x.label} (hop ${x.hop})</li>`).join("");
+}
+renderSubs();predict();loadTrackRecord();
 </script>
 </body>
 </html>

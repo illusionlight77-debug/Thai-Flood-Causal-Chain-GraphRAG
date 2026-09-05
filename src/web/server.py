@@ -106,6 +106,16 @@ def report():
     return out
 
 
+@app.get("/api/track-record")
+def track_record():
+    """Roadmap B — สถิติการเตือนย้อนหลัง (case bank ถูก/ผิด + calibration) สำหรับหน้า /warn.
+    ไม่แตะกราฟ/gate — เป็นชั้น 'บันทึก+ปรับความน่าจะเป็น' ที่กัน overfit (leave-one-event-out)."""
+    def _load(name):
+        f = PROCESSED / f"{name}.json"
+        return json.loads(f.read_text("utf-8")) if f.exists() else None
+    return {"case_bank": _load("case_bank"), "calibration": _load("calibration")}
+
+
 @app.get("/api/config")
 def config():
     events = [{"year": y, "label": lbl} for y, lbl in EVENTS

@@ -1,0 +1,1298 @@
+{
+  "note": "เคสทำนายถูก/ผิดของ early-warning เทียบ GISTDA gold — ไม่แตะกราฟ/gate (กัน overfit)",
+  "systems": "causal-graphrag",
+  "per_event": {
+    "2022": {
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "scored": true,
+      "tp": 15,
+      "fp": 1,
+      "fn": 2,
+      "tn": 5,
+      "pod": 0.882,
+      "far": 0.062,
+      "csi": 0.833
+    },
+    "2021": {
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "scored": true,
+      "tp": 15,
+      "fp": 1,
+      "fn": 1,
+      "tn": 6,
+      "pod": 0.938,
+      "far": 0.062,
+      "csi": 0.882
+    },
+    "2024": {
+      "label": "เจ้าพระยา 2567",
+      "scored": true,
+      "tp": 14,
+      "fp": 2,
+      "fn": 5,
+      "tn": 2,
+      "pod": 0.737,
+      "far": 0.125,
+      "csi": 0.667
+    },
+    "2023": {
+      "label": "เจ้าพระยา 2566",
+      "scored": true,
+      "tp": 14,
+      "fp": 2,
+      "fn": 1,
+      "tn": 6,
+      "pod": 0.933,
+      "far": 0.125,
+      "csi": 0.824
+    },
+    "ne2026": {
+      "label": "โขง/อีสาน (live)",
+      "scored": false,
+      "tp": 4,
+      "fp": 1,
+      "fn": 3,
+      "tn": 2,
+      "pod": 0.571,
+      "far": 0.2,
+      "csi": 0.5
+    }
+  },
+  "cumulative_scored": {
+    "tp": 58,
+    "fp": 6,
+    "fn": 9,
+    "tn": 19,
+    "pod": 0.866,
+    "far": 0.094,
+    "csi": 0.795
+  },
+  "n_cases_scored": 92,
+  "notable_correct": [
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    }
+  ],
+  "notable_wrong": [
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Lampang",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Lamphun",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    }
+  ],
+  "prospective": [],
+  "cases": [
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Ang Thong",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Ayutthaya",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Chai Nat",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Lopburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Nakhon Sawan",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Phetchabun",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Phichit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Phitsanulok",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Saraburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Sing Buri",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Sukhothai",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Uttaradit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Bangkok",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Lampang",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2022",
+      "label": "เจ้าพระยา 2565 (โนรู)",
+      "province": "Lamphun",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Ang Thong",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Ayutthaya",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Chai Nat",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Lopburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Nakhon Sawan",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Phetchabun",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Phichit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Phitsanulok",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Saraburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Sing Buri",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Sukhothai",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Uttaradit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Bangkok",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Lampang",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2021",
+      "label": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
+      "province": "Lamphun",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Ang Thong",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Ayutthaya",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Chai Nat",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Lampang",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Lamphun",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Lopburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Nakhon Sawan",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Phetchabun",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Phichit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Phitsanulok",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Saraburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Sing Buri",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Sukhothai",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Uttaradit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2024",
+      "label": "เจ้าพระยา 2567",
+      "province": "Bangkok",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Ang Thong",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Ayutthaya",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Chai Nat",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Lopburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Nakhon Sawan",
+      "hop": 4,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Phetchabun",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Phichit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Phitsanulok",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Saraburi",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Sing Buri",
+      "hop": 3,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Sukhothai",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Tak",
+      "hop": 2,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Uttaradit",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Bangkok",
+      "hop": 4,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Lampang",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2023",
+      "label": "เจ้าพระยา 2566",
+      "province": "Lamphun",
+      "hop": 2,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Nong Khai",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Bueng Kan",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Nakhon Phanom",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Mukdahan",
+      "hop": 2,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Sakon Nakhon",
+      "hop": 0,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Udon Thani",
+      "hop": 0,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Kalasin",
+      "hop": 0,
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Khon Kaen",
+      "hop": 0,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Loei",
+      "hop": 2,
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": false
+    },
+    {
+      "event": "ne2026",
+      "label": "โขง/อีสาน (live)",
+      "province": "Roi Et",
+      "hop": 0,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": false
+    }
+  ]
+}

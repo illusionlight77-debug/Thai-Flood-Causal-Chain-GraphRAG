@@ -472,6 +472,8 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
+> ✅ **ทำแล้ว (ระบบรวม):** [`src/eval/case_bank.py`](src/eval/case_bank.py) (92 เคส · POD 0.866 · FAR 0.094 · CSI 0.795) · [`src/eval/calibration.py`](src/eval/calibration.py) (LOEO prequential: Brier 0.086 → **0.0725** แยกตาม hop, sharp ขึ้น — กัน overfit) · track-record panel ในหน้า `/warn` + `/api/track-record` · `tests/test_forecasting.py` (3 ผ่าน). ตารางไฟล์→เล่ม + todo ดู roadmap.
+
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
 - **โมดูล B — Early-Warning (พยากรณ์):** "จว.ไหน/เมื่อไหร่/โอกาสเท่าไร" + Case Bank + calibration → **Thesis B**
 - **กัน overfitting:** ตรึงโมเดลฟิสิกส์ (0 learned params) ไว้ — **ห้ามแก้กราฟ/gate/lag จากผล** ปรับได้เฉพาะชั้น calibration บาง ๆ (isotonic/Platt บน rolling holdout) + ประเมินแบบ prequential (เทรนอดีต→ทดสอบอนาคต)

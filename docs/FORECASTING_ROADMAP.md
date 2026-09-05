@@ -116,12 +116,30 @@
 
 ---
 
-## 5. ขั้นตอนถัดไป (todo — จะทำร่วมกัน)
-- [ ] เพิ่ม `src/eval/case_bank.py` (log คำเตือน + แปะ outcome + ป้าย TP/FP/FN)
-- [ ] เพิ่ม `src/eval/calibration.py` (isotonic/Platt บน rolling holdout + reliability/Brier)
-- [ ] ต่อ track-record panel ในหน้า `/warn` + `/api/track-record`
-- [ ] drift monitor (CSI สะสม เทียบ baseline)
+## 4½. แผนที่ไฟล์ → เล่ม (file → thesis mapping)
+
+| ไฟล์ / โมดูล | เล่ม | ทำอะไร |
+|---|---|---|
+| `src/rag/{causal,entity,vector}_*.py`, `registry.py` | **A** | 3 retrievers ที่เปรียบเทียบ |
+| `src/graph/{queries,load,client}.py` | shared | กราฟเหตุ-ผล + Cypher hop/predict |
+| `src/geo/dem_*.py`, `graph/validate_topology.py` | **A** | ยืนยัน topology (DEM 4 วิธี) |
+| `src/eval/{f1_by_hop,mcnemar,pooled_significance,discrimination,ablation,faithfulness,blind_test}.py` | **A** | วัด verifiability / F1 / สถิติ |
+| `src/eval/{lead_validation,risk_warning}.py` | **B** | lead-time + risk = Hazard×Exposure×Vuln |
+| `src/eval/case_bank.py` ✅ | **B** | คลังเคสถูก/ผิด (TP/FP/FN/TN) + prospective |
+| `src/eval/calibration.py` ✅ | **B** | calibrate ความน่าจะเป็น (LOEO — กัน overfit) |
+| `web/warn.html` + `/api/track-record`, `/api/early-warning` ✅ | **B** | หน้าเตือน + track record |
+| `src/ingest/*`, `src/geo/basin_to_province.py` | shared | ข้อมูลจริง + สร้างกราฟ |
+| `web/index.html` (`/`), `web/lab.html` (`/lab`) | **A** | UI แสดงเหตุผล + ผลการทดลอง |
+
+---
+
+## 5. ขั้นตอน (todo / done)
+- [x] **`src/eval/case_bank.py`** — เก็บเคสถูก/ผิดเทียบ GISTDA → **92 เคส: POD 0.866 · FAR 0.094 · CSI 0.795** (FN = ลุ่มปิง local-rain, FP = ปทุม/อุทัย — ตรงที่ documented)
+- [x] **`src/eval/calibration.py`** — LOEO (prequential): **Brier คงที่ 0.086 → แยกตาม hop 0.0725** (sharp ขึ้น sd 0.119) = ดีขึ้นโดยไม่ overfit
+- [x] **track-record panel** ในหน้า `/warn` + `/api/track-record` (แสดงสถิติ + เคสถูก/ผิด)
+- [x] **tests** — `tests/test_forecasting.py` (3 ผ่าน)
+- [ ] drift monitor (CSI สะสมข้ามเวลา เทียบ baseline)
+- [ ] `case_bank.add_prospective(...)` — บันทึกคำเตือน "ก่อนรู้ผล" จริง (เช่นสระบุรี) พร้อม timestamp
 - [ ] เขียนโครงเปเปอร์ B แยกจาก A
-- [ ] เพิ่มกรณีศึกษาจริง (สระบุรี ฯลฯ) ลง Case Bank เป็นตัวอย่าง prospective
 
 > ⚠️ ทุกขั้น: **ห้ามแตะโครงกราฟ/gate จากผลทำนาย** — ปรับได้เฉพาะชั้น calibration บาง ๆ เท่านั้น (กติกากัน overfit ของทิศทาง B)

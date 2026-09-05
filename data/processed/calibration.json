@@ -1,0 +1,54 @@
+{
+  "note": "calibrate ความน่าจะเป็นของคำเตือนแบบ leave-one-event-out (กัน overfit) — ไม่แตะกราฟ/gate",
+  "n_warned": 64,
+  "events": [
+    "2021",
+    "2022",
+    "2023",
+    "2024"
+  ],
+  "observed_base_rate": 0.906,
+  "models": {
+    "baseline_const": {
+      "desc": "ความน่าจะเป็นคงที่ 0.938",
+      "brier": 0.086,
+      "sharpness_sd": 0.0,
+      "mean_prob": 0.938
+    },
+    "loeo_overall": {
+      "desc": "LOEO hit-rate (prequential)",
+      "brier": 0.0857,
+      "sharpness_sd": 0.0104,
+      "mean_prob": 0.9062
+    },
+    "loeo_by_hop": {
+      "desc": "LOEO hit-rate แยกตาม hop",
+      "brier": 0.0725,
+      "sharpness_sd": 0.1192,
+      "mean_prob": 0.9062
+    }
+  },
+  "best_by_brier": "loeo_by_hop",
+  "brier_improvement_vs_const": 0.0135,
+  "reliability_loeo_by_hop": [
+    {
+      "bin": "0.00-0.70",
+      "n": 12,
+      "mean_pred": 0.667,
+      "obs_freq": 0.667
+    },
+    {
+      "bin": "0.85-0.95",
+      "n": 16,
+      "mean_pred": 0.917,
+      "obs_freq": 1.0
+    },
+    {
+      "bin": "0.95-1.01",
+      "n": 36,
+      "mean_pred": 0.981,
+      "obs_freq": 0.944
+    }
+  ],
+  "interpret": "calibrated ดีขึ้น (Brier ลด + sharp ขึ้น)"
+}
