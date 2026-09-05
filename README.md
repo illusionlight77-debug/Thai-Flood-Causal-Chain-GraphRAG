@@ -6,7 +6,7 @@
 
 > A flood-explanation system that walks a *real causal chain* and measures how much more verifiable its answers are than vector search over news, scored by **F1 per causal-hop length**.
 
-📘 **เอกสาร:** [เอกสารการพัฒนาระบบฉบับสมบูรณ์ (System overview + ทุกฟังก์ชัน end-to-end)](docs/SYSTEM_DEVELOPMENT.md) · [เล่มโครงงาน (5 บท)](docs/PROJECT_REPORT.md) · [methodology (freeze)](eval/METHODOLOGY.md) · [references](docs/REFERENCES.md) · [history + bug log](docs/HISTORY.md)
+📘 **เอกสาร:** [เอกสารการพัฒนาระบบฉบับสมบูรณ์ (System overview + ทุกฟังก์ชัน end-to-end)](docs/SYSTEM_DEVELOPMENT.md) · [เล่มโครงงาน (5 บท)](docs/PROJECT_REPORT.md) · [methodology (freeze)](eval/METHODOLOGY.md) · [references](docs/REFERENCES.md) · [history + bug log](docs/HISTORY.md) · [🔭 roadmap: แยกส่วนพยากรณ์ + 2 thesis](docs/FORECASTING_ROADMAP.md)
 
 ---
 
@@ -461,6 +461,22 @@ finding ที่ได้จากการพยายามเพิ่มม
 | 2026-07-27 | **เติม path เดียว (`RUNOFF_TO` ฝน→น้ำท่า) + ข้อมูล gauge จริง = causal F1 0.545→0.769 นำ entity กลับ** | root cause ของ F1 ต่ำคือ *schema ขาดกลไก* ไม่ใช่ตัว algorithm — พอ schema ตรงกลไกจริง + ข้อมูลจริง ผลก็ตามมา | ยืนยันว่า "ใส่ข้อมูลจริง" ต้องคู่กับ "schema ที่ตรงเหตุจริง"; และการนำที่ยืนบนของจริงมีค่ากว่าการนำบน fixture |
 | 2026-07-27 | ข้อมูล 2564 ที่ "หาไม่เจอ" อยู่ในหน้า **event-specific** (DIANMU2021) ไม่ใช่หน้า yearly summary | GISTDA แยกหน้าเป็น per-event ที่มีตารางครบ — yearly เป็น prose | ปลดล็อก Item 4 ได้โดยไม่ต้องใช้ GEE; บทเรียน: ลองหลาย granularity ของแหล่งข้อมูลก่อนสรุปว่า "ไม่มี" |
 | 2026-07-27 | **vector-rag generalize แย่สุดข้ามเหตุการณ์** (F1 0.296→0.141 จาก 2565→2564) | คลังข่าวเอียงไปเหตุการณ์ที่ scrape มา (2565) → คนละปีก็ retrieve ผิด | causal (อิงกลไก+กราฟ) ทนข้ามเหตุการณ์กว่า vector (อิงความถี่ข่าว) — จุดขายเชิง generalization |
+
+---
+
+## 🔭 ทิศทางพัฒนาต่อ — แยกส่วนพยากรณ์ + เรียนรู้จากผล (Roadmap)
+
+> รายละเอียดเต็ม + paper อ้างอิง + แผน 2 thesis: [`docs/FORECASTING_ROADMAP.md`](docs/FORECASTING_ROADMAP.md)
+
+แยก **"ให้เหตุผล" (reasoning)** ออกจาก **"พยากรณ์" (forecasting)** เป็น 2 โมดูลในระบบเดียว (แชร์ causal graph) — โดยส่วนพยากรณ์จะ **เรียนรู้จากผลทำนายถูก/ผิด** (เก็บ Case Bank + โชว์ในหน้า `/warn`) แบบ **ไม่ให้เกิด overfitting**:
+
+![Forecasting architecture](docs/forecasting_architecture.svg)
+
+- **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
+- **โมดูล B — Early-Warning (พยากรณ์):** "จว.ไหน/เมื่อไหร่/โอกาสเท่าไร" + Case Bank + calibration → **Thesis B**
+- **กัน overfitting:** ตรึงโมเดลฟิสิกส์ (0 learned params) ไว้ — **ห้ามแก้กราฟ/gate/lag จากผล** ปรับได้เฉพาะชั้น calibration บาง ๆ (isotonic/Platt บน rolling holdout) + ประเมินแบบ prequential (เทรนอดีต→ทดสอบอนาคต)
+- **กลยุทธ์ thesis:** ระบบเดียว (รวม+ปรับปรุง) แต่เขียน **2 เปเปอร์ claim คมแยกกัน** (B อ้าง A) — ได้เครดิตรวมมากกว่าเปเปอร์เดียวที่ claim เบลอ
+- **paper แนวทาง improve แบบไม่ overfit:** Aamodt&Plaza 1994 (case-based) · Gama et al. 2014 (concept drift) · Niculescu-Mizil&Caruana 2005 / Guo et al. 2017 (calibration) · Gneiting et al. 2007 (calibration+sharpness) · Cloke&Pappenberger 2009 (ensemble flood forecasting) — [รายการเต็ม](docs/REFERENCES.md)
 
 ---
 

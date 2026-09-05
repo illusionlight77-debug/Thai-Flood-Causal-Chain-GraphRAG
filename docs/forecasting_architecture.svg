@@ -1,0 +1,81 @@
+<svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Sans Thai','Segoe UI',Arial,sans-serif">
+  <defs>
+    <marker id="fa" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/></marker>
+    <marker id="fb" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0492f"/></marker>
+  </defs>
+  <rect width="1200" height="780" fill="#f6efe1"/>
+  <text x="34" y="42" font-size="23" font-weight="700" fill="#3a2f22" font-family="Georgia,serif">ทิศทางพัฒนา — แยก "ให้เหตุผล" ออกจาก "พยากรณ์" + เรียนรู้จากผล (กัน overfitting)</text>
+  <text x="34" y="66" font-size="13.5" fill="#8a6d3b">ระบบเดียว แชร์ causal graph · โมดูล A = reasoning (Thesis A) · โมดูล B = forecasting + outcome-feedback (Thesis B)</text>
+
+  <!-- FROZEN GRAPH -->
+  <rect x="430" y="92" width="340" height="74" rx="12" fill="#dfeef4" stroke="#2f6b8a" stroke-width="2.4"/>
+  <text x="600" y="122" font-size="16" font-weight="700" fill="#134b57" text-anchor="middle">🔒 Causal Graph (Neo4j) — FROZEN</text>
+  <text x="600" y="146" font-size="12.5" fill="#2f6b8a" text-anchor="middle">โครง / gate / lag = ฟิสิกส์จริง · 0 learned params (blind property คงอยู่)</text>
+
+  <!-- fan to A and B -->
+  <path d="M480,166 L300,204" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#fa)"/>
+  <path d="M720,166 L900,204" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#fa)"/>
+
+  <!-- Module A -->
+  <rect x="70" y="206" width="330" height="92" rx="12" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2.4"/>
+  <text x="235" y="234" font-size="15.5" font-weight="700" fill="#245c37" text-anchor="middle">โมดูล A · Causal-GraphRAG (ให้เหตุผล)</text>
+  <text x="235" y="257" font-size="12.5" fill="#3a2f22" text-anchor="middle">"ทำไมจังหวัดนี้ท่วม" → chain + evidence</text>
+  <text x="235" y="278" font-size="12" fill="#5a7a5a" text-anchor="middle">วัด: traceability · specificity · F1-by-hop</text>
+  <path d="M235,298 L235,330" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#fa)"/>
+  <polygon points="110,332 360,332 340,384 90,384" fill="#f3f0e8" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="225" y="356" font-size="13" font-weight="700" fill="#3a2f22" text-anchor="middle">คำอธิบาย + evidence (ตรวจย้อนได้)</text>
+  <text x="225" y="374" font-size="11.5" fill="#8a6d3b" text-anchor="middle">retrospective · "ทำไม"</text>
+  <rect x="70" y="404" width="150" height="34" rx="17" fill="#2f7d4a"/><text x="145" y="426" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">📘 Thesis A</text>
+
+  <!-- Module B -->
+  <rect x="800" y="206" width="330" height="92" rx="12" fill="#fbf3e6" stroke="#b8801f" stroke-width="2.4"/>
+  <text x="965" y="234" font-size="15.5" font-weight="700" fill="#8a6d3b" text-anchor="middle">โมดูล B · Early-Warning (พยากรณ์)</text>
+  <text x="965" y="257" font-size="12.5" fill="#3a2f22" text-anchor="middle">"จว.ไหน / เมื่อไหร่ / โอกาสเท่าไร"</text>
+  <text x="965" y="278" font-size="12" fill="#9a7a3f" text-anchor="middle">วัด: POD/FAR/CSI · calibration · sharpness</text>
+  <path d="M965,298 L965,330" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#fa)"/>
+  <polygon points="838,332 1092,332 1072,384 818,384" fill="#f3ece0" stroke="#b8801f" stroke-width="1.8"/>
+  <text x="955" y="356" font-size="13" font-weight="700" fill="#8a6d3b" text-anchor="middle">คำเตือน: จว. + lead window + prob</text>
+  <text x="955" y="374" font-size="11.5" fill="#9a7a3f" text-anchor="middle">prospective · "จะเกิดไหม"</text>
+
+  <!-- ===== outcome-feedback loop (Module B only) ===== -->
+  <path d="M955,384 L955,420" fill="none" stroke="#8a6d3b" stroke-width="2" marker-end="url(#fa)"/>
+  <rect x="800" y="422" width="330" height="60" rx="12" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="965" y="447" font-size="14" font-weight="700" fill="#3a2f22" text-anchor="middle">Prediction Log / Case Bank</text>
+  <text x="965" y="468" font-size="11.5" fill="#8a6d3b" text-anchor="middle">บันทึกคำเตือน "ก่อนรู้ผล" (ts · chain · window · prob)</text>
+
+  <path d="M965,482 L965,508" fill="none" stroke="#c0492f" stroke-width="2" marker-end="url(#fb)"/>
+  <rect x="812" y="510" width="306" height="30" rx="8" fill="#fbeee9" stroke="#c0492f" stroke-width="1.6"/>
+  <text x="965" y="531" font-size="12.5" font-weight="700" fill="#c0492f" text-anchor="middle">ผลจริงจาก GISTDA → ป้าย TP / FP / FN / TN</text>
+
+  <!-- three outputs -->
+  <path d="M880,540 L720,566" fill="none" stroke="#8a6d3b" stroke-width="1.8" marker-end="url(#fa)"/>
+  <path d="M965,540 L965,566" fill="none" stroke="#8a6d3b" stroke-width="1.8" marker-end="url(#fa)"/>
+  <path d="M1050,540 L1110,566" fill="none" stroke="#8a6d3b" stroke-width="1.8" marker-end="url(#fa)"/>
+
+  <rect x="560" y="568" width="230" height="70" rx="11" fill="#eef3ec" stroke="#2f7d4a" stroke-width="2"/>
+  <text x="675" y="592" font-size="13" font-weight="700" fill="#245c37" text-anchor="middle">Calibration layer</text>
+  <text x="675" y="611" font-size="11" fill="#3a2f22" text-anchor="middle">isotonic / Platt · rolling holdout</text>
+  <text x="675" y="628" font-size="10.5" fill="#5a7a5a" text-anchor="middle">พารามิเตอร์น้อย · nested CV</text>
+
+  <rect x="850" y="568" width="230" height="70" rx="11" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8"/>
+  <text x="965" y="592" font-size="13" font-weight="700" fill="#3a2f22" text-anchor="middle">Track-record → /warn</text>
+  <text x="965" y="611" font-size="11" fill="#8a6d3b" text-anchor="middle">โชว์เคสถูก/ผิด + reliability</text>
+  <text x="965" y="628" font-size="10.5" fill="#a58a5a" text-anchor="middle">โปร่งใส (integrity)</text>
+
+  <rect x="1092" y="568" width="76" height="70" rx="11" fill="#fbf6ec" stroke="#8a6d3b" stroke-width="1.8" stroke-dasharray="4 3"/>
+  <text x="1130" y="595" font-size="12" font-weight="700" fill="#3a2f22" text-anchor="middle">Drift</text>
+  <text x="1130" y="613" font-size="12" font-weight="700" fill="#3a2f22" text-anchor="middle">monitor</text>
+  <text x="1130" y="630" font-size="9.5" fill="#a58a5a" text-anchor="middle">CSI ตก = เตือน</text>
+
+  <!-- calibration feeds prob back (dashed up) -->
+  <path d="M560,600 C470,600 470,360 815,358" fill="none" stroke="#2f7d4a" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#fa)"/>
+  <text x="470" y="470" font-size="11.5" font-weight="700" fill="#2f7d4a" text-anchor="middle" transform="rotate(-90 470 470)">ปรับ prob เท่านั้น (ไม่แตะกราฟ)</text>
+
+  <rect x="1000" y="470" width="130" height="34" rx="17" fill="#b8801f"/><text x="1065" y="492" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">📗 Thesis B</text>
+
+  <!-- guard banner -->
+  <rect x="34" y="672" width="1132" height="80" rx="12" fill="#fbeee9" stroke="#c0492f" stroke-width="1.6"/>
+  <text x="50" y="698" font-size="14" font-weight="700" fill="#c0492f">กติกากัน overfitting (หัวใจของทิศทาง B)</text>
+  <text x="50" y="720" font-size="12.5" fill="#3a2f22">• <tspan font-weight="700">ห้ามแก้โครงกราฟ / gate / lag จากผลทำนาย</tspan> — โมเดลฟิสิกส์ตรึงไว้ (0 learned params) → blind test ยังจริง · ปรับได้เฉพาะชั้น calibration บาง ๆ</text>
+  <text x="50" y="740" font-size="12.5" fill="#3a2f22">• ประเมินแบบ <tspan font-weight="700">prequential</tspan> (เทรนอดีต → ทดสอบอนาคต) · วัด calibration + sharpness คู่กัน (Gneiting) · refs: Aamodt&amp;Plaza · Gama · Niculescu-Mizil · Guo · Cloke&amp;Pappenberger</text>
+</svg>

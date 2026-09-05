@@ -144,7 +144,7 @@
     <div class="head"><div class="kicker">ภาพรวมระบบ · System Overview</div>
       <h2>สายเหตุ-ผล (บน) + ระบบที่สร้างมาวัดมัน (ล่าง)</h2>
       <h3>The causal chain (top) and the system built to measure it (bottom)</h3></div>
-    <div class="fig"><img src="system_overview_en.svg" alt="System overview"></div>
+    <div class="fig"><img src="system_overview.svg" alt="System overview"></div>
     <div class="take"><div class="th">ตัดสินด้วยความจริงจากดาวเทียม GISTDA ที่ <b>อิสระจากโมเดล</b> — โมเดลไม่เคยเห็นเฉลย</div>
       <div class="en">Judged by GISTDA satellite truth that is independent of the model — the model never sees the answer key.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">03</span></div>
@@ -154,7 +154,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">① Pipeline · Ingestion</div>
       <h2>สร้างกราฟเหตุ-ผลจากข้อมูลจริง</h2><h3>Ingestion &amp; Graph Build</h3></div>
-    <div class="fig"><img src="blocks/block1_ingest_en.svg" alt="Ingestion"></div>
+    <div class="fig"><img src="blocks/block1_ingest.svg" alt="Ingestion"></div>
     <div class="take"><div class="th">ทุก edge พก <b>evidence</b> · ประตูน้ำ "ล้น" ตัดสินจาก RID gauge <b>อิสระ</b>จากดาวเทียมที่เป็นเฉลย</div>
       <div class="en">Every edge carries evidence; "overflow" is decided by RID gauges, independent of the satellite gold.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">04</span></div>
@@ -164,7 +164,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">② Pipeline · Geo</div>
       <h2>จับลำน้ำ → จังหวัด + วางเฉลยจากภาพน้ำท่วม</h2><h3>Geo Mapping (basin → province)</h3></div>
-    <div class="fig"><img src="blocks/block2_geo_en.svg" alt="Geo mapping"></div>
+    <div class="fig"><img src="blocks/block2_geo.svg" alt="Geo mapping"></div>
     <div class="take"><div class="th">GeoPandas point-in-polygon บนขอบเขตจริง · เฉลย (gold) มาจาก<b>ดาวเทียมล้วน ๆ</b></div>
       <div class="en">Point-in-polygon on real boundaries; the gold answer key comes purely from satellite imagery.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">05</span></div>
@@ -174,7 +174,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">③ Pipeline · Retrievers ★</div>
       <h2>หัวใจงาน — 3 ระบบเดินคนละแบบ</h2><h3>The core: causal vs entity vs vector</h3></div>
-    <div class="fig"><img src="blocks/block3_retrievers_en.svg" alt="3 retrievers"></div>
+    <div class="fig"><img src="blocks/block3_retrievers.svg" alt="3 retrievers"></div>
     <div class="take"><div class="th">ทั้ง 3 ตอบ "จังหวัดไหนท่วม" ได้ — แต่<b>มีแค่ causal ที่บอก "เพราะอะไร" พร้อมหลักฐาน</b></div>
       <div class="en">All three can say which provinces flooded — but only causal can say "why", with evidence.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">06</span></div>
@@ -184,7 +184,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">④ Pipeline · Evaluation</div>
       <h2>ให้คะแนน + ยืนยันสถิติ (รายงานตรง)</h2><h3>Evaluation &amp; statistical confirmation</h3></div>
-    <div class="fig"><img src="blocks/block4_eval_en.svg" alt="Evaluation"></div>
+    <div class="fig"><img src="blocks/block4_eval.svg" alt="Evaluation"></div>
     <div class="take"><div class="th">eval set แช่แข็ง · รายงานเลขเก่า+ใหม่คู่กัน — F1 <b>1.000→0.545→0.909</b></div>
       <div class="en">Frozen eval set; old and new numbers reported together — F1 1.000 → 0.545 → 0.909.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">07</span></div>
@@ -194,7 +194,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">⑤ Pipeline · DEM</div>
       <h2>ยืนยันทิศน้ำไหลด้วยฟิสิกส์อิสระ</h2><h3>DEM validation of flow direction</h3></div>
-    <div class="fig"><img src="blocks/block5_dem_en.svg" alt="DEM validation"></div>
+    <div class="fig"><img src="blocks/block5_dem.svg" alt="DEM validation"></div>
     <div class="take"><div class="th">ความสูงพื้นดินจาก<b>ดาวเทียม Copernicus</b> ยืนยันทิศ FLOWS_TO — flow-accum 11/11, routing 8/11 (รายงานตรง)</div>
       <div class="en">Real Copernicus elevation validates every FLOWS_TO edge — flow-accumulation 11/11, routing 8/11 (reported straight).</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">08</span></div>
@@ -204,7 +204,7 @@
   <section class="slide">
     <div class="head"><div class="kicker">⑥ Extension</div>
       <h2>พยากรณ์ / ความเสี่ยง + ทำไมอาจไม่เกิด</h2><h3>Forecasting / risk + why it might not happen</h3></div>
-    <div class="fig"><img src="blocks/block6_extension_en.svg" alt="Extension"></div>
+    <div class="fig"><img src="blocks/block6_extension.svg" alt="Extension"></div>
     <div class="take"><div class="th">ห่อคำเตือนด้วยตัวเลข<b>วัดจริง</b> (precision 0.938) + มาตรฐาน UNDRR/IPCC — ระบุความไม่แน่นอนชัดเจน</div>
       <div class="en">Wraps warnings with measured numbers (precision 0.938) + UNDRR/IPCC standards — uncertainty stated explicitly.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">09</span></div>

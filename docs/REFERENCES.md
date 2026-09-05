@@ -105,3 +105,27 @@ Full source links + endpoint status: README → *System — All Links*.
 - **thai-legal-temporal-graphrag** — temporal KG traversal to avoid citing repealed law;
   frozen-methodology + honest-limitations template our METHODOLOGY.md follows.
 - **thai-multiteacher-opd** — McNemar + Holm + pre-registration discipline reused here.
+
+---
+
+### Forecasting improvement (Roadmap B) — เรียนรู้จากผลถูก/ผิด โดยกัน overfitting
+
+> ดูแผน: [`docs/FORECASTING_ROADMAP.md`](FORECASTING_ROADMAP.md). หลักร่วม: แยก "โมเดลกลไก" (ตรึง) ออกจาก "ชั้นปรับ" (บาง, cross-validate, ทดสอบ prospective).
+
+- **Aamodt & Plaza (1994)** — *Case-Based Reasoning: Foundational Issues, Methodological
+  Variations, and System Approaches.* AI Communications 7(1):39–59. → รากของ **Case Bank** (คลังเคสถูก/ผิด).
+- **Gama, Žliobaitė, Bifet, Pechenizkiy & Bouchachia (2014)** — *A survey on concept drift
+  adaptation.* ACM Computing Surveys 46(4). → ปรับตามข้อมูลใหม่โดยไม่พัง + drift monitor.
+- **Gama, Sebastião & Rodrigues (2013)** — *On evaluating stream learning algorithms.*
+  Machine Learning 90(3). (+ Dawid 1984, prequential principle) → ประเมิน **prequential** (เทรนอดีต→ทดสอบอนาคต).
+- **Platt (1999)** Platt scaling; **Niculescu-Mizil & Caruana (2005)** *Predicting Good
+  Probabilities with Supervised Learning* (ICML); **Guo, Pleiss, Sun & Weinberger (2017)**
+  *On Calibration of Modern Neural Networks* (ICML). → **ชั้น calibration บาง ๆ** พารามิเตอร์น้อย = เสี่ยง overfit ต่ำ.
+- **Gneiting, Balabdaoui & Raftery (2007)** — *Probabilistic forecasts, calibration and
+  sharpness.* JRSS-B 69(2):243–268. → วัด **calibration + sharpness** คู่กัน (ไม่ดันตัวเลขให้สวย).
+- **Jolliffe & Stephenson (2012)** — *Forecast Verification: A Practitioner's Guide.* 2nd ed.,
+  Wiley. (+ NOAA Forecast Verification Glossary) → POD/FAR/CSI, reliability, Brier.
+- **Cloke & Pappenberger (2009)** — *Ensemble flood forecasting: A review.* J. Hydrology 375. →
+  บริบทพยากรณ์น้ำท่วมเชิงปฏิบัติการ + post-processing.
+- **Liu et al. (2012)** — *Advancing data assimilation in operational hydrologic forecasting.*
+  HESS 16. → อัปเดตพยากรณ์จากข้อมูลจริง (เชิงหลักการ).
