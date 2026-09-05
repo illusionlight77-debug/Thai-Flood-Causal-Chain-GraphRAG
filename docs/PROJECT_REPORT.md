@@ -178,6 +178,15 @@ record — นี่คือหัวใจของ H1 (traceability). *(ห�
   เท่านั้น ไม่ให้คะแนน) → Spearman ρ, MAE/RMSE, calibrated R², **warning skill POD/FAR/CSI**
 - **probability + risk** (`risk_warning.py`): โอกาส = precision ที่วัดได้; ช่วงเวลา = [คลื่นเร็ว, ×5.7 basin-fill];
   **Risk = โอกาส × ประชากร(NSO) × ความถี่น้ำท่วม** (H×E×V). *ไม่ได้สร้าง predictor ใหม่ — ห่อผลด้วยเลขที่มี paper รองรับ*
+- **outcome-feedback: Case Bank + calibration** (`case_bank.py`, `calibration.py`): เก็บเคสทำนายถูก/ผิดเทียบ GISTDA
+  (**92 เคส · POD 0.866 · FAR 0.094 · CSI 0.795**) แล้วปรับ *ความน่าจะเป็น* แบบ leave-one-event-out (prequential):
+  Brier **0.086 → 0.0725** (sharp ขึ้น) — *โดยไม่แตะกราฟ/gate จึงกัน overfitting*; แสดง track record ในหน้า `/warn`
+
+> **📌 โน้ตสำหรับเล่ม (ส่วนชดเชย / social-good):** ส่วน extension นี้ทำเป็น **ระบบจริงที่รันได้แล้ว** (ไม่ใช่แค่แนวคิด) —
+> มี lead-time ที่ผูกกับ timeline จริง, warning skill ที่วัดได้, risk ตามมาตรฐาน UNDRR/IPCC, และชั้นเรียนรู้จากผลที่กัน
+> overfitting. ใช้เป็น **บทเสริมด้าน climate-resilience / early-warning (NECTEC social-good)** ได้อย่างมั่นใจและความเสี่ยงต่ำ
+> เพราะยืนบนโครงเดียวกับงานหลัก (0 learned params) — **ข้อจำกัดที่รายงานตรง:** N ยังจำกัด (64 คำเตือน/4 เหตุการณ์),
+> lead-time แม่นเชิง *ลำดับ* แต่ *magnitude* ยังต้อง calibrate เพิ่ม, และ prospective log จริงยังต้องสะสมต่อ.
 
 ## 3.10 Blind / out-of-sample
 โมเดล **ไม่มี learned parameter** (โครงสร้างจากอุทกวิทยา, gate จาก RID gauge, gold ใช้*ให้คะแนน*เท่านั้น)
