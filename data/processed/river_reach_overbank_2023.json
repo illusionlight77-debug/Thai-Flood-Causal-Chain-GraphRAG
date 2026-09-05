@@ -1,18 +1,131 @@
 {
   "_meta": {
-    "description": "Sub-basin over-bank gate for 2023 — held FIXED from the high-confidence 2022 RID SWOC pattern, NOT refit to 2023 outcomes. This is a deliberate out-of-sample test (#5 blind): the gate is not tuned per event, so where 2023's actual overflow differed from the 2022 pattern, causal produces honest FN/FP. Independent of the GISTDA satellite gold either way.",
-    "source": "fixed = river_reach_overbank_2022.json pattern (RID SWOC 2022)",
-    "confidence": "fixed-pattern (out-of-sample, not refit)",
-    "retrieved_date": "2026-09-04"
+    "description": "Per-reach over-bank gate for 2023 — control/index gauge per reach from thaiwater API v3 (main-stream: discharge>qmax; tributary: stage>min_bank). Independent of GISTDA gold (de-circularized). Refs: NHDPlus snapping, NWS index gauge.",
+    "source": "https://api-v3.thaiwater.net/api/v1/thaiwater30/public/waterlevel_graph (2023-09-15..2023-10-20)"
   },
-  "subbasin_overbank": {
-    "Ping":       {"overflow": false, "confidence": "fixed-2022"},
-    "Wang":       {"overflow": false, "confidence": "fixed-2022"},
-    "Yom":        {"overflow": true,  "confidence": "fixed-2022"},
-    "Nan":        {"overflow": true,  "confidence": "fixed-2022"},
-    "SakaeKrang": {"overflow": true,  "confidence": "fixed-2022"},
-    "ChaoPhraya": {"overflow": true,  "confidence": "fixed-2022"},
-    "ThaChin":    {"overflow": true,  "confidence": "fixed-2022"},
-    "Pasak":      {"overflow": true,  "confidence": "fixed-2022"}
+  "reach_overbank": {
+    "RR-PING": {
+      "overflow": false,
+      "gauge": "P.7A",
+      "over_bank": false,
+      "basis": "discharge 970.0<=qmax 3000",
+      "peak_stage": 74.07,
+      "min_bank": 77.070003,
+      "peak_discharge": 970.0,
+      "qmax": 3000
+    },
+    "RR-WANG": {
+      "overflow": true,
+      "gauge": "W.4A",
+      "over_bank": true,
+      "basis": "discharge 621.0>530",
+      "peak_stage": 137.23,
+      "min_bank": 137,
+      "peak_discharge": 621.0,
+      "qmax": 530
+    },
+    "RR-YOM": {
+      "overflow": true,
+      "gauge": "Y.16",
+      "over_bank": true,
+      "basis": "discharge 460.0>230",
+      "peak_stage": 41.41,
+      "min_bank": 38.929999,
+      "peak_discharge": 460.0,
+      "qmax": 230
+    },
+    "RR-NAN": {
+      "overflow": false,
+      "gauge": "N.67",
+      "over_bank": false,
+      "basis": "discharge 1181.0<=qmax 1435",
+      "peak_stage": 27.05,
+      "min_bank": 28.209999,
+      "peak_discharge": 1181.0,
+      "qmax": 1435
+    },
+    "RR-SAKAEKRANG": {
+      "overflow": false,
+      "gauge": "SKG002",
+      "over_bank": false,
+      "basis": "stage 17.63<=bank 17.66",
+      "peak_stage": 17.63,
+      "min_bank": 17.66,
+      "peak_discharge": null,
+      "qmax": null
+    },
+    "RR-CP-UPPER": {
+      "overflow": false,
+      "gauge": "C.13",
+      "over_bank": false,
+      "basis": "discharge 1800.0<=qmax 2720",
+      "peak_stage": 13.87,
+      "min_bank": 16.34,
+      "peak_discharge": 1800.0,
+      "qmax": 2720
+    },
+    "RR-CP-L1": {
+      "overflow": false,
+      "gauge": "C.13",
+      "over_bank": false,
+      "basis": "discharge 1800.0<=qmax 2720",
+      "peak_stage": 13.87,
+      "min_bank": 16.34,
+      "peak_discharge": 1800.0,
+      "qmax": 2720
+    },
+    "RR-CP-L2": {
+      "overflow": false,
+      "gauge": "C.35",
+      "over_bank": false,
+      "basis": "discharge 1024.0<=qmax 1159",
+      "peak_stage": 3.81,
+      "min_bank": 4.35,
+      "peak_discharge": 1024.0,
+      "qmax": 1159
+    },
+    "RR-CP-L3": {
+      "overflow": true,
+      "gauge": "C.37",
+      "over_bank": true,
+      "basis": "discharge 109.0>97",
+      "peak_stage": 3.56,
+      "min_bank": 4.14,
+      "peak_discharge": 109.0,
+      "qmax": 97
+    },
+    "RR-PASAK": {
+      "overflow": false,
+      "gauge": "S.26",
+      "over_bank": false,
+      "basis": "discharge 313.0<=qmax 633",
+      "peak_stage": 4.01,
+      "min_bank": 7.2,
+      "peak_discharge": 313.0,
+      "qmax": 633
+    },
+    "RR-THACHIN": {
+      "overflow": false,
+      "gauge": "T.1",
+      "over_bank": false,
+      "basis": "stage -7.91<=bank 1.5",
+      "peak_stage": -7.91,
+      "min_bank": 1.5,
+      "peak_discharge": null,
+      "qmax": null
+    }
+  },
+  "overflow": {
+    "RR-PING": false,
+    "RR-WANG": true,
+    "RR-YOM": true,
+    "RR-NAN": false,
+    "RR-SAKAEKRANG": false,
+    "RR-CP-UPPER": false,
+    "RR-CP-L1": false,
+    "RR-CP-L2": false,
+    "RR-CP-L3": true,
+    "RR-PASAK": false,
+    "RR-THACHIN": false
   }
 }

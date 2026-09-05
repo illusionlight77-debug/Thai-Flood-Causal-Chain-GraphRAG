@@ -140,7 +140,11 @@ _GAUGES_PATH = _PROC / f"river_gauges_{_YEAR}.json"
 
 def _load_reach_overflow() -> dict:
     if _OVERBANK_PATH.exists():
-        sub = json.loads(_OVERBANK_PATH.read_text("utf-8")).get("subbasin_overbank", {})
+        doc = json.loads(_OVERBANK_PATH.read_text("utf-8"))
+        reach = doc.get("reach_overbank")   # per-reach control-gauge gate (thaiwater_gauge --mode reach)
+        if reach:
+            return {r: bool(reach.get(r, {}).get("overflow", False)) for r in REACH_META}
+        sub = doc.get("subbasin_overbank", {})
         return {r: bool(sub.get(REACH_SUBBASIN[r], {}).get("overflow", False)) for r in REACH_META}
     if _GAUGES_PATH.exists():  # fallback: reach-level gauge file (เหตุการณ์เดิม)
         g = json.loads(_GAUGES_PATH.read_text("utf-8")).get("reach_gauge", {})
