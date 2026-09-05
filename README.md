@@ -39,6 +39,7 @@
 ![System Overview](docs/system_overview.svg)
 
 > 📖 เวอร์ชันเล่าเรื่องเต็ม (สำหรับเล่าให้อาจารย์/นำเสนอ): [`docs/STORY.md`](docs/STORY.md)
+> 🖥️ **สไลด์นำเสนอ 1920×1080 (สองภาษา TH/EN):** [`docs/slides.html`](docs/slides.html) — รวม overview + 6 blocks + Neo4j schema + multi-hop (เปิดในเบราว์เซอร์ · กด `P` เพื่อ export PDF)
 
 **เจาะเข้าไปทีละก้อน** — แต่ละก้อนบอก *เอาอะไรเข้า → ทำอะไร → ได้อะไรออก → ทำไมเชื่อถือได้*:
 
