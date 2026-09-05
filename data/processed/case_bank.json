@@ -46,6 +46,17 @@
       "far": 0.125,
       "csi": 0.824
     },
+    "2025": {
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "scored": true,
+      "tp": 15,
+      "fp": 1,
+      "fn": 2,
+      "tn": 5,
+      "pod": 0.882,
+      "far": 0.062,
+      "csi": 0.833
+    },
     "ne2026": {
       "label": "โขง/อีสาน (live)",
       "scored": false,
@@ -59,15 +70,15 @@
     }
   },
   "cumulative_scored": {
-    "tp": 58,
-    "fp": 6,
-    "fn": 9,
-    "tn": 19,
-    "pod": 0.866,
-    "far": 0.094,
-    "csi": 0.795
+    "tp": 73,
+    "fp": 7,
+    "fn": 11,
+    "tn": 24,
+    "pod": 0.869,
+    "far": 0.087,
+    "csi": 0.802
   },
-  "n_cases_scored": 92,
+  "n_cases_scored": 115,
   "notable_correct": [
     {
       "event": "2022",
@@ -289,6 +300,39 @@
       "predicted": true,
       "gold": false,
       "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "subbasin": "Ping",
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Saraburi",
+      "hop": 2,
+      "subbasin": "Pasak",
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "subbasin": "ChaoPhraya",
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
       "scored": true
     }
   ],
@@ -1298,6 +1342,259 @@
     {
       "event": "2023",
       "label": "เจ้าพระยา 2566",
+      "province": "Lamphun",
+      "hop": 2,
+      "subbasin": "Ping",
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Ang Thong",
+      "hop": 3,
+      "subbasin": "ChaoPhraya",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Ayutthaya",
+      "hop": 3,
+      "subbasin": null,
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Chai Nat",
+      "hop": 4,
+      "subbasin": "ChaoPhraya",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Kamphaeng Phet",
+      "hop": 2,
+      "subbasin": "Ping",
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Lopburi",
+      "hop": 2,
+      "subbasin": "Pasak",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Nakhon Pathom",
+      "hop": 5,
+      "subbasin": "ThaChin",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Nakhon Sawan",
+      "hop": 4,
+      "subbasin": "ChaoPhraya",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Phetchabun",
+      "hop": 2,
+      "subbasin": "Pasak",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Phichit",
+      "hop": 2,
+      "subbasin": "Nan",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Phitsanulok",
+      "hop": 2,
+      "subbasin": "Nan",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Saraburi",
+      "hop": 2,
+      "subbasin": "Pasak",
+      "predicted": true,
+      "gold": false,
+      "outcome": "FP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Sing Buri",
+      "hop": 3,
+      "subbasin": "ChaoPhraya",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Sukhothai",
+      "hop": 2,
+      "subbasin": "Yom",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Suphan Buri",
+      "hop": 5,
+      "subbasin": "ThaChin",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Tak",
+      "hop": 2,
+      "subbasin": "Ping",
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Uthai Thani",
+      "hop": 2,
+      "subbasin": "SakaeKrang",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Uttaradit",
+      "hop": 2,
+      "subbasin": "Nan",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Pathum Thani",
+      "hop": 4,
+      "subbasin": "ChaoPhraya",
+      "predicted": true,
+      "gold": true,
+      "outcome": "TP",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Nonthaburi",
+      "hop": 4,
+      "subbasin": "ChaoPhraya",
+      "predicted": false,
+      "gold": true,
+      "outcome": "FN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Bangkok",
+      "hop": 4,
+      "subbasin": null,
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Chiang Mai",
+      "hop": 2,
+      "subbasin": "Ping",
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
+      "province": "Lampang",
+      "hop": 2,
+      "subbasin": "Wang",
+      "predicted": false,
+      "gold": false,
+      "outcome": "TN",
+      "scored": true
+    },
+    {
+      "event": "2025",
+      "label": "เจ้าพระยา 2568 (GISTDA)",
       "province": "Lamphun",
       "hop": 2,
       "subbasin": "Ping",

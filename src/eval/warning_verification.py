@@ -31,7 +31,7 @@ _PROC = settings.data_processed_dir
 _BANK = _PROC / "case_bank.json"
 _OUT = _PROC / "warning_verification.json"
 P_CONST = 0.938
-_YEAR_ORDER = ["2021", "2022", "2023", "2024"]   # chronological (เตี้ยนหมู่→โนรู→2566→2567)
+_YEAR_ORDER = ["2021", "2022", "2023", "2024", "2025"]   # chronological (+2568 GISTDA)
 random.seed(20260905)
 
 

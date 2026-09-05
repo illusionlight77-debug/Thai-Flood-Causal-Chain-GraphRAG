@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "description": "Sub-basin over-bank gate for 2025 — held FIXED from the 2022 RID SWOC pattern, NOT refit to 2025 (same out-of-sample protocol as 2023/2024)."
+  },
+  "subbasin_overbank": {
+    "Ping": {
+      "overflow": false,
+      "basis": "ไม่อยู่ในตารางน้ำล้นตลิ่ง 21 ต.ค.; P.7A 409<585 ต่ำกว่าตลิ่ง",
+      "confidence": "high"
+    },
+    "Wang": {
+      "overflow": false,
+      "basis": "ลำปาง/ลำพูน ไม่ล้นตลิ่งในรายงาน",
+      "confidence": "medium"
+    },
+    "Yom": {
+      "overflow": true,
+      "basis": "แม่น้ำยม(สายเก่า) พิษณุโลก/สุโขทัย ล้นตลิ่ง (สชป.3)",
+      "confidence": "high"
+    },
+    "Nan": {
+      "overflow": true,
+      "basis": "ลุ่มน้ำน่าน พิจิตร/พิษณุโลก ล้นตลิ่ง (สชป.3); N.7A/N.8 crest ก่อนหน้า",
+      "confidence": "high"
+    },
+    "SakaeKrang": {
+      "overflow": true,
+      "basis": "แม่น้ำสะแกกรัง อุทัยธานี ล้นตลิ่ง (สชป.12)",
+      "confidence": "high"
+    },
+    "ChaoPhraya": {
+      "overflow": true,
+      "basis": "แม่น้ำเจ้าพระยา นครสวรรค์/ชัยนาท/สิงห์บุรี/อ่างทอง/อยุธยา ล้นตลิ่ง; C.13 3,048≥2,800",
+      "confidence": "high"
+    },
+    "ThaChin": {
+      "overflow": true,
+      "basis": "แม่น้ำท่าจีน สุพรรณบุรี/นครปฐม ล้นตลิ่ง (สชป.12/13)",
+      "confidence": "high"
+    },
+    "Pasak": {
+      "overflow": true,
+      "basis": "แม่น้ำป่าสัก เพชรบูรณ์/ลพบุรี/สระบุรี ล้นตลิ่ง (สชป.10)",
+      "confidence": "high"
+    }
+  },
+  "station_readings_21oct": {
+    "N.7A": {
+      "river": "Nan",
+      "province": "Phichit",
+      "level_m": 8.29,
+      "bank_m": 9.87,
+      "over_bank": false,
+      "discharge_cms": 684.1,
+      "capacity_cms": 997.0
+    },
+    "N.8": {
+      "river": "Nan",
+      "province": "Phichit",
+      "level_m": 10.14,
+      "bank_m": 10.8,
+      "over_bank": false,
+      "discharge_cms": 884.8,
+      "capacity_cms": 1023.0
+    }
+  }
+}

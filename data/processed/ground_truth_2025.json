@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "source": "https://www.nationthailand.com/news/general/40058106",
+    "rule": "GISTDA official flooded-province list (in-basin)",
+    "note": "per-province rai unavailable → list-based gold"
+  },
+  "gold_provinces": [
+    "Ang Thong",
+    "Ayutthaya",
+    "Chai Nat",
+    "Kamphaeng Phet",
+    "Lopburi",
+    "Nakhon Pathom",
+    "Nakhon Sawan",
+    "Nonthaburi",
+    "Pathum Thani",
+    "Phetchabun",
+    "Phichit",
+    "Phitsanulok",
+    "Sing Buri",
+    "Sukhothai",
+    "Suphan Buri",
+    "Uthai Thani",
+    "Uttaradit"
+  ]
+}

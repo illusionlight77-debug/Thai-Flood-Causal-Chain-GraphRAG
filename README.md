@@ -472,7 +472,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
-> ✅ **ทำแล้ว (ระบบรวม):** [`case_bank.py`](src/eval/case_bank.py) (92 เคส · POD 0.866 · FAR 0.094 · CSI 0.795) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) — verify เต็ม (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift): calibrate ตาม causal-hop **มี skill (BSS +0.147)** ขณะค่าคงที่ไม่มี (−0.012), Brier 0.086→**0.0725**; **event-level CI [0.07, 0.29]** + ทุกเหตุการณ์ BSS>0 (skill คงเส้นคงวา) — *แต่ 4 เหตุการณ์ยังน้อยเกินเคลม significance มั่นใจ (รายงานตรง)* · prospective log + track-record ใน `/warn` · `tests` (4 ผ่าน).
+> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **POD 0.869 · FAR 0.087 · CSI 0.802**) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) — verify เต็ม (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **เพิ่มเหตุการณ์จริงที่ 5** (เจ้าพระยา 2568 จาก GISTDA, [`add_gistda_2025.py`](src/ingest/add_gistda_2025.py), gate ตายตัวจาก 2022 = out-of-sample). **ผลซื่อสัตย์:** calibrate ตาม hop มี skill บวก (BSS +0.069) แต่ **ตกจาก +0.147 (4 เหตุการณ์)** เมื่อเพิ่ม 2568 (per-event BSS −0.32) → calibration *ยังไม่ robust* (รายงานตรง, ไม่ revert) · binary skill ยังแข็งทั้ง 5 · prospective log CLI + track-record ใน `/warn` · `tests` (4 ผ่าน).
 > 📗 **สรุปเตรียมทำเล่ม B:** [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md)
 
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**

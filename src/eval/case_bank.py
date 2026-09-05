@@ -44,9 +44,10 @@ def _subbasin_map() -> dict[str, str]:
 _SUB = _subbasin_map()
 
 # เหตุการณ์ที่ "ให้คะแนน" (ลุ่มเจ้าพระยา, มี negative จริง) — ne2026 เป็น generalization แยก
-SCORED = ["2022", "2021", "2024", "2023"]
+SCORED = ["2022", "2021", "2024", "2023", "2025"]
 _LABEL = {"2022": "เจ้าพระยา 2565 (โนรู)", "2021": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
-          "2024": "เจ้าพระยา 2567", "2023": "เจ้าพระยา 2566", "ne2026": "โขง/อีสาน (live)"}
+          "2024": "เจ้าพระยา 2567", "2023": "เจ้าพระยา 2566",
+          "2025": "เจ้าพระยา 2568 (GISTDA)", "ne2026": "โขง/อีสาน (live)"}
 SYS = "causal-graphrag"
 
 
@@ -150,6 +151,19 @@ def resolve_prospective(event: str, province: str, gold: bool) -> None:
 
 
 def main() -> None:
+    # --- prospective log CLI (path ข): บันทึกคำเตือน 'ก่อนรู้ผล' / เติมผลภายหลัง ---
+    if "--log" in sys.argv:      # --log EVENT PROVINCE TIMESTAMP [note]
+        i = sys.argv.index("--log")
+        ev, prov, ts = sys.argv[i + 1: i + 4]
+        note = sys.argv[i + 4] if len(sys.argv) > i + 4 else ""
+        add_prospective(ev, prov, predicted=True, timestamp=ts, note=note)
+        print(f"logged prospective (pending): {ev} {prov} @ {ts}"); return
+    if "--resolve" in sys.argv:  # --resolve EVENT PROVINCE GOLD(1/0)
+        i = sys.argv.index("--resolve")
+        ev, prov, gold = sys.argv[i + 1: i + 4]
+        resolve_prospective(ev, prov, gold in ("1", "true", "True"))
+        print(f"resolved: {ev} {prov} gold={gold}"); return
+
     bank = build()
     _OUT.write_text(json.dumps(bank, ensure_ascii=False, indent=2), "utf-8")
     c = bank["cumulative_scored"]

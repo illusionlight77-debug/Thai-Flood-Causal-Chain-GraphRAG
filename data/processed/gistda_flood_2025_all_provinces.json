@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "description": "GISTDA satellite flood — Chao Phraya 2025 event (2,441,484 rai, 17 provinces). Per-province rai not published in source.",
+    "source": "https://www.nationthailand.com/news/general/40058106",
+    "satellite_date": "2025-11-11",
+    "total_rai": 2441484
+  },
+  "flooded_provinces": [
+    "Ang Thong",
+    "Ayutthaya",
+    "Chai Nat",
+    "Kamphaeng Phet",
+    "Lopburi",
+    "Nakhon Pathom",
+    "Nakhon Sawan",
+    "Nonthaburi",
+    "Pathum Thani",
+    "Phetchabun",
+    "Phichit",
+    "Phitsanulok",
+    "Sing Buri",
+    "Sukhothai",
+    "Suphan Buri",
+    "Uthai Thani",
+    "Uttaradit"
+  ]
+}

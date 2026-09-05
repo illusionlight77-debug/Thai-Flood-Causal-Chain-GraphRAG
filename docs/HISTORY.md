@@ -99,3 +99,21 @@ real-distance lags).
   (ทางเดียวที่ทำให้ N โต/CI แคบอย่างซื่อสัตย์). **ไม่ scrape ข้อมูลปีใหม่แบบมั่ว** (ไม่มีข้อมูลจริงในเครื่อง = ไม่ปั้น).
 - **drift monitor:** CSI 2021→2024 = .882/.833/.824/.667 (จับการเสื่อมปี 2567). track-record ในหน้า `/warn`.
 - อ้างอิงเพิ่ม: ดู `docs/REFERENCES.md` (Probabilistic warning verification). สรุปเตรียมเล่ม: `docs/THESIS_B_SUMMARY.md`.
+
+---
+
+### 2026-09-05 (ต่อ) — เพิ่มเหตุการณ์จริงที่ 5 (เจ้าพระยา 2568) → ผลซื่อสัตย์กว่า
+
+- **แหล่งจริง (WebSearch/WebFetch):** GISTDA satellite ผ่าน Nation Thailand — เจ้าพระยา 2568 (ภาพ 11 พ.ย. 2568)
+  2,441,484 ไร่ · **17 จังหวัด** (Ayutthaya, Nakhon Sawan, Suphan Buri, Phichit, Sukhothai, Phitsanulok,
+  Lopburi, Nakhon Pathom, Chai Nat, Ang Thong, Sing Buri, Uthai Thani, Kamphaeng Phet, Uttaradit,
+  Nonthaburi, Phetchabun, Pathum Thani). src: nationthailand.com/news/general/40058106
+- **เพิ่มอย่างถูก protocol (`src/ingest/add_gistda_2025.py`):** gate ตายตัวจาก 2022 (out-of-sample,
+  เหมือน 2023/2024 ที่ verified ว่า predicted set เท่ากันเป๊ะ) · gold = รายชื่อจังหวัดทางการ (บทความไม่ให้
+  ไร่รายจังหวัด → gold หยาบกว่า cutoff ≥10k ไร่ = บันทึกเป็น caveat). **ไม่ปั้น overflow/prediction.**
+- **2568 เดี่ยว:** TP15/FP1/FN2/TN5 → CSI 0.833 (binary ดี)
+- **ผลรวม 5 เหตุการณ์ (115 เคส):** POD 0.869 · FAR 0.087 · CSI 0.802
+- **แต่ probabilistic BSS ตก:** +0.147 (4 เหตุการณ์) → **+0.069 (5 เหตุการณ์)**; 2568 per-event BSS **−0.322**
+  → **การเพิ่มข้อมูลจริงเผยว่า calibration ยังไม่ robust** (4 เหตุการณ์เดิมดูดีเกิน) — รายงานตรง ไม่ revert
+  (คู่ขนานกับบทเรียน F1 1.000→0.545: ยิ่งใช้ข้อมูลจริง ยิ่งเห็นความจริง)
+- **prospective log CLI** พร้อมใช้ (`--log`/`--resolve`) — ไฟล์ prospective ว่างไว้ (ไม่ ship demo ที่อาจเข้าใจผิด)

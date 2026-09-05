@@ -40,7 +40,8 @@ def test_verification_bss_and_decomp():
         assert abs(approx - v["brier"]) < 1e-2
     # calibrate-by-hop ควรมี skill (BSS) เหนือค่าคงที่ (รายงานตรง แม้ CI จะกว้าง)
     assert m["by_hop"]["bss_vs_climatology"] > m["const"]["bss_vs_climatology"]
-    assert len(r["drift_csi_by_event"]) == 4
+    n_events = len({c["event"] for c in case_bank.build()["cases"] if c["scored"]})
+    assert len(r["drift_csi_by_event"]) == n_events
     # event-level (cluster) bootstrap + per-event consistency reported
     assert "bss_ci95" in r["best_ci_event_level"]
-    assert len(r["per_event_loeo"]) == 4
+    assert len(r["per_event_loeo"]) == n_events

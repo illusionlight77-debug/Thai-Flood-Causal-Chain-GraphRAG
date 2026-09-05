@@ -1,0 +1,6 @@
+{
+  "_meta": {
+    "note": "prospective warnings logged BEFORE outcome (path B). ใช้: python -m src.eval.case_bank --log EVENT PROVINCE TIMESTAMP; แล้ว --resolve EVENT PROVINCE 1/0 เมื่อทราบผล. ยังว่าง = ยังไม่มีการ log จริง (ไม่ปั้น)"
+  },
+  "cases": []
+}

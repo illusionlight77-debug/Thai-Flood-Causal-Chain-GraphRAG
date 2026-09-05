@@ -44,29 +44,31 @@
 
 ## 4. ผลลัพธ์ (รายงานตรง — ไม่ tune)
 
-### 4.1 Warning skill (binary, 92 province-cases · 4 เหตุการณ์)
-- **POD 0.866 · FAR 0.094 · CSI 0.795** (per-event FAR ต่ำ ~0.06)
+### 4.1 Warning skill (binary, 115 province-cases · **5 เหตุการณ์**)
+- **POD 0.869 · FAR 0.087 · CSI 0.802** (per-event CSI 0.667–0.882 — คงเส้นคงวา)
+- เพิ่มเหตุการณ์ที่ 5 จริง: **เจ้าพระยา 2568 (GISTDA satellite, 11 พ.ย. 2568, 2.44 ล้านไร่/17 จังหวัด)**
+  ใช้ **gate ตายตัวจาก 2022** (out-of-sample, protocol เดียวกับ 2023/2024) → TP15/FP1/FN2/TN5 = **CSI 0.833**
 - เคสผิดสม่ำเสมอ: **FN = ลุ่มปิง** (ตาก/กำแพงเพชร/เชียงใหม่ = local-rain) · **FP = ปทุมธานี/อุทัยธานี**
 
-### 4.2 Probabilistic verification (64 คำเตือน · LOEO prequential)
-| calibrator | Brier | **BSS** vs climatology | ECE | sharpness | reliability | resolution |
-|---|---|---|---|---|---|---|
-| const (0.938) | 0.0860 | **−0.012** | 0.032 | 0.000 | 0.0010 | 0.0000 |
-| climatology (ref) | 0.0857 | −0.009 | 0.000 | 0.010 | 0.0017 | 0.0010 |
-| **empirical by-hop** | **0.0725** | **+0.147** | 0.042 | 0.119 | 0.0034 | 0.0160 |
-| Platt (logistic) | 0.0853 | −0.004 | 0.020 | 0.031 | 0.0163 | 0.0160 |
-| isotonic | 0.0846 | +0.004 | 0.000 | 0.037 | 0.0020 | 0.0024 |
+### 4.2 Probabilistic verification (80 คำเตือน · **5 เหตุการณ์** · LOEO prequential)
+| calibrator | Brier | **BSS** vs climatology | ECE | sharpness |
+|---|---|---|---|---|
+| const (0.938) | 0.0805 | **−0.008** | 0.025 | 0.000 |
+| climatology (ref) | 0.0804 | −0.007 | 0.000 | 0.008 |
+| **empirical by-hop** | **0.0743** | **+0.069** | 0.025 | 0.094 |
+| Platt (logistic) | 0.0810 | −0.015 | 0.008 | 0.019 |
+| isotonic | 0.0794 | +0.006 | 0.000 | 0.034 |
 
-- **finding หลัก:** calibrate ตาม **causal-hop มี skill จริง (BSS +0.147)** ขณะที่ค่าคงที่/climatology **ไม่มี** (BSS ≈ 0)
-  → ความลึกของสายเหตุ-ผลเป็นสัญญาณ calibrate ที่มีความหมาย
-- **ความไม่แน่นอน (วัดให้ถูกวิธี):**
-  - *case-level* bootstrap: BSS CI95 = **[−0.38, 0.34]** (คร่อม 0) — *แคบเกินจริง/ผิดวิธี* เพราะ province-cases
-    ในเหตุการณ์เดียวกัน correlated
-  - *event-level (cluster) bootstrap* (ถูกต้องกว่า): BSS CI95 = **[0.07, 0.29]** (ไม่คร่อม 0)
-  - *per-event LOEO*: ทุกเหตุการณ์ BSS **เป็นบวก** (2021 .23 · 2022 .23 · 2023 .09 · 2024 .09) = skill **คงเส้นคงวา**
-  - **สรุปตรง:** หลักฐานเชิง consistency + cluster CI *หนุนว่ามี skill* แต่ **4 clusters ยังน้อยเกินจะเคลม
-    significance แบบมั่นใจ** (cluster bootstrap กับ cluster น้อยไม่เสถียร) → ทางที่จะปิดจ็อบคือ **เพิ่มเหตุการณ์**
-    (ผ่าน prospective log) *ไม่ใช่จูน*
+- **finding หลัก:** calibrate ตาม **causal-hop ยังมี skill เป็นบวก (BSS +0.069)** เหนือค่าคงที่/climatology (≈0)
+  → ความลึกสายเหตุ-ผลยังเป็นสัญญาณที่มีความหมาย
+- **⚠️ ผลที่ซื่อสัตย์กว่าเมื่อเพิ่มเหตุการณ์จริง (2568):** BSS pooled **ตกจาก +0.147 (4 เหตุการณ์) → +0.069 (5 เหตุการณ์)**
+  และ **2568 เองมี per-event BSS = −0.322** (calibration ที่เรียนจากปีก่อนไม่ fit ปีนี้ดี — ส่วนหนึ่งเพราะ
+  gold 2568 ใช้รายชื่อจังหวัด ไม่ใช่ cutoff ≥10k ไร่ → base-rate สูงต่างออกไป)
+  → **การเพิ่มข้อมูลจริงทำให้เห็นว่า calibration *ยังไม่ robust* จริง** (4 เหตุการณ์เดิมทำให้ดูดีเกิน) — รายงานตรงตามกติกา
+- **ความไม่แน่นอน:** event-level cluster bootstrap BSS CI95 = **[−0.25, 0.20]** (คร่อม 0);
+  per-event LOEO: 2021 .19 · 2022 .19 · 2023 .09 · 2024 .09 · **2025 −0.32**
+  → **ยัง *ไม่* significant** — จุดที่ต้องพัฒนา: gold ให้เป็นมาตรฐานเดียว (rai cutoff) + เพิ่มเหตุการณ์ + ฟีเจอร์ calibrate ที่ทนกว่า hop
+- **binary skill (CSI) ยังแข็งทั้ง 5 เหตุการณ์** — จุดอ่อนอยู่ที่ *การ calibrate ความน่าจะเป็น* ไม่ใช่การตัดสินใจเตือน
 - **Platt/isotonic ไม่ชนะ empirical** — ตรงกับ survey: ข้อมูลน้อย **isotonic เสี่ยง overfit, Platt ก็ยังไม่พอ**
   (Niculescu-Mizil & Caruana 2005) → empirical-by-hop (LOEO) เหมาะสุดกับสเกลข้อมูลนี้
 
@@ -95,7 +97,9 @@ Gneiting et al. (2007) · Niculescu-Mizil & Caruana (2005) · Gama et al. (2014)
 ## 6. ข้อจำกัด + สิ่งที่ต้องทำต่อ (เพื่อให้ B เป็นเล่มที่แข็ง)
 - [x] **วัด CI ให้ถูกวิธี** — เพิ่ม event-level cluster bootstrap + per-event LOEO (เห็น skill คงเส้นคงวา)
 - [x] **prospective log pipeline** — `case_bank.add_prospective()` (log ก่อนรู้ผล) + `resolve_prospective()` (เติมผลภายหลัง)
-- [ ] **เพิ่มเหตุการณ์จริง (>4)** → ทำให้ CI แน่นพอเคลม significance ได้ (ปัจจัยสำคัญสุด — ต้องมีข้อมูล GISTDA ปีใหม่)
+- [x] **เพิ่มเหตุการณ์จริงที่ 5** — เจ้าพระยา 2568 จาก GISTDA (`src/ingest/add_gistda_2025.py`). ผล: BSS ตก → เห็นว่า
+  calibration ยังไม่ robust (ซื่อสัตย์). **ยังต้องเพิ่มอีก** ให้ CI แน่น + ทำ gold 2568 เป็น rai cutoff (ตอนนี้ list-based)
+- [x] **prospective log CLI** — `python -m src.eval.case_bank --log EVENT PROV TS` / `--resolve EVENT PROV 1|0`
 - [ ] เดินเครื่อง prospective จริง (log เหตุการณ์ที่กำลังจะเกิด → เก็บผล → เพิ่ม N ตามเวลา)
 - [ ] **calibrate magnitude ของ lead-time** (ต้องมี onset ของเหตุการณ์ปกติหลายเหตุการณ์)
 - [ ] ขยายฟีเจอร์ calibrate (subbasin/#overflow) เมื่อข้อมูลมากพอ (ตอนนี้ hop ปลอดภัยสุด)
