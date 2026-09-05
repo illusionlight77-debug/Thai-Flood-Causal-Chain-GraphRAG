@@ -1,26 +1,25 @@
 {
   "_meta": {
-    "source": "https://www.nationthailand.com/news/general/40058106",
-    "rule": "GISTDA official flooded-province list (in-basin)",
-    "note": "per-province rai unavailable → list-based gold"
+    "source": "https://www.naewna.com/local/927163",
+    "desc": "GISTDA satellite 2025 (11 Nov 2025) 17-province flooded list; per-province rai not published -> list-based gold"
   },
-  "gold_provinces": [
-    "Ang Thong",
-    "Ayutthaya",
-    "Chai Nat",
-    "Kamphaeng Phet",
-    "Lopburi",
-    "Nakhon Pathom",
-    "Nakhon Sawan",
-    "Nonthaburi",
-    "Pathum Thani",
-    "Phetchabun",
-    "Phichit",
-    "Phitsanulok",
-    "Sing Buri",
-    "Sukhothai",
-    "Suphan Buri",
-    "Uthai Thani",
-    "Uttaradit"
+  "gold_flooded": [
+    "AYUTTHAYA",
+    "NAKHONSAWAN",
+    "SUPHANBURI",
+    "PHICHIT",
+    "SUKHOTHAI",
+    "PHITSANULOK",
+    "LOPBURI",
+    "NAKHONPATHOM",
+    "CHAINAT",
+    "ANGTHONG",
+    "SINGBURI",
+    "UTHAITHANI",
+    "KAMPHAENGPHET",
+    "UTTARADIT",
+    "NONTHABURI",
+    "PHETCHABUN",
+    "PATHUMTHANI"
   ]
 }
