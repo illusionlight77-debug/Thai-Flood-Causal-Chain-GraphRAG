@@ -192,3 +192,45 @@ real-distance lags).
   gauge P.7A truly did not exceed capacity; the flood was upstream/tributary), NOT a gate error —
   a main-stream causal gate cannot capture it. B's ceiling is this + N(events), not the gate source.
 - 2025 promoted from bolt-on to a proper pipeline event (fixtures + gold_flooded + real gate).
+
+### 2026-09-06 — lever-1b: LOCAL-RAIN gate (catches Ping FN) — real independent data, no gold-tuning
+
+**Motivation (from B finding):** FN 9/11 = Ping basin — provinces that flood from *local rainfall*
+the mainstem river-gauge (P.7A lower-Ping) cannot see. Added a physically-motivated local-rain gate.
+
+**Integrity (threshold from real data, NOT tuned to gold):**
+- Data = **ERA5-Land daily precip** (open-meteo archive, reanalysis back to 1940, no key,
+  independent of GISTDA gold — same provider the repo uses for DEM). thaiwater `rain_24h_graph`
+  is rolling-24h only (no history) → **logged as blocked**, used ERA5 instead (did not fabricate).
+- Signal = event-window (Jul 1–Nov 30, fixed every year) peak 3-day accumulated rain at province centroid.
+- Threshold = the province's **own return-period 3-day rainfall** (Gumbel MoM on 1991–2020 annual maxima).
+  Pre-registered by principle: T=2 (bankfull ~1.5–2 yr, Leopold 1994) and **T=10 (significant-flood
+  recurrence; 2011 ≈ 10–20 yr, Gale 2013)** — adopted **T=10**. Applied **uniformly to all 23 provinces**
+  (not just the FN ones). `src/ingest/local_rain.py`.
+
+**Honest sensitivity (OR-gate vs GISTDA gold, pooled 5 events):**
+`baseline CSI 0.802 (POD 0.869, FN 11)` → T2 CSI 0.779 (POD 0.964, FN 3, over-flags: FAR 0.198)
+· T5 0.804 · **T10 0.828 (POD 0.917, FAR 0.105, FN 7)** · T25 0.835.
+**T=25 scores marginally highest but was NOT adopted** (that would be picking the gold-optimum = tuning);
+T=10 has an independent anchor and is not the max. Full table kept for transparency.
+
+**Result — B adopts local-rain (T10):**
+- Binary: **POD 0.869→0.917 · FAR 0.087→0.105 · CSI 0.802→0.828**; FN 11→7; **Ping FN 9→5**;
+  drift CSI 2024 0.667→0.762 (weak year recovered).
+- Probabilistic (honest tradeoff): by-hop **BSS +0.069→+0.053** (still positive, *still not significant*,
+  event-level p≈0.29) — warning more provinces raises the base rate, so climatology is a stronger ref.
+  Conclusion unchanged; decision-quality (CSI/POD) up, which is the primary warning metric.
+
+**Effect on Plan A (does B's data improve the causal reasoning system?):** measured offline on the
+frozen A eval: pooled causal **F1 0.890→0.906 (+0.016)** but **specificity 0.774→0.710 (−0.064)**
+(2022 spec 0.83→0.50). → **A keeps its frozen mainstem gate**: local-rain raises F1 but erodes the
+specificity that is A's differentiator vs the entity baseline. Reported as a finding; A's headline
+numbers are unchanged (gate frozen).
+
+**Work 2 (more events) & Work 3 (2025→rai cutoff) — DATA-BLOCKED (logged, not fabricated):**
+- thaiwater gauge history only reaches **~2020** (2017/2019/2011 return no data) → cannot build a
+  reproducible de-circularized gauge gate for 2011; no GISTDA gold Excel exists for 2020
+  (`flood_area_2020.xlsx` = soft-404 HTML) → **no addable event** via self-service.
+- GISTDA **did not publish per-province rai for 2025** (`flood_area_2025.xlsx` absent; source metadata
+  says so) → 2025 gold stays **list-based** with the documented base-rate caveat. Both need a
+  user-supplied source (GISTDA tambon Excel / RID gauge PDF) to unblock.

@@ -1,0 +1,553 @@
+{
+  "_meta": {
+    "description": "Local-rain gate for 2024 — event 3-day peak precip vs province's own 10-yr return level (Gumbel, ERA5-Land). Independent of GISTDA gold (de-circularized). Ref: Leopold 1994 bankfull ~1.5-2yr; Gale 2013 (2011~10-20yr); Gumbel FA.",
+    "source": "open-meteo archive (ERA5-Land) precipitation_sum",
+    "accum_days": 3,
+    "primary_return_period_y": 10.0,
+    "return_periods_reported": [
+      2.0,
+      5.0,
+      10.0,
+      25.0
+    ],
+    "clim_period": "1991-2020",
+    "event_window": [
+      "07-01",
+      "11-30"
+    ],
+    "integrity": "threshold = province's own return level (a-priori T=10, not chosen vs gold); applied uniformly to all 23 provinces"
+  },
+  "local_rain": {
+    "TAK": {
+      "event_max_3day_mm": 118.2,
+      "thresholds_by_return_period": {
+        "2": 117.2,
+        "5": 175.4,
+        "10": 213.9,
+        "25": 262.6
+      },
+      "threshold_primary_mm": 213.9,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@16.87,99.13",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "KAMPHAENGPHET": {
+      "event_max_3day_mm": 131.4,
+      "thresholds_by_return_period": {
+        "2": 99.8,
+        "5": 124.1,
+        "10": 140.2,
+        "25": 160.6
+      },
+      "threshold_primary_mm": 140.2,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": true,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@16.48,99.53",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "SUKHOTHAI": {
+      "event_max_3day_mm": 107.6,
+      "thresholds_by_return_period": {
+        "2": 101.8,
+        "5": 128.4,
+        "10": 146.0,
+        "25": 168.2
+      },
+      "threshold_primary_mm": 146.0,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@17.01,99.82",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "UTTARADIT": {
+      "event_max_3day_mm": 115.2,
+      "thresholds_by_return_period": {
+        "2": 105.9,
+        "5": 136.8,
+        "10": 157.3,
+        "25": 183.2
+      },
+      "threshold_primary_mm": 157.3,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@17.62,100.1",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "PHITSANULOK": {
+      "event_max_3day_mm": 77.0,
+      "thresholds_by_return_period": {
+        "2": 98.1,
+        "5": 128.3,
+        "10": 148.2,
+        "25": 173.4
+      },
+      "threshold_primary_mm": 148.2,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@16.82,100.27",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "PHICHIT": {
+      "event_max_3day_mm": 105.3,
+      "thresholds_by_return_period": {
+        "2": 94.0,
+        "5": 120.5,
+        "10": 138.1,
+        "25": 160.3
+      },
+      "threshold_primary_mm": 138.1,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@16.44,100.35",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "NAKHONSAWAN": {
+      "event_max_3day_mm": 83.9,
+      "thresholds_by_return_period": {
+        "2": 83.1,
+        "5": 105.3,
+        "10": 120.0,
+        "25": 138.6
+      },
+      "threshold_primary_mm": 120.0,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@15.7,100.14",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "UTHAITHANI": {
+      "event_max_3day_mm": 97.0,
+      "thresholds_by_return_period": {
+        "2": 80.6,
+        "5": 104.3,
+        "10": 119.9,
+        "25": 139.8
+      },
+      "threshold_primary_mm": 119.9,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@15.38,99.87",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "CHAINAT": {
+      "event_max_3day_mm": 83.3,
+      "thresholds_by_return_period": {
+        "2": 86.5,
+        "5": 111.6,
+        "10": 128.2,
+        "25": 149.3
+      },
+      "threshold_primary_mm": 128.2,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@15.19,100.13",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "SINGBURI": {
+      "event_max_3day_mm": 80.2,
+      "thresholds_by_return_period": {
+        "2": 86.9,
+        "5": 120.6,
+        "10": 142.9,
+        "25": 171.2
+      },
+      "threshold_primary_mm": 142.9,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.89,100.4",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "ANGTHONG": {
+      "event_max_3day_mm": 89.6,
+      "thresholds_by_return_period": {
+        "2": 86.5,
+        "5": 120.7,
+        "10": 143.3,
+        "25": 171.9
+      },
+      "threshold_primary_mm": 143.3,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.59,100.46",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "AYUTTHAYA": {
+      "event_max_3day_mm": 78.8,
+      "thresholds_by_return_period": {
+        "2": 82.9,
+        "5": 114.0,
+        "10": 134.6,
+        "25": 160.7
+      },
+      "threshold_primary_mm": 134.6,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.35,100.58",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "LOPBURI": {
+      "event_max_3day_mm": 76.3,
+      "thresholds_by_return_period": {
+        "2": 91.1,
+        "5": 128.2,
+        "10": 152.8,
+        "25": 183.9
+      },
+      "threshold_primary_mm": 152.8,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@15.05,100.65",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "SARABURI": {
+      "event_max_3day_mm": 96.8,
+      "thresholds_by_return_period": {
+        "2": 90.4,
+        "5": 119.0,
+        "10": 137.9,
+        "25": 161.7
+      },
+      "threshold_primary_mm": 137.9,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.53,100.92",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "PHETCHABUN": {
+      "event_max_3day_mm": 113.9,
+      "thresholds_by_return_period": {
+        "2": 108.4,
+        "5": 141.4,
+        "10": 163.2,
+        "25": 190.8
+      },
+      "threshold_primary_mm": 163.2,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@16.42,101.16",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "SUPHANBURI": {
+      "event_max_3day_mm": 82.7,
+      "thresholds_by_return_period": {
+        "2": 84.7,
+        "5": 109.8,
+        "10": 126.5,
+        "25": 147.5
+      },
+      "threshold_primary_mm": 126.5,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.47,100.12",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "NAKHONPATHOM": {
+      "event_max_3day_mm": 57.9,
+      "thresholds_by_return_period": {
+        "2": 85.5,
+        "5": 110.5,
+        "10": 127.1,
+        "25": 148.0
+      },
+      "threshold_primary_mm": 127.1,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@13.82,100.06",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "PATHUMTHANI": {
+      "event_max_3day_mm": 74.7,
+      "thresholds_by_return_period": {
+        "2": 78.0,
+        "5": 105.5,
+        "10": 123.7,
+        "25": 146.7
+      },
+      "threshold_primary_mm": 123.7,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@14.02,100.53",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "NONTHABURI": {
+      "event_max_3day_mm": 69.1,
+      "thresholds_by_return_period": {
+        "2": 78.4,
+        "5": 105.1,
+        "10": 122.8,
+        "25": 145.2
+      },
+      "threshold_primary_mm": 122.8,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@13.86,100.51",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "BANGKOK": {
+      "event_max_3day_mm": 67.3,
+      "thresholds_by_return_period": {
+        "2": 77.8,
+        "5": 105.4,
+        "10": 123.7,
+        "25": 146.8
+      },
+      "threshold_primary_mm": 123.7,
+      "over": false,
+      "over_by_return_period": {
+        "2": false,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@13.75,100.52",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "CHIANGMAI": {
+      "event_max_3day_mm": 158.6,
+      "thresholds_by_return_period": {
+        "2": 88.8,
+        "5": 109.5,
+        "10": 123.3,
+        "25": 140.6
+      },
+      "threshold_primary_mm": 123.3,
+      "over": true,
+      "over_by_return_period": {
+        "2": true,
+        "5": true,
+        "10": true,
+        "25": true
+      },
+      "evidence": {
+        "station_id": "ERA5@18.79,98.99",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "LAMPANG": {
+      "event_max_3day_mm": 108.8,
+      "thresholds_by_return_period": {
+        "2": 97.2,
+        "5": 119.6,
+        "10": 134.4,
+        "25": 153.2
+      },
+      "threshold_primary_mm": 134.4,
+      "over": false,
+      "over_by_return_period": {
+        "2": true,
+        "5": false,
+        "10": false,
+        "25": false
+      },
+      "evidence": {
+        "station_id": "ERA5@18.29,99.49",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    },
+    "LAMPHUN": {
+      "event_max_3day_mm": 181.8,
+      "thresholds_by_return_period": {
+        "2": 91.1,
+        "5": 115.0,
+        "10": 130.8,
+        "25": 150.7
+      },
+      "threshold_primary_mm": 130.8,
+      "over": true,
+      "over_by_return_period": {
+        "2": true,
+        "5": true,
+        "10": true,
+        "25": true
+      },
+      "evidence": {
+        "station_id": "ERA5@18.58,99.01",
+        "dataset": "ERA5-Land daily precip (open-meteo archive)",
+        "rule": "3-day peak >= Gumbel T10y (clim 1991-2020)"
+      }
+    }
+  },
+  "over": {
+    "TAK": false,
+    "KAMPHAENGPHET": false,
+    "SUKHOTHAI": false,
+    "UTTARADIT": false,
+    "PHITSANULOK": false,
+    "PHICHIT": false,
+    "NAKHONSAWAN": false,
+    "UTHAITHANI": false,
+    "CHAINAT": false,
+    "SINGBURI": false,
+    "ANGTHONG": false,
+    "AYUTTHAYA": false,
+    "LOPBURI": false,
+    "SARABURI": false,
+    "PHETCHABUN": false,
+    "SUPHANBURI": false,
+    "NAKHONPATHOM": false,
+    "PATHUMTHANI": false,
+    "NONTHABURI": false,
+    "BANGKOK": false,
+    "CHIANGMAI": true,
+    "LAMPANG": false,
+    "LAMPHUN": true
+  }
+}

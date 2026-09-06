@@ -45,7 +45,10 @@
 ## 4. ผลลัพธ์ (รายงานตรง — ไม่ tune)
 
 ### 4.1 Warning skill (binary, 115 province-cases · **5 เหตุการณ์**)
-- **POD 0.869 · FAR 0.087 · CSI 0.802** (per-event CSI 0.667–0.882 — คงเส้นคงวา)
+- **[อัปเดต 2026-09-06 — เพิ่ม local-rain gate (lever-1b)]** ปรับปรุงเป็น
+  **POD 0.917 · FAR 0.105 · CSI 0.828** (เดิม 0.869 / 0.087 / **0.802**); FN 11→7; **Ping FN 9→5**;
+  drift CSI 2567 0.667→0.762. ดู §4.3 lever-1b (ค่า threshold จากข้อมูลจริง ไม่จูน gold).
+- (ฐานเดิม causal-only) **POD 0.869 · FAR 0.087 · CSI 0.802** (per-event CSI 0.667–0.882)
 - เพิ่มเหตุการณ์ที่ 5 จริง: **เจ้าพระยา 2568 (GISTDA satellite, 11 พ.ย. 2568, 2.44 ล้านไร่/17 จังหวัด)**
   ใช้ **gate ตายตัวจาก 2022** (out-of-sample, protocol เดียวกับ 2023/2024) → TP15/FP1/FN2/TN5 = **CSI 0.833**
 - เคสผิดสม่ำเสมอ: **FN = ลุ่มปิง** (ตาก/กำแพงเพชร/เชียงใหม่ = local-rain) · **FP = ปทุมธานี/อุทัยธานี**
@@ -91,6 +94,20 @@
   ไม่ใช่ gate ผิด และแก้ด้วย calibrator ไม่ได้ (ต้องเพิ่มกลไก local-rain = งานหลัก/future)
 - **ข้อสรุปตรง:** ทำ 3 levers เต็มที่ในกรอบ integrity แล้ว → **ตัวเลขไม่พุ่ง** เพราะขีดจำกัดจริงคือ *ข้อมูล (5 เหตุการณ์)*
   + *gate ต้นน้ำ* ไม่ใช่ระเบียบวิธี. การวินิจฉัยชัด (9/11 FN = ปิง) เป็น**ผลลัพธ์ที่มีค่าเชิงวิชาการ** (บอกทางแก้ที่ถูก)
+
+### 4.3b Lever-1b (2026-09-06) — LOCAL-RAIN gate: แก้ FN ลุ่มปิงด้วยข้อมูลจริง (ไม่จูน gold)
+- **ปัญหา:** FN 9/11 = ลุ่มปิง ท่วมจาก *ฝนในพื้นที่* ที่ gauge ลำน้ำหลักจับไม่ได้ → เพิ่ม gate ฝนตรง.
+- **ข้อมูล (อิสระจาก gold):** ERA5-Land daily precip (open-meteo archive, ไม่ใช้ key) — thaiwater
+  `rain_24h_graph` เป็น rolling 24 ชม.เท่านั้น (**log เป็น blocked** ไม่ปั้นข้อมูล). สัญญาณ = พีคฝนสะสม 3 วัน
+  ในหน้าต่าง 1 ก.ค.–30 พ.ย. (ตายตัวทุกปี) ที่ centroid จังหวัด.
+- **Threshold (a-priori, ไม่เลือกจาก gold):** ค่าคาบอุบัติของจังหวัดเอง (Gumbel MoM, clim 1991–2020).
+  pre-register 2 ค่า: **T=2** (bankfull ~1.5–2 ปี, Leopold) และ **T=10** (คาบน้ำท่วมนัยสำคัญ; 2554 ~10–20 ปี, Gale 2013)
+  → **ใช้ T=10**. ใช้ **ทุก 23 จังหวัดเท่ากัน**.
+- **Sensitivity (ซื่อสัตย์, OR-gate vs gold, pooled):** baseline CSI 0.802 → T2 0.779 (over-flag FAR 0.198) ·
+  T5 0.804 · **T10 0.828** · T25 0.835. **ไม่เลือก T=25 ที่สูงสุด** (= จูน gold); T=10 มี anchor อิสระ + ไม่ใช่ max.
+- **ผลที่ใช้ (T10):** POD 0.869→**0.917** · CSI 0.802→**0.828** · Ping FN 9→5. **BSS +0.069→+0.053**
+  (ยังบวก, ยังไม่ significant — warning เพิ่มจังหวัด → base-rate สูงขึ้น climatology แกร่งขึ้น; ข้อสรุปเดิม).
+  → decision-quality (CSI/POD) ดีขึ้น = เมตริกหลักของระบบเตือน. **เป็น improvement ที่ถูกต้องตาม integrity**.
 - **Platt/isotonic ไม่ชนะ empirical** — ตรงกับ survey: ข้อมูลน้อย **isotonic เสี่ยง overfit, Platt ก็ยังไม่พอ**
   (Niculescu-Mizil & Caruana 2005) → empirical-by-hop (LOEO) เหมาะสุดกับสเกลข้อมูลนี้
 
@@ -152,3 +169,10 @@ Gneiting et al. (2007) · Niculescu-Mizil & Caruana (2005) · Gama et al. (2014)
 7. **กัน overfitting ตลอด:** 0 learned structural params · ปรับแค่ชั้น calibration · prequential (LOEO) · ไม่เคย tune กับ gold.
 
 **ตัวปลดล็อก B ที่แท้จริง (บท future work):** (a) เพิ่ม **กลไก local-rain** จับ FN ลุ่มปิง · (b) **เพิ่มเหตุการณ์** ให้ significance ผ่าน — *ไม่ใช่ระเบียบวิธี (แน่นแล้ว)*.
+
+8. **[ทำแล้ว 2026-09-06] local-rain gate สำเร็จบางส่วน:** เพิ่ม gate ฝนจริง (ERA5 + Gumbel T10, a-priori ไม่จูน gold)
+   → **CSI 0.802→0.828 · POD→0.917 · Ping FN 9→5**. เหลือ FN ปิง 5 (ERA5 grid เรียบกว่าเกจจุด + จังหวัดต้นน้ำจริง).
+9. **[บล็อก — log ไว้] เพิ่มเหตุการณ์/แปลง gold 2568 เป็นไร่ ทำไม่ได้ด้วย self-service:** เกจ thaiwater ย้อนถึง ~2563
+   (2554 ไม่มี) + ไม่มี GISTDA rai ราย จว. ปี 2568 → ต้องให้ผู้ใช้ป้อนแหล่ง (ไม่ปั้นข้อมูล).
+10. **local-rain ช่วย B แต่ไม่ช่วย A:** บน A (frozen) F1 0.890→0.906 แต่ **specificity 0.774→0.710** → A คง gate เดิม
+    (specificity คือจุดต่างของ A กับ baseline). = คำตอบว่า "ข้อมูล B ยกระดับ A ได้ไหม" → *ยก F1 แต่กร่อน specificity*.

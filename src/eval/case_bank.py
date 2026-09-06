@@ -16,6 +16,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -43,6 +44,30 @@ def _subbasin_map() -> dict[str, str]:
 
 _SUB = _subbasin_map()
 
+# ── local-rain gate (Roadmap B lever-1b): PID -> name_en เพื่อ match กับ ui_data ──
+#   ORเข้ากับคำทำนาย causal (จับ FN ลุ่มปิงที่ท่วมจากฝนในพื้นที่ ที่ gauge ลำน้ำหลักจับไม่ได้)
+#   threshold = ERA5 3-day peak >= Gumbel T10 ของจังหวัดเอง (a-priori, อิสระจาก gold). ดู src/ingest/local_rain.py
+_EN = {"TAK": "Tak", "KAMPHAENGPHET": "Kamphaeng Phet", "SUKHOTHAI": "Sukhothai",
+       "UTTARADIT": "Uttaradit", "PHITSANULOK": "Phitsanulok", "PHICHIT": "Phichit",
+       "NAKHONSAWAN": "Nakhon Sawan", "UTHAITHANI": "Uthai Thani", "CHAINAT": "Chai Nat",
+       "SINGBURI": "Sing Buri", "ANGTHONG": "Ang Thong", "AYUTTHAYA": "Ayutthaya",
+       "LOPBURI": "Lopburi", "SARABURI": "Saraburi", "PHETCHABUN": "Phetchabun",
+       "SUPHANBURI": "Suphan Buri", "NAKHONPATHOM": "Nakhon Pathom", "PATHUMTHANI": "Pathum Thani",
+       "NONTHABURI": "Nonthaburi", "BANGKOK": "Bangkok", "CHIANGMAI": "Chiang Mai",
+       "LAMPANG": "Lampang", "LAMPHUN": "Lamphun"}
+_PROTECTED = {"BANGKOK", "NONTHABURI"}
+LOCAL_RAIN_GATE = os.environ.get("LOCAL_RAIN_GATE", "1") != "0"  # เปิดโดย default; =0 เพื่อ baseline
+
+
+def _local_rain_over(year: str) -> set[str]:
+    """set ของ name_en(normalized) ที่ local-rain over (ไม่รวมจังหวัดมีคันกั้นน้ำ)."""
+    f = _PROC / f"local_rain_{year}.json"
+    if not (LOCAL_RAIN_GATE and f.exists()):
+        return set()
+    over = json.loads(f.read_text("utf-8")).get("over", {})
+    return {_norm(_EN[pid]) for pid, o in over.items()
+            if o and pid not in _PROTECTED and pid in _EN}
+
 # เหตุการณ์ที่ "ให้คะแนน" (ลุ่มเจ้าพระยา, มี negative จริง) — ne2026 เป็น generalization แยก
 SCORED = ["2022", "2021", "2024", "2023", "2025"]
 _LABEL = {"2022": "เจ้าพระยา 2565 (โนรู)", "2021": "เจ้าพระยา 2564 (เตี้ยนหมู่)",
@@ -63,14 +88,19 @@ def _cases_for_event(year: str) -> list[dict]:
     d = json.loads(f.read_text("utf-8"))
     predicted = set(d["per_province"][d["provinces"][0]]["systems"][SYS]["provinces"]) \
         if d["provinces"] else set()
+    lr_over = _local_rain_over(year)          # local-rain gate (B lever-1b)
+    predicted_norm = {_norm(p) for p in predicted}
     out = []
     for p in d["provinces"]:
         pp = d["per_province"][p]
-        pred = p in predicted
+        via_causal = p in predicted
+        via_rain = _norm(p) in lr_over
+        pred = via_causal or via_rain
         gold = bool(pp["is_gold"])
         out.append({"event": year, "label": _LABEL.get(year, year), "province": p,
                     "hop": pp.get("hop"), "subbasin": _SUB.get(_norm(p)),
-                    "predicted": pred, "gold": gold,
+                    "predicted": pred, "predicted_causal": via_causal,
+                    "predicted_local_rain": via_rain, "gold": gold,
                     "outcome": _label(pred, gold), "scored": year in SCORED})
     return out
 
@@ -109,11 +139,18 @@ def build() -> dict:
                              key=lambda c: -(c["hop"] or 0))[:5]
     notable_wrong = [c for c in scored_cases if c["outcome"] in ("FP", "FN")]
 
+    # baseline (causal-only, ไม่มี local-rain) — เก็บไว้รายงานคู่กันเสมอ (integrity)
+    causal_only = [{**c, "predicted": c.get("predicted_causal", c["predicted"]),
+                    "outcome": _label(c.get("predicted_causal", c["predicted"]), c["gold"])}
+                   for c in scored_cases]
+
     return {
-        "note": "เคสทำนายถูก/ผิดของ early-warning เทียบ GISTDA gold — ไม่แตะกราฟ/gate (กัน overfit)",
+        "note": "เคสทำนายถูก/ผิดของ early-warning เทียบ GISTDA gold — causal + local-rain gate (B lever-1b)",
         "systems": SYS,
+        "local_rain_gate": LOCAL_RAIN_GATE,
         "per_event": per_event,
         "cumulative_scored": _skill(scored_cases),
+        "cumulative_scored_causal_only": _skill(causal_only),
         "n_cases_scored": len(scored_cases),
         "notable_correct": notable_correct,
         "notable_wrong": notable_wrong,
