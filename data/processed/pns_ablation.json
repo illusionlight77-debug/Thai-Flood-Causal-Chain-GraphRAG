@@ -1,0 +1,69 @@
+{
+  "note": "Counterfactual necessity/sufficiency (PNS) + per-mechanism ablation of causal-graphrag. Refs: Pearl PNS; FANS (2402.08845); correctness!=faithfulness (2412.18004).",
+  "mechanisms": [
+    "fluvial",
+    "pluvial3",
+    "pluvial30"
+  ],
+  "full_model": {
+    "f1": 0.795,
+    "mcc": 0.203,
+    "recall": 0.81,
+    "specificity": 0.387
+  },
+  "pns": {
+    "fluvial": {
+      "necessity": 0.353,
+      "sufficiency": 0.794,
+      "pns": 0.28,
+      "ablated_f1": 0.629,
+      "ablated_mcc": 0.121,
+      "ablated_recall": 0.524,
+      "delta_f1": -0.167,
+      "delta_mcc": -0.082,
+      "delta_recall": -0.286
+    },
+    "pluvial3": {
+      "necessity": 0.0,
+      "sufficiency": 0.846,
+      "pns": 0.0,
+      "ablated_f1": 0.795,
+      "ablated_mcc": 0.203,
+      "ablated_recall": 0.81,
+      "delta_f1": 0.0,
+      "delta_mcc": 0.0,
+      "delta_recall": 0.0
+    },
+    "pluvial30": {
+      "necessity": 0.206,
+      "sufficiency": 0.774,
+      "pns": 0.159,
+      "ablated_f1": 0.715,
+      "ablated_mcc": 0.201,
+      "ablated_recall": 0.643,
+      "delta_f1": -0.08,
+      "delta_mcc": -0.002,
+      "delta_recall": -0.167
+    }
+  },
+  "pr_by_mechanism_count": [
+    {
+      "min_mechanisms": 1,
+      "precision": 0.782,
+      "recall": 0.819,
+      "n_predicted": 87
+    },
+    {
+      "min_mechanisms": 2,
+      "precision": 0.833,
+      "recall": 0.361,
+      "n_predicted": 36
+    },
+    {
+      "min_mechanisms": 3,
+      "precision": 0.667,
+      "recall": 0.048,
+      "n_predicted": 6
+    }
+  ]
+}
