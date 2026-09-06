@@ -309,6 +309,24 @@ Traceability ของ causal = **0.94 / 0.88 / 0.93 / 0.74 / 0.93** · recall 0
 **MCC=0 = ไม่มี skill**; causal เป็น **ระบบเดียวที่ MCC>0** + **traceable 100%**. specificity แลกลง (0.806→0.387)
 เป็นจุด operating เน้น recall (variant min_bank เน้น precision spec 0.806) — วัดจริง ไม่จูน gold.
 
+### 2½) 🎯 Contribution หลัก — Faithfulness/Attribution (ไม่ใช่แค่ correctness)
+> **"Correctness is not Faithfulness"** ([arXiv:2412.18004](https://arxiv.org/abs/2412.18004)): ระบบ *ถูก* (F1) ไม่ได้แปลว่า
+> *อธิบายที่มาได้ (faithful/attributable)*. นี่คือแก่นของ A — entity เดาถูกบางที (F1 0.844) แต่ **traceability=0**
+> (บอกไม่ได้ว่า "ทำไมจังหวัดนี้ท่วม"). causal ทำนายทุกจังหวัดพร้อม **สายเหตุ-ผลที่ตรวจย้อนได้ 100%** (ทุก edge มี
+> `evidence` ชี้กลับสถานี/ชุดข้อมูล). **claim ของงาน = flood attribution ที่ faithful + มี skill (MCC) เพียงระบบเดียว**.
+
+**Necessity/Sufficiency ต่อกลไก (counterfactual PNS — Pearl; [FANS](https://arxiv.org/abs/2402.08845))** — [`src/eval/pns_ablation.py`](src/eval/pns_ablation.py):
+ตัดแต่ละกลไกออก (intervention) แล้ววัดว่าคำทำนายที่ถูกเปลี่ยนไหม → พิสูจน์ว่าแต่ละสายเหตุ-ผล *ทำงานจริง*:
+| กลไก | Necessity | Sufficiency | Δrecall ถ้าตัดออก |
+|---|---|---|---|
+| **fluvial** (2-yr stage) | **0.35** | 0.79 | −0.286 |
+| **pluvial-30วัน** (ฝนตกยาว) | 0.21 | 0.77 | −0.167 |
+| pluvial-3วัน (ฝนกระหน่ำ) | 0.00 | **0.85** | 0.000 (ซ้ำซ้อนแต่แม่น) |
+
+→ fluvial จำเป็นสุด, pluvial-30วันเติมเคสฝนตกยาว (เช่น 2566), ทุกกลไก **sufficiency สูง (0.77–0.85 = ยิงแล้วมักถูก)**.
+**PR ตามจำนวนกลไกที่เห็นตรงกัน:** precision **0.782 (≥1 กลไก) → 0.833 (≥2 กลไกยืนยันตรงกัน)** — *การมีหลายสาย
+เหตุ-ผลยืนยันตรงกัน = ความมั่นใจสูงขึ้น* (เป็น confidence score ที่ traceable, baseline ทำไม่ได้).
+
 ### 3) hop-invariance (H2) ยังจริงเชิงโครงสร้าง
 causal ทำนาย footprint ทั้งลุ่มจาก event-state → **F1-by-hop คงที่ภายในเหตุการณ์ (ΔF1=0 ข้าม 2/3/4/5-hop)**
 โดยโครงสร้าง (ไม่เสื่อมตามความยาว chain), ต่างจาก entity/vector ที่แกว่งตาม hop — สนับสนุน H2. (ค่า F1 ต่อ

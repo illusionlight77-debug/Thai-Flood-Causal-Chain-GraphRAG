@@ -130,10 +130,17 @@ def build(events: list[str], cache: dict | None = None) -> dict[str, dict]:
                        "over": bool(dur[n][e][0] >= dur[n][e][1] and dur[n][e][0] > 0)}
                    for n in DURATIONS}
             over = any(byN[n]["over"] for n in DURATIONS)
-            per_event[e][pid] = {
+            rec = {
                 "event_max_3day_mm": byN[DURATIONS[0]]["peak_mm"],   # backward-compat
                 "threshold_primary_mm": byN[DURATIONS[0]]["threshold_T10_mm"],
-                "by_duration": byN, "over": over,
+                "by_duration": byN, "over": over}
+            # flat keys ต่อ duration (over_3day/over_30day/...) ให้ตรงกับไฟล์ข้อมูลที่ committed
+            for n in DURATIONS:
+                rec[f"event_max_{n}day_mm"] = byN[n]["peak_mm"]
+                rec[f"threshold_{n}day_T10_mm"] = byN[n]["threshold_T10_mm"]
+                rec[f"over_{n}day"] = byN[n]["over"]
+            per_event[e][pid] = {
+                **rec,
                 "evidence": {"station_id": f"ERA5@{lat},{lon}",
                              "dataset": "ERA5-Land daily precip (open-meteo archive)",
                              "rule": f"peak {'/'.join(map(str, DURATIONS))}-day >= Gumbel "

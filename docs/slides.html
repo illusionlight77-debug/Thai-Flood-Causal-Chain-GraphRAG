@@ -185,8 +185,8 @@
     <div class="head"><div class="kicker">④ Pipeline · Evaluation</div>
       <h2>ให้คะแนน + ยืนยันสถิติ (รายงานตรง)</h2><h3>Evaluation &amp; statistical confirmation</h3></div>
     <div class="fig"><img src="blocks/block4_eval.svg" alt="Evaluation"></div>
-    <div class="take"><div class="th">eval set แช่แข็ง · รายงานเลขเก่า+ใหม่คู่กัน — F1 <b>1.000→0.545→0.909</b></div>
-      <div class="en">Frozen eval set; old and new numbers reported together — F1 1.000 → 0.545 → 0.909.</div></div>
+    <div class="take"><div class="th">eval set แช่แข็ง · รายงานเก่า→ใหม่คู่กัน — พบว่า F1 0.9 เดิมเป็น <b>artifact ของ gate over-flag</b> → แก้เป็น de-circularized: causal <b>MCC +0.203 (ระบบเดียว), F1 0.795</b></div>
+      <div class="en">Frozen eval set; old→new reported together — the old F1 0.9 was an over-flag gate artifact → fixed (de-circularized): causal MCC +0.203 (only skilled system), F1 0.795.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">07</span></div>
   </section>
 
@@ -205,8 +205,8 @@
     <div class="head"><div class="kicker">⑥ Extension</div>
       <h2>พยากรณ์ / ความเสี่ยง + ทำไมอาจไม่เกิด</h2><h3>Forecasting / risk + why it might not happen</h3></div>
     <div class="fig"><img src="blocks/block6_extension.svg" alt="Extension"></div>
-    <div class="take"><div class="th">การทดลอง B (5 เหตุการณ์): Case Bank → calibration LOEO → verification — <b>CSI 0.802</b>, gate จากเกจจริง = bulletin เป๊ะ (รายละเอียดสไลด์ถัดไป)</div>
-      <div class="en">Experiment B (5 events): Case Bank → LOEO calibration → verification — CSI 0.802; auto gauge-gate reproduces the expert bulletin (details next slide).</div></div>
+    <div class="take"><div class="th">Extension B (5 เหตุการณ์) บน gate ซื่อสัตย์: <b>CSI 0.378→0.660</b> (2yr-stage + multi-duration rain) — recall ขึ้นจริง (รายละเอียดสไลด์ถัดไป)</div>
+      <div class="en">Extension B (5 events) on the honest gate: CSI 0.378→0.660 (2yr-stage + multi-duration rain) — real recall gain (details next slide).</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">09</span></div>
   </section>
 
@@ -237,8 +237,8 @@
       <h2>causal ชนะที่ "อธิบายได้ตรวจย้อนได้"</h2><h3>The win is verifiable explanation, not raw accuracy</h3></div>
     <div class="kpis">
       <div class="kpi win"><div class="th">Traceability &amp; Specificity</div><div class="en">causal ทำได้จริง · baseline = 0 เสมอ / baselines are always 0</div><div class="num">causal ✓ · entity 0 · vector 0</div></div>
-      <div class="kpi"><div class="th">F1 vs baselines (McNemar, N=92)</div><div class="en">ชนะ entity อย่างมีนัยสำคัญ one-sided · ชนะ vector ขาด</div><div class="num">vs entity p=0.044 · vs vector p&lt;0.001</div></div>
-      <div class="kpi hon"><div class="th">เส้นทาง F1 ที่ซื่อสัตย์ / Honest F1 journey</div><div class="en">ตกเมื่อใช้ข้อมูลจริง แล้วฟื้นบนโครงสร้างที่ถูก</div><div class="num">1.000 → 0.545 → 0.909</div></div>
+      <div class="kpi win"><div class="th">MCC — เมตริกที่ถูกต้อง (imbalanced)</div><div class="en">causal เดียวที่มี skill · entity เดาท่วมหมด F1 สูงแต่ MCC=0</div><div class="num">causal +0.203 · entity 0 · vector −0.50</div></div>
+      <div class="kpi hon"><div class="th">เส้นทางที่ซื่อสัตย์ / Honest journey</div><div class="en">F1 0.9 เดิม = artifact ของ gate over-flag → แก้แล้ว วัดจริง</div><div class="num">F1 0.548 → 0.795 (grounded)</div></div>
       <div class="kpi"><div class="th">ยืนยันหลายทาง / Multiple validations</div><div class="en">DEM 4 วิธี · blind (0 learned params) · McNemar + bootstrap</div><div class="num">independent gold · frozen eval set</div></div>
     </div>
     <div class="take"><div class="th">งานนี้ไม่ได้บอกว่า GraphRAG ทายแม่นกว่า — แต่บอกว่ามัน <b>อธิบายเหตุผลย้อนกลับไปหาหลักฐานได้ทุกก้าว</b></div>
@@ -251,8 +251,8 @@
     <div class="head"><div class="kicker">Extension B · Forecasting findings</div>
       <h2>ผลการทดลองส่วนพยากรณ์ + สิ่งที่ค้นพบ</h2><h3>Early-warning extension — results &amp; discoveries (5 real events)</h3></div>
     <div class="fig"><img src="forecasting_findings.svg" alt="Forecasting findings"></div>
-    <div class="take"><div class="th">gate อัตโนมัติจากเกจจริง = ผู้เชี่ยวชาญคัดมือ · warning CSI 0.802 · calibrate มี skill (BSS +0.069) แต่ยังไม่ significant · FN 9/11 = ลุ่มปิง (local-rain จริง)</div>
-      <div class="en">Auto gauge-gate reproduces the expert bulletin · warning CSI 0.802 · calibration has skill (BSS +0.069) but not yet significant · FN 9/11 = Ping basin (real local rain).</div></div>
+    <div class="take"><div class="th">แก้ artifact → de-circularized: A causal <b>F1 0.795 · MCC +0.203</b> (ระบบเดียว) · B <b>CSI 0.660</b> · PNS: หลายกลไกตรงกัน→precision 0.83 · MCC ชนเพดาน ~0.20</div>
+      <div class="en">Fixed the artifact → de-circularized: A causal F1 0.795 · MCC +0.203 (only skilled) · B CSI 0.660 · PNS: mechanism agreement → precision 0.83 · MCC hits ~0.20 ceiling.</div></div>
     <div class="foot">Thai Flood Causal-Chain GraphRAG · <span class="pg">13</span></div>
   </section>
 
