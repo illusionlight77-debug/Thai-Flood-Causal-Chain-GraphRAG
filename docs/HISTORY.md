@@ -276,3 +276,30 @@ BSS +0.004 (ไม่ significant) · FN 50/84 (ChaoPhraya 19, Nan 9, ThaChin 8,
   ≥10k ไร่ ส่วนใหญ่ไม่ได้มาจากกลไกที่เกจสายหลัก/ฝนสุดขั้วจับได้ → **ขีดจำกัดจริงของ gauge-based causal
   flood attribution** (finding ที่รายงานได้).
 - claim หลักของ A เปลี่ยนจาก "ชนะ F1" → **"ระบบเดียวที่ traceable + ปฏิเสธจังหวัดไม่ท่วมได้ + มี skill (MCC) เหนือ chance"**.
+
+### 2026-09-06 (ต่อ) — ปรับปรุง Plan A ด้วยแนวทางที่มี paper รองรับ (วัดจริง ค่าดีขึ้นจริง)
+
+หลังแก้ให้ซื่อสัตย์ (MCC +0.197, F1 0.548) เรา survey paper แล้วเพิ่ม **2 สัญญาณ de-circularized** ที่ถูกต้องเชิงกลไก:
+
+1. **Fluvial: 2-yr return stage แทนหมุดตลิ่งช่องหลัก** — หมุดตลิ่ง (min_bank) ของเกจสายหลักสูงเกิน (levee) →
+   ระดับน้ำแทบไม่ถึง → recall ต่ำ. เปลี่ยนเป็น **2-yr return stage** (median annual-max p95, LOEO) = flood-onset
+   ตาม bankfull recurrence ~1.5–2 ปี (Leopold 1994). de-circularized (stage climatology) + prequential.
+2. **Pluvial multi-duration: peak 3-วัน OR 30-วัน ≥ Gumbel T10** — 3 วันจับฝนกระหน่ำ, **30 วันจับฝนตกยาว**
+   (ดินอิ่มตัว → ท่วมนา). ปี **2566 ฝนทั้งฤดูสูง 83–100th percentile** แต่ 3-วันไม่สุดขั้ว → เดิมพลาดหมด (F1 0);
+   30-วันจับได้. อ้างอิง multi-duration/IDF thresholds + antecedent precipitation index.
+
+**ผล (วัดจริง, รายงานเก่า→ใหม่):**
+| | เดิม (honest) | **ปรับปรุงแล้ว** | entity |
+|---|---|---|---|
+| A causal F1 | 0.548 | **0.795** | 0.844 |
+| A recall | 0.405 | **0.81** | 1.0 |
+| A MCC | 0.197 | **0.203** | 0.000 |
+| A Traceability | ~0.90 | ~0.88 | 0 |
+| B CSI | 0.378 | **0.660** | — |
+per-event MCC: 2564 +0.47 · 2565 +0.52 · 2566 +0.04 · 2567 +0.37 · 2568 +0.17
+
+**finding สำคัญ — เพดาน skill:** MCC **นิ่งที่ ~0.20 ทุก variant** (min_bank 0.197 · 2yr-stage 0.201 ·
++multi-duration 0.203) → **~0.20 คือเพดาน skill ที่แท้จริง** ของสัญญาณเชิงฟิสิกส์สำหรับทำนายจังหวัดท่วม.
+เกณฑ์ที่ grounded ยก **F1/recall** ได้จริง (เลื่อนบนเส้น recall–precision) แต่ไม่ทะลุเพดาน MCC. causal ยังเป็น
+**ระบบเดียวที่ MCC>0** (entity F1 สูงกว่าแต่ MCC=0 = ไม่มี skill). specificity แลกลง (0.806→0.387) = จุด operating
+ที่เน้น recall; min_bank เป็น variant เน้น precision. **ทั้งหมดวัดจริง ไม่จูน gold** (threshold a-priori จาก climatology).

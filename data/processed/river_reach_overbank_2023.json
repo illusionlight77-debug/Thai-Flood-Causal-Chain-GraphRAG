@@ -1,218 +1,203 @@
 {
   "_meta": {
-    "description": "Per-reach over-bank gate for 2023 — gauges snapped to each reach (thaiwater API v3): reach overflows if ANY on-reach gauge p95-stage>min_bank. p95 guards sensor spikes. Independent of GISTDA gold (de-circularized). Refs: NHDPlus snapping, NWS index gauge. Fixed 2026-09-06: per-reach snapping (was C.13 for all CP mainstem).",
-    "source": "https://api-v3.thaiwater.net/api/v1/thaiwater30/public/waterlevel_graph (2023-08-01..2023-11-15)"
+    "description": "Per-reach over-bank gate 2023 — event p95 stage > gauge's own 2-yr return stage (median annual-max, leave-one-event-out). Flood-onset = bankfull recurrence ~1.5-2yr (Leopold 1994), lower than high main-channel bank. De-circularized (stage climatology, not gold), prequential (LOEO). p95 guards spikes. Refs: Leopold 1994; Gumbel FA; NHDPlus snapping.",
+    "source": "thaiwater API v3 waterlevel_graph (Aug1-Nov15, 2020-2025)"
   },
   "reach_overbank": {
     "RR-PING": {
       "overflow": false,
       "gauge": "P.7A",
-      "basis": "stage 73.83<=bank 77.070003",
+      "basis": "stage 73.83<=2yr-return 74.6 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "P.7A",
-          "over_bank": false,
-          "basis": "stage 73.83<=bank 77.070003",
           "peak_stage": 73.83,
+          "threshold_2yr_stage": 74.6,
           "min_bank": 77.070003,
-          "peak_discharge": 873.0,
-          "qmax": 3000
+          "over_bank": false,
+          "basis": "stage 73.83<=2yr-return 74.6 (bankfull, LOEO)"
         }
       ]
     },
     "RR-WANG": {
       "overflow": false,
       "gauge": "W.4A",
-      "basis": "stage 135.85<=bank 137",
+      "basis": "stage 135.85<=2yr-return 136.63 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "W.4A",
-          "over_bank": false,
-          "basis": "stage 135.85<=bank 137",
           "peak_stage": 135.85,
+          "threshold_2yr_stage": 136.63,
           "min_bank": 137,
-          "peak_discharge": 480.0,
-          "qmax": 530
+          "over_bank": false,
+          "basis": "stage 135.85<=2yr-return 136.63 (bankfull, LOEO)"
         }
       ]
     },
     "RR-YOM": {
-      "overflow": true,
+      "overflow": false,
       "gauge": "Y.16",
-      "basis": "stage 41.37>bank 38.929999",
+      "basis": "stage 41.37<=2yr-return 42.29 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "Y.16",
-          "over_bank": true,
-          "basis": "stage 41.37>bank 38.929999",
           "peak_stage": 41.37,
+          "threshold_2yr_stage": 42.29,
           "min_bank": 38.929999,
-          "peak_discharge": 458.0,
-          "qmax": 230
+          "over_bank": false,
+          "basis": "stage 41.37<=2yr-return 42.29 (bankfull, LOEO)"
         }
       ]
     },
     "RR-NAN": {
       "overflow": false,
       "gauge": "N.67",
-      "basis": "stage 26.98<=bank 28.209999",
+      "basis": "stage 26.98<=2yr-return 27.24 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "N.67",
-          "over_bank": false,
-          "basis": "stage 26.98<=bank 28.209999",
           "peak_stage": 26.98,
+          "threshold_2yr_stage": 27.24,
           "min_bank": 28.209999,
-          "peak_discharge": 1168.0,
-          "qmax": 1435
+          "over_bank": false,
+          "basis": "stage 26.98<=2yr-return 27.24 (bankfull, LOEO)"
         }
       ]
     },
     "RR-SAKAEKRANG": {
       "overflow": false,
       "gauge": "SKG002",
-      "basis": "stage 17.55<=bank 17.66",
+      "basis": "stage 17.55<=2yr-return 18.21 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "SKG002",
-          "over_bank": false,
-          "basis": "stage 17.55<=bank 17.66",
           "peak_stage": 17.55,
+          "threshold_2yr_stage": 18.21,
           "min_bank": 17.66,
-          "peak_discharge": null,
-          "qmax": null
+          "over_bank": false,
+          "basis": "stage 17.55<=2yr-return 18.21 (bankfull, LOEO)"
         }
       ]
     },
     "RR-CP-UPPER": {
       "overflow": false,
       "gauge": "C.2",
-      "basis": "stage 23.25<=bank 25.700001",
+      "basis": "stage 23.25<=2yr-return 24.38 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "C.2",
-          "over_bank": false,
-          "basis": "stage 23.25<=bank 25.700001",
           "peak_stage": 23.25,
+          "threshold_2yr_stage": 24.38,
           "min_bank": 25.700001,
-          "peak_discharge": 2083.0,
-          "qmax": 3735
+          "over_bank": false,
+          "basis": "stage 23.25<=2yr-return 24.38 (bankfull, LOEO)"
         }
       ]
     },
     "RR-CP-L1": {
       "overflow": false,
       "gauge": "C.3",
-      "basis": "stage 10.07<=bank 13.2",
+      "basis": "stage 10.07<=2yr-return 12.68 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "C.3",
-          "over_bank": false,
-          "basis": "stage 10.07<=bank 13.2",
           "peak_stage": 10.07,
+          "threshold_2yr_stage": 12.68,
           "min_bank": 13.2,
-          "peak_discharge": 1701.0,
-          "qmax": 2997
+          "over_bank": false,
+          "basis": "stage 10.07<=2yr-return 12.68 (bankfull, LOEO)"
         },
         {
           "gauge": "C.7A",
-          "over_bank": false,
-          "basis": "stage 6.81<=bank 9.9",
           "peak_stage": 6.81,
+          "threshold_2yr_stage": 9.29,
           "min_bank": 9.9,
-          "peak_discharge": 1561.0,
-          "qmax": 2862
+          "over_bank": false,
+          "basis": "stage 6.81<=2yr-return 9.29 (bankfull, LOEO)"
         }
       ]
     },
     "RR-CP-L2": {
-      "overflow": true,
-      "gauge": "C.36",
-      "basis": "stage 5.11>bank 4.3",
+      "overflow": false,
+      "gauge": "C.35",
+      "basis": "stage 3.7<=2yr-return 5.53 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "C.35",
-          "over_bank": false,
-          "basis": "stage 3.7<=bank 4.35",
           "peak_stage": 3.7,
+          "threshold_2yr_stage": 5.53,
           "min_bank": 4.35,
-          "peak_discharge": 1004.0,
-          "qmax": 1159
+          "over_bank": false,
+          "basis": "stage 3.7<=2yr-return 5.53 (bankfull, LOEO)"
         },
         {
           "gauge": "C.36",
-          "over_bank": true,
-          "basis": "stage 5.11>bank 4.3",
           "peak_stage": 5.11,
+          "threshold_2yr_stage": 6.49,
           "min_bank": 4.3,
-          "peak_discharge": 552.0,
-          "qmax": 441
+          "over_bank": false,
+          "basis": "stage 5.11<=2yr-return 6.49 (bankfull, LOEO)"
         },
         {
           "gauge": "C.67",
-          "over_bank": true,
-          "basis": "stage 4.23>bank 2.75",
           "peak_stage": 4.23,
+          "threshold_2yr_stage": 5.75,
           "min_bank": 2.75,
-          "peak_discharge": null,
-          "qmax": null
+          "over_bank": false,
+          "basis": "stage 4.23<=2yr-return 5.75 (bankfull, LOEO)"
         }
       ]
     },
     "RR-CP-L3": {
       "overflow": false,
       "gauge": "C.12",
-      "basis": "stage 1.46<=bank 2.26",
+      "basis": "stage 1.46<=2yr-return 1.88 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "C.12",
-          "over_bank": false,
-          "basis": "stage 1.46<=bank 2.26",
           "peak_stage": 1.46,
+          "threshold_2yr_stage": 1.88,
           "min_bank": 2.26,
-          "peak_discharge": 1.0,
-          "qmax": null
+          "over_bank": false,
+          "basis": "stage 1.46<=2yr-return 1.88 (bankfull, LOEO)"
         },
         {
           "gauge": "C.37",
-          "over_bank": false,
-          "basis": "stage 3.49<=bank 4.14",
           "peak_stage": 3.49,
+          "threshold_2yr_stage": 4.87,
           "min_bank": 4.14,
-          "peak_discharge": 107.0,
-          "qmax": 97
+          "over_bank": false,
+          "basis": "stage 3.49<=2yr-return 4.87 (bankfull, LOEO)"
         }
       ]
     },
     "RR-PASAK": {
       "overflow": false,
       "gauge": "S.26",
-      "basis": "stage 3.56<=bank 7.2",
+      "basis": "stage 3.56<=2yr-return 6.68 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "S.26",
-          "over_bank": false,
-          "basis": "stage 3.56<=bank 7.2",
           "peak_stage": 3.56,
+          "threshold_2yr_stage": 6.68,
           "min_bank": 7.2,
-          "peak_discharge": 278.0,
-          "qmax": 633
+          "over_bank": false,
+          "basis": "stage 3.56<=2yr-return 6.68 (bankfull, LOEO)"
         }
       ]
     },
     "RR-THACHIN": {
       "overflow": false,
       "gauge": "T.1",
-      "basis": "stage -7.98<=bank 1.5",
+      "basis": "stage -7.98<=2yr-return -7.46 (bankfull, LOEO)",
       "stations": [
         {
           "gauge": "T.1",
-          "over_bank": false,
-          "basis": "stage -7.98<=bank 1.5",
           "peak_stage": -7.98,
+          "threshold_2yr_stage": -7.46,
           "min_bank": 1.5,
-          "peak_discharge": null,
-          "qmax": null
+          "over_bank": false,
+          "basis": "stage -7.98<=2yr-return -7.46 (bankfull, LOEO)"
         }
       ]
     }
@@ -220,12 +205,12 @@
   "overflow": {
     "RR-PING": false,
     "RR-WANG": false,
-    "RR-YOM": true,
+    "RR-YOM": false,
     "RR-NAN": false,
     "RR-SAKAEKRANG": false,
     "RR-CP-UPPER": false,
     "RR-CP-L1": false,
-    "RR-CP-L2": true,
+    "RR-CP-L2": false,
     "RR-CP-L3": false,
     "RR-PASAK": false,
     "RR-THACHIN": false

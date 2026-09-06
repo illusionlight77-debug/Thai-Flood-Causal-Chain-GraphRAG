@@ -47,7 +47,8 @@
 ### 4.1 Warning skill (binary, 115 province-cases · **5 เหตุการณ์**)
 > **⚠️ แก้ครั้งใหญ่ 2026-09-06:** ตัวเลข CSI 0.8 ทั้งชุดนี้อยู่บน **gate ที่ over-flag** (พบทีหลังว่า repo ไม่ตรงกัน).
 > บน **gate ซื่อสัตย์ (per-reach snap + de-circularized + local-rain)** ผลจริงคือ:
-> **POD 0.405 · FAR 0.15 · CSI 0.378** · BSS +0.004 (ไม่ significant) · FN 50/84 (ChaoPhraya 19/Nan 9/ThaChin 8/Pasak 8/Ping 5).
+> พื้นฐาน **CSI 0.378** → หลังปรับปรุงด้วยแนวทางมี paper (2-yr return stage + multi-duration rain):
+> **POD 0.81 · FAR 0.218 · CSI 0.660** (ยก recall จริง วัดจริง ไม่จูน gold). BSS ยังไม่ significant.
 > **บทเรียน:** ระบบเตือนที่พิงเกจสายหลัก+ฝนสุดขั้ว **recall ต่ำ** เพราะน้ำท่วมดาวเทียมส่วนใหญ่มาจาก local/สาขา
 > = ขีดจำกัดจริงของ gauge-based warning. ดู [`HISTORY.md`](HISTORY.md). ตัวเลขด้านล่างเก็บไว้เพื่อความโปร่งใส (gate เก่า).
 

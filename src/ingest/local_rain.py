@@ -39,15 +39,17 @@ _PROC = settings.data_processed_dir
 _BASIN = _PROC / "chao_phraya_basin_provinces.json"
 
 # a-priori constants (ตรึงก่อนเห็นผล — ห้ามจูน)
-ACCUM_DAYS = 3            # ฝนสะสม 3 วัน (antecedent + event, เหมาะกับ overbank ลุ่มกลาง)
-# return period: pre-register 2 ค่าตามหลักการ (ไม่ได้เลือกจาก gold):
-#   T=2  = bankfull recurrence ~1.5–2 ปี (Leopold 1994) → เกณฑ์ recall-first (เตือนพลาดน้อยสุด)
-#   T=10 = คาบอุบัติน้ำท่วมนัยสำคัญ (มาตรฐาน flood-hazard mapping; 2554 ~10–20 ปี, Gale 2013)
-#          → เกณฑ์ operational (สมดุล CSI). *ไม่ได้เลือก T=25 ที่ CSI สูงสุด = ไม่จูนตาม gold*
-RETURN_PERIODS = (2.0, 5.0, 10.0, 25.0)   # เก็บทุกค่า (โปร่งใส/sensitivity)
-PRIMARY_T = 10.0          # gate ที่ใช้จริง (a-priori: significant-flood recurrence)
+# multi-duration (2026-09-06): ฝนสะสม 3 วัน (peak burst) + 30 วัน (prolonged/antecedent) —
+#   3-day จับฝนกระหน่ำ, 30-day จับฝนตกยาวสะสม (เช่น 2566 ที่ 3-day ไม่สุดขั้วแต่ทั้งฤดูฝนเยอะ →
+#   ดินอิ่มตัว → ท่วมนา). อ้างอิง: multi-duration rainfall thresholds (IDF); antecedent precipitation
+#   index / soil-saturation flood triggering (survey ด้านล่าง).
+DURATIONS = (3, 30)      # วัน — peak-burst + prolonged
+PRIMARY_T = 10.0         # return period ที่ใช้จริง (a-priori; น้ำท่วมนัยสำคัญ ~10–20 ปี, Gale 2013)
+RETURN_PERIODS = (2.0, 5.0, 10.0, 25.0)   # เก็บไว้ sensitivity
+ACCUM_DAYS = 3           # (คงไว้ backward-compat — ดูราคาหลักที่ DURATIONS)
 CLIM_Y0, CLIM_Y1 = 1991, 2020   # WMO climate normals
 EVENT_WINDOW = ("07-01", "11-30")  # ฤดูน้ำหลาก (ตายตัวทุกปี — กัน cherry-pick หน้าต่าง)
+# กติกา over = พีค 3-วัน ≥ T10 *หรือ* พีค 30-วัน ≥ T10 (ของจังหวัดเอง, Gumbel clim 1991-2020)
 
 
 def _centroids() -> dict[str, tuple[float, float]]:
@@ -111,33 +113,31 @@ def _event_peak(accum: list[tuple[str, float]], year: str) -> tuple[float, str]:
 
 
 def build(events: list[str], cache: dict | None = None) -> dict[str, dict]:
-    """cache = {pid: {"thr": {T: mm}, "ev": {year: mm}}} (ข้ามการเรียก API ถ้ามี)."""
+    """Multi-duration local-rain gate. over = พีค N-วัน ≥ Gumbel T{PRIMARY_T} สำหรับ N ใด ๆ ใน DURATIONS."""
     cent = _centroids()
     y1_fetch = max(CLIM_Y1, max(int(e) for e in events))
     per_event: dict[str, dict] = {e: {} for e in events}
     for pid, (lat, lon) in cent.items():
-        if cache and pid in cache:
-            thr = {float(k): float(v) for k, v in cache[pid]["thr"].items()}
-            evv = {e: float(cache[pid]["ev"][e]) for e in events}
-        else:
-            dates, pr = _fetch_daily(lat, lon, CLIM_Y0, y1_fetch)
-            accum = _rolling_accum(dates, pr, ACCUM_DAYS)
-            amax = _annual_max(accum, CLIM_Y0, CLIM_Y1)
-            thr = {T: round(_gumbel_return(amax, T), 1) for T in RETURN_PERIODS}
-            evv = {e: _event_peak(accum, e)[0] for e in events}
-            time.sleep(0.3)
+        dates, pr = _fetch_daily(lat, lon, CLIM_Y0, y1_fetch)
+        dur = {}
+        for n in DURATIONS:
+            accum = _rolling_accum(dates, pr, n)
+            t10 = round(_gumbel_return(_annual_max(accum, CLIM_Y0, CLIM_Y1), PRIMARY_T), 1)
+            dur[n] = {e: (round(_event_peak(accum, e)[0], 1), t10) for e in events}
+        time.sleep(0.3)
         for e in events:
-            peak = round(evv[e], 1)
+            byN = {n: {"peak_mm": dur[n][e][0], "threshold_T10_mm": dur[n][e][1],
+                       "over": bool(dur[n][e][0] >= dur[n][e][1] and dur[n][e][0] > 0)}
+                   for n in DURATIONS}
+            over = any(byN[n]["over"] for n in DURATIONS)
             per_event[e][pid] = {
-                "event_max_3day_mm": peak,
-                "thresholds_by_return_period": {str(int(T)): round(thr[T], 1) for T in RETURN_PERIODS},
-                "threshold_primary_mm": round(thr[PRIMARY_T], 1),
-                "over": bool(peak >= thr[PRIMARY_T] and peak > 0),
-                "over_by_return_period": {str(int(T)): bool(peak >= thr[T] and peak > 0)
-                                          for T in RETURN_PERIODS},
+                "event_max_3day_mm": byN[DURATIONS[0]]["peak_mm"],   # backward-compat
+                "threshold_primary_mm": byN[DURATIONS[0]]["threshold_T10_mm"],
+                "by_duration": byN, "over": over,
                 "evidence": {"station_id": f"ERA5@{lat},{lon}",
                              "dataset": "ERA5-Land daily precip (open-meteo archive)",
-                             "rule": f"3-day peak >= Gumbel T{PRIMARY_T:.0f}y (clim {CLIM_Y0}-{CLIM_Y1})"}}
+                             "rule": f"peak {'/'.join(map(str, DURATIONS))}-day >= Gumbel "
+                                     f"T{PRIMARY_T:.0f}y (clim {CLIM_Y0}-{CLIM_Y1})"}}
     return per_event
 
 
@@ -146,13 +146,13 @@ def write(events: list[str], cache: dict | None = None) -> None:
     for e, provs in per_event.items():
         n_over = sum(v["over"] for v in provs.values())
         doc = {"_meta": {
-            "description": f"Local-rain gate for {e} — event 3-day peak precip vs province's own "
-                           f"{PRIMARY_T:.0f}-yr return level (Gumbel, ERA5-Land). "
-                           "Independent of GISTDA gold (de-circularized). "
-                           "Ref: Leopold 1994 bankfull ~1.5-2yr; Gale 2013 (2011~10-20yr); Gumbel FA.",
+            "description": f"Local-rain gate {e} — multi-duration peak "
+                           f"{'/'.join(map(str, DURATIONS))}-day precip vs province's own "
+                           f"{PRIMARY_T:.0f}-yr return level (Gumbel, ERA5-Land). 30-day captures "
+                           "prolonged-rain flooding (e.g. 2566). De-circularized (not gold). "
+                           "Refs: multi-duration/IDF thresholds; antecedent precipitation index; Gumbel FA.",
             "source": "open-meteo archive (ERA5-Land) precipitation_sum",
-            "accum_days": ACCUM_DAYS, "primary_return_period_y": PRIMARY_T,
-            "return_periods_reported": list(RETURN_PERIODS),
+            "durations_days": list(DURATIONS), "primary_return_period_y": PRIMARY_T,
             "clim_period": f"{CLIM_Y0}-{CLIM_Y1}", "event_window": EVENT_WINDOW,
             "integrity": "threshold = province's own return level (a-priori T=10, not chosen vs gold); "
                          "applied uniformly to all 23 provinces"},
@@ -160,8 +160,7 @@ def write(events: list[str], cache: dict | None = None) -> None:
             "over": {pid: v["over"] for pid, v in provs.items()}}
         out = _PROC / f"local_rain_{e}.json"
         out.write_text(json.dumps(doc, ensure_ascii=False, indent=2), "utf-8")
-        over_list = [pid for pid, v in provs.items() if v["over"]]
-        print(f"[{e}] local_rain over={n_over}/23 @T{PRIMARY_T:.0f}: {over_list}")
+        print(f"[{e}] local_rain over={n_over}/23 (multi-duration {DURATIONS})")
 
 
 def main() -> None:

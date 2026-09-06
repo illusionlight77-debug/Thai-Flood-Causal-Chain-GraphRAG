@@ -166,3 +166,11 @@ Full source links + endpoint status: README → *System — All Links*.
   API `qmax`=2720) = operational downstream flood-warning gate. (nationthailand / thethaiger 2025.)
 - **Gate rule used:** main-stream reaches → *discharge > qmax* (published channel capacity, not
   gold); tributary reaches → *stage > min_bank*. All from thaiwater API v3 (`waterlevel_graph`).
+
+## เพิ่มเติม 2026-09-06 — survey สำหรับปรับปรุง Plan A (วัดจริง ไม่จูน gold)
+
+- **Leopold, L.B. (1994), *A View of the River*; Wolman & Miller (1960).** Bankfull discharge/stage (ระดับน้ำเริ่มล้นออกจากช่องหลักสู่ที่ราบน้ำท่วม) มีคาบอุบัติ ~1.5–2 ปี → ใช้ตั้ง **2-yr return stage** เป็นเกณฑ์ flood-onset แทนหมุดตลิ่งช่องหลักที่สูง (levee). ยก A recall 0.41→0.64.
+- **Chicco, D. & Jurman, G. (2020), *BMC Genomics* 21:6 — "The advantages of the Matthews correlation coefficient (MCC) over F1 score and accuracy".** เหตุผลว่าทำไม **MCC เหนือ F1** บนงาน imbalanced (base-rate ท่วมสูง) → F1 ถูก game ด้วยการเดา positive หมด. เป็นเมตริกหลักของ Plan A.
+- **Multi-duration / IDF rainfall thresholds; Antecedent Precipitation Index (API).** ฝนสะสมหลาย duration (3 วัน = กระหน่ำ, 30 วัน = ตกยาว/ดินอิ่ม) จับกลไกน้ำท่วมต่างชนิด. API เป็น proxy ความชื้นดิน (weighted sum ฝนย้อนหลัง) — ฝนตกยาวทำให้ดินอิ่มตัวแล้วท่วมแม้ไม่มี burst สุดขั้ว (เช่น 2566). ใช้ตั้ง trigger 30-วัน → จับ 2566 ที่ 3-วันพลาด. (ref: storm-runoff API models; flash-flood API early-warning thresholds.)
+- **Gumbel EV1 frequency analysis (ลุ่มเจ้าพระยา, JDR flood-hazard mapping).** วิธีมาตรฐานหา return-period ของฝน/ระดับน้ำจาก annual maxima — ใช้ทั้ง rain threshold (T10) และ stage threshold (T2).
+- **de-circularization + prequential (LOEO):** threshold ของ gate มาจาก climatology ของเกจ/ฝนเอง (ไม่ใช่ satellite gold) + leave-one-event-out กัน leakage.

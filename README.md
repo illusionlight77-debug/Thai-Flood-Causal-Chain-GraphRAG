@@ -6,12 +6,13 @@
 
 > A flood-explanation system that walks a *real causal chain* and measures how much more verifiable its answers are than vector search over news.
 
-> ### ⚠️ อัปเดตสำคัญ 2026-09-06 — แก้ตัวเลขให้ซื่อสัตย์ (อ่านก่อน)
-> เราพบว่า **ตัวเลข F1/CSI เดิม (A F1 ~0.9, B CSI 0.8) เป็น artifact ของ gate ที่ over-flag** และ repo ไม่ตรงกัน
-> เงียบ ๆ มาจาก session ก่อน. แก้เป็น **per-reach gauge ที่ snap ถูกต้อง + de-circularized** แล้ว (ตรวจฟิสิกส์:
-> เจ้าพระยาสายหลักไม่เคยล้นตลิ่ง 2564–2568). **ผลซื่อสัตย์:** causal **MCC +0.197 · Specificity 0.806 · Traceability ~0.90**
-> — **เป็นระบบเดียวที่ MCC>0** (entity "เดาท่วมหมด" MCC=0). **claim ของงานคือ MCC/Spec/Traceability ไม่ใช่ F1**
-> (F1 ถูก game เมื่อ base-rate ท่วมสูง). เรื่องราวเต็ม + การค้นพบ: [`docs/HISTORY.md`](docs/HISTORY.md) · ผล: [§Results](#-results).
+> ### ⚠️ อัปเดตสำคัญ 2026-09-06 — แก้ตัวเลขให้ซื่อสัตย์ + ปรับปรุงด้วยแนวทางมี paper รองรับ (อ่านก่อน)
+> **(1) แก้ artifact:** ตัวเลข F1/CSI เดิม (A F1 ~0.9, B CSI 0.8) เป็น artifact ของ gate ที่ over-flag (repo ไม่ตรงกัน
+> เงียบ ๆ จาก session ก่อน). ตรวจฟิสิกส์: เจ้าพระยาสายหลักไม่เคยล้นตลิ่ง 2564–2568 → ท่วมจาก local/สาขา.
+> **(2) ปรับปรุงจริง (survey-grounded, วัดจริง ไม่จูน gold):** โมเดล A = fluvial (**2-yr return stage**, Leopold 1994)
+> ∪ pluvial (**ฝน 3/30-วัน ≥ T10**, multi-duration). → **causal F1 0.548→0.795 · recall 0.41→0.81 · B CSI 0.378→0.660**.
+> **MCC นิ่ง ~0.20 = เพดาน skill จริง** — causal เป็น **ระบบเดียวที่ MCC>0** (entity F1 0.844 แต่ MCC=0 = ไม่มี skill) +
+> **traceable 100%**. **claim คือ MCC/Specificity/Traceability ไม่ใช่ F1**. เต็ม: [`docs/HISTORY.md`](docs/HISTORY.md) · [§Results](#-results).
 
 📘 **เอกสาร:** [เอกสารการพัฒนาระบบฉบับสมบูรณ์ (System overview + ทุกฟังก์ชัน end-to-end)](docs/SYSTEM_DEVELOPMENT.md) · [เล่มโครงงาน (5 บท)](docs/PROJECT_REPORT.md) · [methodology (freeze)](eval/METHODOLOGY.md) · [references](docs/REFERENCES.md) · [history + bug log](docs/HISTORY.md) · [🔭 roadmap: แยกส่วนพยากรณ์ + 2 thesis](docs/FORECASTING_ROADMAP.md)
 
@@ -290,18 +291,23 @@ FastAPI ([`src/web/server.py`](src/web/server.py)) เสิร์ฟ 3 หน�
 โมเดล A ทำนายจาก **2 สัญญาณข้อมูลจริง**: (1) แม่น้ำล้น (river-gauge snap ต่อ reach) *หรือ* (2) local-rain
 (ฝนสะสม 3 วัน ≥ คาบอุบัติ T10 ของจังหวัด, ERA5) — ทั้งคู่อิสระจาก GISTDA gold.
 
+โมเดล A (ปรับปรุงด้วยแนวทางมี paper รองรับ 2026-09-06): **fluvial** (ระดับน้ำ ≥ **2-yr return stage** = bankfull
+onset, Leopold 1994 — แทนหมุดตลิ่งช่องหลักที่สูงเกิน) ∪ **pluvial multi-duration** (ฝนพีค **3-วัน หรือ 30-วัน**
+≥ Gumbel T10 — 30 วันจับฝนตกยาว/ดินอิ่ม). ทั้งหมด de-circularized + LOEO. ดู [`docs/REFERENCES.md`](docs/REFERENCES.md).
+
 | System | 2564 | 2565 | 2566 | 2567 | 2568 | **pooled F1 / MCC / Spec** |
 |---|---|---|---|---|---|---|
-| **causal** F1 | 0.692 | 0.571 | 0.333 | 0.385 | 0.692 | **0.548 / +0.197 / 0.806** |
-| causal **MCC** | +0.39 | −0.03 | +0.28 | **−0.20** | +0.48 | (ระบบเดียวที่ MCC>0) |
+| **causal** F1 | 0.865 | 0.895 | 0.667 | 0.643 | 0.842 | **0.795 / +0.203 / 0.387** |
+| causal **MCC** | +0.47 | +0.52 | +0.04 | +0.37 | +0.17 | (ระบบเดียวที่ MCC>0) |
 | entity | 0.821 | 0.850 | 0.789 | 0.905 | 0.850 | 0.844 / **0.000** / **0.0** |
 | vector | ~0.10 | ~0.10 | 0.105 | 0.087 | 0.190 | 0.096 / **−0.497** / 0.516 |
 
-Traceability ของ causal = **0.94 / 0.88 / 0.93 / 0.74 / 0.93** (baseline = 0 เสมอ).
+Traceability ของ causal = **0.94 / 0.88 / 0.93 / 0.74 / 0.93** · recall 0.81 (baseline entity recall 1.0 แต่ spec 0).
 
-**อ่านผลอย่างซื่อสัตย์:** entity ชนะ **F1** (เดาท่วมหมด, base-rate สูง) แต่ **MCC=0 = ไม่มี skill จริง**. causal มี
-**MCC>0 (+0.197) เพียงระบบเดียว** + **specificity สูง** (ปฏิเสธจังหวัดไม่ท่วมได้) + **traceable 100%**. per-event
-MCC แปรผัน (**2567 ติดลบ −0.20** = ปีที่ยากสุด ท่วมจาก local เยอะ) — รายงานตรง ไม่เลือกเฉพาะปีที่เข้าข้าง.
+**อ่านผลอย่างซื่อสัตย์:** การปรับปรุงที่ grounded ยก **F1 0.548→0.795 · recall 0.41→0.81** (แข่งกับ entity 0.844 ได้)
+แต่ **MCC นิ่งที่ ~0.20 ทุก variant = เพดาน skill จริง** ของสัญญาณเชิงฟิสิกส์. entity ชนะ F1 (เดาท่วมหมด) แต่
+**MCC=0 = ไม่มี skill**; causal เป็น **ระบบเดียวที่ MCC>0** + **traceable 100%**. specificity แลกลง (0.806→0.387)
+เป็นจุด operating เน้น recall (variant min_bank เน้น precision spec 0.806) — วัดจริง ไม่จูน gold.
 
 ### 3) hop-invariance (H2) ยังจริงเชิงโครงสร้าง
 causal ทำนาย footprint ทั้งลุ่มจาก event-state → **F1-by-hop คงที่ภายในเหตุการณ์ (ΔF1=0 ข้าม 2/3/4/5-hop)**
@@ -309,13 +315,14 @@ causal ทำนาย footprint ทั้งลุ่มจาก event-state �
 เหตุการณ์ = ตามตาราง §2; hop bucket ตรึงตามภูมิศาสตร์ ไม่เปลี่ยนตามผล.)
 
 ### 4) #3 Negative control (confusion — gold=ท่วม, non-gold=ไม่ท่วม, 2565 · N=23)
-| System (2565) | TP | FP | FN | TN | Specificity | MCC |
+| System (2565, โมเดลปรับปรุง) | TP | FP | FN | TN | Specificity | **MCC** |
 |---|---|---|---|---|---|---|
-| **causal** | 8 | 3 | 9 | 3 | **0.500** | −0.03 |
-| entity | 17 | 6 | 0 | 0 | **0.000** | 0.000 |
-| vector | 1 | 3 | 16 | 3 | 0.500 | — |
+| **causal** | 17 | 4 | 0 | 2 | 0.333 | **+0.519** |
+| entity | 17 | 6 | 0 | 0 | **0.000** | **0.000** |
+| vector | 1 | 3 | 16 | 3 | 0.500 | −0.511 |
 
-→ **causal เป็นระบบเดียวที่มี TN>0 จริง** (ปฏิเสธจังหวัดไม่ท่วมได้); entity TN=0 เสมอ (เดาท่วมหมด → MCC=0).
+→ 2565 causal จับครบ (FN=0) + **MCC +0.519 (สูงสุดของทุกเหตุการณ์)**; entity แม้ TP เท่ากันแต่ TN=0 → **MCC=0**
+(เดาท่วมหมด). causal มี TN>0 = ปฏิเสธจังหวัดไม่ท่วมได้จริง.
 
 (2564: causal TP9/FP1/FN7/TN6 → Spec 0.857, MCC +0.39.) → **causal เป็นระบบเดียวที่ปฏิเสธจังหวัดไม่ท่วมได้จริง** (TN>0); entity TN=0 เสมอ (เดาท่วมหมด → MCC=0).
 
@@ -527,7 +534,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
-> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์จริง):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **CSI 0.378 · POD 0.405** บน gate ซื่อสัตย์; เดิม 0.802 บน gate over-flag) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **Gate per-reach gauge snap + p95** ([`thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py), อิสระจาก gold, de-circularized) · **local-rain** ([`local_rain.py`](src/ingest/local_rain.py), ERA5 Gumbel T10) · prospective log CLI + track-record ใน `/warn` · `tests` (5 ผ่าน). **หมายเหตุ:** ตัวเลขซื่อสัตย์ต่ำ = ขีดจำกัดจริงของ gauge-based warning (ดู HISTORY).
+> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์จริง):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **CSI 0.660 · POD 0.81** โมเดลปรับปรุง; 0.378 gate ซื่อสัตย์พื้นฐาน; 0.802 gate over-flag เดิม) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **Gate per-reach gauge snap + p95** ([`thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py), อิสระจาก gold, de-circularized) · **local-rain** ([`local_rain.py`](src/ingest/local_rain.py), ERA5 Gumbel T10) · prospective log CLI + track-record ใน `/warn` · `tests` (5 ผ่าน). **หมายเหตุ:** ตัวเลขซื่อสัตย์ต่ำ = ขีดจำกัดจริงของ gauge-based warning (ดู HISTORY).
 > 📗 **สรุปเตรียมทำเล่ม B:** [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md)
 
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
@@ -549,7 +556,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 **ผลหลัก ซื่อสัตย์ (5 เหตุการณ์ · 115 province-cases · gate per-reach + local-rain):**
 | ตัวชี้วัด | ค่า (เดิม gate over-flag → ซื่อสัตย์) | อ่านว่า |
 |---|---|---|
-| Warning skill (binary) | CSI 0.802 → **0.378** · POD 0.405 · FAR 0.15 | **recall ต่ำ** — ระบบเกจ/ฝนพลาดน้ำท่วม local เยอะ (honest limitation) |
+| Warning skill (binary) | CSI 0.802(over-flag) → 0.378(honest) → **0.660**(ปรับปรุง) · POD **0.81** · FAR 0.218 | 2yr-stage + multi-duration rain ยก recall จริง |
 | Calibration skill | BSS +0.069 → **+0.004** | ~climatology, **ไม่ significant** (event-level p=0.26) |
 | Gate อัตโนมัติ | per-reach gauge snap + p95 (de-circularized) | สร้างจากเกจจริง อิสระจาก gold — reproducible |
 | FN กระจุก | **ChaoPhraya 19 · Nan 9 · ThaChin 8 · Pasak 8 · Ping 5** | น้ำท่วม ≥10k ไร่ ส่วนใหญ่ไม่ได้มาจากแม่น้ำหลักล้น |

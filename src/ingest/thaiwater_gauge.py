@@ -169,15 +169,80 @@ def event_reach_overflow(event: str, start: str, end: str) -> dict:
             "overflow": {r: v["overflow"] for r, v in reach.items()}}
 
 
+def _p95_season(sid: int, year: int) -> float | None:
+    try:
+        d = requests.get(BASE + "waterlevel_graph", headers=H, timeout=60,
+                         params={"station_type": "tele_waterlevel", "station_id": sid,
+                                 "start_date": f"{year}-08-01", "end_date": f"{year}-11-15"}).json().get("data") or {}
+    except Exception:  # noqa: BLE001
+        return None
+    return _p95([float(p["value"]) for p in d.get("graph_data", []) if p.get("value") is not None])
+
+
+def build_returnperiod_gates(events: list[int], clim_years: list[int]) -> None:
+    """gate ต่อ reach จาก **2-yr return stage** (median annual-max p95, leave-one-event-out).
+    flood-onset = bankfull recurrence ~1.5–2 ปี (Leopold 1994) — ต่ำกว่าหมุดตลิ่งช่องหลักที่สูง (levee).
+    de-circularized (stage climatology, ไม่ดู gold), prequential (LOEO). ดู docs/HISTORY (2026-09-06)."""
+    import statistics as _stat
+    # p95 stage ต่อ (reach, gauge) ต่อปี
+    hist: dict[str, dict[int, float]] = {}
+    for r, gauges in REACH_GAUGES.items():
+        for oc, sid in gauges:
+            yr = {}
+            for y in sorted(set(clim_years) | set(events)):
+                pk = _p95_season(sid, y)
+                time.sleep(0.3)
+                if pk is not None:
+                    yr[y] = pk
+            hist[f"{r}|{oc}"] = yr
+    for Y in events:
+        reach = {}
+        for r, gauges in REACH_GAUGES.items():
+            over = False
+            stations = []
+            fired = None
+            for oc, sid in gauges:
+                yr = hist.get(f"{r}|{oc}", {})
+                others = [yr[y] for y in yr if y != Y]
+                if len(others) >= 2 and Y in yr:
+                    thr = round(_stat.median(others), 2)   # ~2-yr return (bankfull)
+                    ov = yr[Y] > thr
+                    st = {"gauge": oc, "peak_stage": round(yr[Y], 2), "threshold_2yr_stage": thr,
+                          "over_bank": ov, "basis": f"stage {round(yr[Y], 2)}{'>' if ov else '<='}"
+                          f"2yr-return {thr} (bankfull, LOEO)"}
+                    stations.append(st)
+                    over = over or ov
+                    if ov and fired is None:
+                        fired = st
+            base = fired or (stations[0] if stations else {})
+            reach[r] = {"overflow": over, "gauge": base.get("gauge"),
+                        "basis": base.get("basis"), "stations": stations}
+        doc = {"_meta": {"description": f"Per-reach over-bank gate {Y} — event p95 stage > gauge's own "
+               "2-yr return stage (median annual-max, LOEO). Flood-onset = bankfull recurrence ~1.5-2yr "
+               "(Leopold 1994), lower than the high main-channel bank. De-circularized (stage climatology, "
+               "not gold), prequential (LOEO). p95 guards spikes.",
+               "source": f"{BASE}waterlevel_graph (Aug1-Nov15)"},
+               "reach_overbank": reach,
+               "overflow": {r: v["overflow"] for r, v in reach.items()}}
+        (settings.data_processed_dir / f"river_reach_overbank_{Y}.json").write_text(
+            json.dumps(doc, ensure_ascii=False, indent=2), "utf-8")
+        print(f"[{Y}] return-period gate over={[r for r, v in reach.items() if v['overflow']]}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--event", required=True)
     ap.add_argument("--start", required=True)
     ap.add_argument("--end", required=True)
-    ap.add_argument("--mode", choices=["reach", "subbasin"], default="reach")
+    ap.add_argument("--mode", choices=["reach", "subbasin", "returnperiod"], default="reach")
+    ap.add_argument("--clim-years", nargs="+", type=int,
+                    default=[2020, 2021, 2022, 2023, 2024, 2025], help="years for LOEO 2-yr stage")
     ap.add_argument("--per-sub", type=int, default=8)
     ap.add_argument("--write", action="store_true")
     a = ap.parse_args()
+    if a.mode == "returnperiod":
+        build_returnperiod_gates([int(a.event)], a.clim_years)
+        return
     if a.mode == "reach":
         res = event_reach_overflow(a.event, a.start, a.end)
         over = [k for k, v in res["overflow"].items() if v]

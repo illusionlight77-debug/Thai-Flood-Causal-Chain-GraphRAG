@@ -9,16 +9,16 @@
     "RES-PASAK": true
   },
   "reach_overflow": {
-    "RR-PING": false,
-    "RR-WANG": false,
+    "RR-PING": true,
+    "RR-WANG": true,
     "RR-YOM": true,
-    "RR-NAN": false,
+    "RR-NAN": true,
     "RR-SAKAEKRANG": true,
-    "RR-CP-UPPER": false,
-    "RR-CP-L1": false,
+    "RR-CP-UPPER": true,
+    "RR-CP-L1": true,
     "RR-CP-L2": true,
     "RR-CP-L3": true,
-    "RR-PASAK": false,
+    "RR-PASAK": true,
     "RR-THACHIN": true
   },
   "gold_flooded": [
