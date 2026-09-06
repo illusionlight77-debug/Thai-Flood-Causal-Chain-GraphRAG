@@ -303,3 +303,19 @@ per-event MCC: 2564 +0.47 · 2565 +0.52 · 2566 +0.04 · 2567 +0.37 · 2568 +0.1
 เกณฑ์ที่ grounded ยก **F1/recall** ได้จริง (เลื่อนบนเส้น recall–precision) แต่ไม่ทะลุเพดาน MCC. causal ยังเป็น
 **ระบบเดียวที่ MCC>0** (entity F1 สูงกว่าแต่ MCC=0 = ไม่มี skill). specificity แลกลง (0.806→0.387) = จุด operating
 ที่เน้น recall; min_bank เป็น variant เน้น precision. **ทั้งหมดวัดจริง ไม่จูน gold** (threshold a-priori จาก climatology).
+
+### 2026-09-06 (ต่อ) — เพดาน skill (MCC ~0.20): เป็นเพดานของ "ข้อมูล/สัญญาณ" ไม่ใช่ "วิธี"
+
+คำถาม: MCC ~0.20 ยกให้สูงขึ้นได้ไหม? ทดสอบ 3 ทาง ([`src/eval/ceiling_analysis.py`](../src/eval/ceiling_analysis.py)):
+1. **Learned combiner (logistic บนฟีเจอร์ต่อเนื่อง stage/rain-ratio)** — in-sample (upper bound) MCC=**0.0**,
+   LOEO MCC=**0.0** → **collapse เป็น predict-all** เพราะ base-rate 0.79 สูงเกิน. การรวมสัญญาณที่ฉลาดกว่า OR
+   **ไม่ช่วย** → เพดานไม่ได้มาจากวิธีรวม.
+2. **Rule variants** — fluvial-only 0.135 · +pluvial30 0.189 · current(+pluvial3) 0.189 (pluvial3 ซ้ำซ้อน
+   ตรงกับ PNS) · rain-needs-both 0.179 → **กระจุก 0.13–0.19 ทุกสูตร**.
+3. **Cutoff sweep (โมเดลตายตัว)** — ≥10k 0.214 · ≥30k 0.146 · ≥50k 0.155 · ≥100k 0.139 · ≥200k 0.166 →
+   **เข้มขึ้นก็ไม่ขึ้น** (TP กลายเป็น FP) → ไม่ใช่แค่ base-rate; สัญญาณฟิสิกส์แยกความรุนแรงไม่ได้จริง.
+
+**ข้อสรุป: ~0.20 เป็นเพดานของ DATA/SIGNAL ไม่ใช่ method.** ยกได้เฉพาะด้วย *ข้อมูลใหม่* — (ก) ความละเอียด
+เชิงพื้นที่ระดับอำเภอ/ตำบล (ลด base-rate + แยกได้มากขึ้น) · (ข) สัญญาณที่เห็นกลไกมากขึ้น (ความชื้นดิน SMAP/ASCAT,
+อัตราระบายเขื่อน, distributed hydro model) · (ค) เพิ่มเหตุการณ์ (significance) — **ไม่ใช่ระเบียบวิธีบนข้อมูลเดิม**.
+เป็น finding เชิงวิชาการที่ตอบตรง ๆ ว่า "ขีดจำกัดอยู่ที่ข้อมูล" (มีค่าสำหรับบท future work).

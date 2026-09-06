@@ -1,0 +1,77 @@
+{
+  "note": "Predictability-ceiling analysis for Plan A. Tests whether MCC ~0.20 is a data/signal ceiling or a method ceiling. Learned fits are diagnostic (upper bounds), not the shipped model.",
+  "verdict": "DATA/SIGNAL ceiling — a learned combiner collapses to predict-all at high base-rate, rule variants cluster ~0.13-0.22, and stricter cutoffs do not raise MCC. Raising it needs NEW data (finer spatial unit, soil-moisture/dam-release signals, more events), not a better method.",
+  "learned_combiner": {
+    "available": true,
+    "base_rate": 0.79,
+    "insample_mcc_upperbound": 0.0,
+    "loeo_mcc": 0.0,
+    "loeo_confusion": [
+      83,
+      22,
+      0,
+      0
+    ]
+  },
+  "rule_variants": {
+    "fluvial_only": {
+      "mcc": 0.135,
+      "f1": 0.662,
+      "tp": 48,
+      "fp": 13,
+      "fn": 36,
+      "tn": 18
+    },
+    "fluvial+pluvial30": {
+      "mcc": 0.189,
+      "f1": 0.788,
+      "tp": 67,
+      "fp": 19,
+      "fn": 17,
+      "tn": 12
+    },
+    "fluvial+pluvial3+pluvial30 (current)": {
+      "mcc": 0.189,
+      "f1": 0.788,
+      "tp": 67,
+      "fp": 19,
+      "fn": 17,
+      "tn": 12
+    },
+    "fluvial OR (rain3 AND rain30)": {
+      "mcc": 0.179,
+      "f1": 0.698,
+      "tp": 52,
+      "fp": 13,
+      "fn": 32,
+      "tn": 18
+    }
+  },
+  "cutoff_sweep": [
+    {
+      "cutoff_rai": 10000,
+      "base_rate": 0.728,
+      "mcc": 0.214
+    },
+    {
+      "cutoff_rai": 30000,
+      "base_rate": 0.685,
+      "mcc": 0.146
+    },
+    {
+      "cutoff_rai": 50000,
+      "base_rate": 0.62,
+      "mcc": 0.155
+    },
+    {
+      "cutoff_rai": 100000,
+      "base_rate": 0.457,
+      "mcc": 0.139
+    },
+    {
+      "cutoff_rai": 200000,
+      "base_rate": 0.315,
+      "mcc": 0.166
+    }
+  ]
+}
