@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "description": "Rain-station 3-day peak precip 2024 (ERA5-Land, open-meteo archive) for H1 evidence-grounding of RUNOFF_TO/FEEDS edges. Independent of GISTDA gold.",
+    "source": "open-meteo archive ERA5-Land precipitation_sum, Jul1-Nov30 window"
+  },
+  "stations": {
+    "RS-PING": {
+      "rain_3day_peak_mm": 158.6,
+      "peak_start": "",
+      "threshold_T10_mm": 123.3,
+      "over": true,
+      "note": "ERA5-Land @ station coord (== province centroid)"
+    },
+    "RS-WANG": {
+      "rain_3day_peak_mm": 108.8,
+      "peak_start": "",
+      "threshold_T10_mm": 134.4,
+      "over": false,
+      "note": "ERA5-Land @ station coord (== province centroid)"
+    },
+    "RS-YOM": {
+      "rain_3day_peak_mm": null,
+      "peak_start": null,
+      "threshold_T10_mm": null,
+      "over": null,
+      "note": "pending ERA5 fetch (rate-limited)"
+    },
+    "RS-NAN": {
+      "rain_3day_peak_mm": null,
+      "peak_start": null,
+      "threshold_T10_mm": null,
+      "over": null,
+      "note": "pending ERA5 fetch (rate-limited)"
+    },
+    "RS-SAKAEKRANG": {
+      "rain_3day_peak_mm": 97.0,
+      "peak_start": "",
+      "threshold_T10_mm": 119.9,
+      "over": false,
+      "note": "ERA5-Land @ station coord (== province centroid)"
+    },
+    "RS-PASAK": {
+      "rain_3day_peak_mm": 113.9,
+      "peak_start": "",
+      "threshold_T10_mm": 163.2,
+      "over": false,
+      "note": "ERA5-Land @ station coord (== province centroid)"
+    }
+  }
+}

@@ -45,10 +45,13 @@
 ## 4. ผลลัพธ์ (รายงานตรง — ไม่ tune)
 
 ### 4.1 Warning skill (binary, 115 province-cases · **5 เหตุการณ์**)
-- **[อัปเดต 2026-09-06 — เพิ่ม local-rain gate (lever-1b)]** ปรับปรุงเป็น
-  **POD 0.917 · FAR 0.105 · CSI 0.828** (เดิม 0.869 / 0.087 / **0.802**); FN 11→7; **Ping FN 9→5**;
-  drift CSI 2567 0.667→0.762. ดู §4.3 lever-1b (ค่า threshold จากข้อมูลจริง ไม่จูน gold).
-- (ฐานเดิม causal-only) **POD 0.869 · FAR 0.087 · CSI 0.802** (per-event CSI 0.667–0.882)
+> **⚠️ แก้ครั้งใหญ่ 2026-09-06:** ตัวเลข CSI 0.8 ทั้งชุดนี้อยู่บน **gate ที่ over-flag** (พบทีหลังว่า repo ไม่ตรงกัน).
+> บน **gate ซื่อสัตย์ (per-reach snap + de-circularized + local-rain)** ผลจริงคือ:
+> **POD 0.405 · FAR 0.15 · CSI 0.378** · BSS +0.004 (ไม่ significant) · FN 50/84 (ChaoPhraya 19/Nan 9/ThaChin 8/Pasak 8/Ping 5).
+> **บทเรียน:** ระบบเตือนที่พิงเกจสายหลัก+ฝนสุดขั้ว **recall ต่ำ** เพราะน้ำท่วมดาวเทียมส่วนใหญ่มาจาก local/สาขา
+> = ขีดจำกัดจริงของ gauge-based warning. ดู [`HISTORY.md`](HISTORY.md). ตัวเลขด้านล่างเก็บไว้เพื่อความโปร่งใส (gate เก่า).
+
+- (gate เก่า over-flag) POD 0.869 · FAR 0.087 · CSI 0.802 — **inflate, ห้ามใช้เป็น claim**
 - เพิ่มเหตุการณ์ที่ 5 จริง: **เจ้าพระยา 2568 (GISTDA satellite, 11 พ.ย. 2568, 2.44 ล้านไร่/17 จังหวัด)**
   ใช้ **gate ตายตัวจาก 2022** (out-of-sample, protocol เดียวกับ 2023/2024) → TP15/FP1/FN2/TN5 = **CSI 0.833**
 - เคสผิดสม่ำเสมอ: **FN = ลุ่มปิง** (ตาก/กำแพงเพชร/เชียงใหม่ = local-rain) · **FP = ปทุมธานี/อุทัยธานี**

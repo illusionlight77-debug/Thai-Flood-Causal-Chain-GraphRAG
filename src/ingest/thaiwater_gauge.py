@@ -29,17 +29,24 @@ H = {"User-Agent": "Mozilla/5.0", "Accept": "application/json", "Referer": "http
 PREFIX = {"P": "Ping", "W": "Wang", "Y": "Yom", "N": "Nan",
           "C": "ChaoPhraya", "S": "Pasak", "T": "ThaChin"}
 
-# --mode reach: control/index gauge ต่อ reach (survey: NHDPlus snapping + NWS index gauge;
-# C.2 = control หลักเจ้าพระยา). สายหลักที่มี discharge → ใช้ 'discharge > qmax' (qmax = ความจุมาตรฐาน RID,
-# เหมือน bulletin C.13≥~2800) เพราะเขื่อนคุมระดับให้ต่ำกว่าหมุดตลิ่งได้แต่ปริมาณน้ำสูง; สาขาที่มีแต่ระดับ → stage>bank.
-REACH_GAUGE = {  # reach -> (oldcode, station_id)
-    "RR-PING": ("P.7A", 2900), "RR-WANG": ("W.4A", 3018), "RR-YOM": ("Y.16", 2941),
-    "RR-NAN": ("N.67", 2821), "RR-SAKAEKRANG": ("SKG002", 595),
-    # CP mainstem: ใช้ C.13 (เขื่อนเจ้าพระยา = master control structure, qmax 2720 = operational flood
-    # threshold ~ bulletin C.13≥2800) เพราะ C.2 qmax 3735 คือ rated capacity สูงเกินจะเป็น flood onset
-    "RR-CP-UPPER": ("C.13", 2744), "RR-CP-L1": ("C.13", 2744), "RR-CP-L2": ("C.35", 2609),
-    "RR-CP-L3": ("C.37", 2608), "RR-PASAK": ("S.26", 2624), "RR-THACHIN": ("T.1", 2676),
+# --mode reach: control/index gauge ต่อ reach (survey: NHDPlus snapping + NWS index gauge).
+# กติกา: reach ล้น = สถานีที่ *อยู่บน reach นั้นจริง* สถานีใดสถานีหนึ่ง peak > ตลิ่ง (stage>min_bank)
+# หรือ discharge>qmax. peak ใช้ *95th percentile* กัน sensor spike (เช่น C.3 เด้ง 23 ม. จาก 2 ม.).
+#
+# แก้บั๊ก mapping (2026-09-06): เดิม RR-CP-UPPER + RR-CP-L1 ชี้ C.13 ทั้งคู่ (เขื่อนเจ้าพระยาจุดเดียว)
+# → พลาดสถานีที่อยู่บน reach จริง (นครสวรรค์=C.2, สิงห์บุรี=C.3, อ่างทอง=C.7A, อยุธยา=C.35/36/67).
+# ตอนนี้ snap แต่ละ reach เข้ากับสถานีที่ตั้งอยู่บน reach นั้น (ตามที่ตั้งจริง ไม่ได้ดู gold).
+REACH_GAUGES = {  # reach -> [(oldcode, station_id), ...] สถานีที่ตั้งอยู่บน reach นั้น
+    "RR-PING": [("P.7A", 2900)], "RR-WANG": [("W.4A", 3018)], "RR-YOM": [("Y.16", 2941)],
+    "RR-NAN": [("N.67", 2821)], "RR-SAKAEKRANG": [("SKG002", 595)],
+    "RR-CP-UPPER": [("C.2", 2795)],                       # ค่ายจิรประวัติ นครสวรรค์
+    "RR-CP-L1": [("C.3", 2723), ("C.7A", 2626)],          # บ้านบางพุทรา สิงห์บุรี · บ้านบางแก้ว อ่างทอง
+    "RR-CP-L2": [("C.35", 2609), ("C.36", 2611), ("C.67", 1095849)],  # ป้อมเพชร/บางหลวงโดด/หัวเวียง อยุธยา
+    "RR-CP-L3": [("C.12", 2599), ("C.37", 2608)],         # สามเสน กทม. · บ้านบางบาล (ท้ายอยุธยา)
+    "RR-PASAK": [("S.26", 2624)], "RR-THACHIN": [("T.1", 2676)],
 }
+# backward-compat: reach -> control gauge เดี่ยว (ตัวแรกของ list) สำหรับโค้ดเก่าที่อ้าง REACH_GAUGE
+REACH_GAUGE = {r: gs[0] for r, gs in REACH_GAUGES.items()}
 
 
 def station_index() -> dict[str, list[dict]]:
@@ -100,8 +107,17 @@ def event_overflow(event: str, start: str, end: str, per_sub: int = 8) -> dict:
             "overflow": {k: v["overflow"] for k, v in subs.items()}}
 
 
+def _p95(vals: list[float]) -> float | None:
+    """95th-percentile peak (กัน sensor spike แทน max())."""
+    if not vals:
+        return None
+    s = sorted(vals)
+    k = max(0, int(round(0.95 * (len(s) - 1))))
+    return s[k]
+
+
 def reach_signal(sid: int, start: str, end: str) -> dict | None:
-    """control gauge ของ reach: over = (peak discharge > qmax) ถ้ามี, ไม่งั้น (peak stage > min_bank)."""
+    """สถานีเดี่ยว: over = (p95 discharge > qmax) ถ้ามี, ไม่งั้น (p95 stage > min_bank). ใช้ p95 กัน spike."""
     try:
         d = requests.get(BASE + "waterlevel_graph", headers=H, timeout=60,
                          params={"station_type": "tele_waterlevel", "station_id": sid,
@@ -112,14 +128,15 @@ def reach_signal(sid: int, start: str, end: str) -> dict | None:
     stages = [float(p["value"]) for p in g if p.get("value") is not None]
     dis = [float(p["discharge"]) for p in g if p.get("discharge") is not None]
     mb, qmax = d.get("min_bank"), d.get("qmax")
-    peak_stage = round(max(stages), 2) if stages else None
-    peak_dis = round(max(dis), 0) if dis else None
-    if peak_dis is not None and qmax is not None:
-        over = peak_dis > float(qmax)
-        basis = f"discharge {peak_dis}>{qmax}" if over else f"discharge {peak_dis}<=qmax {qmax}"
-    elif peak_stage is not None and mb is not None:
+    peak_stage = round(_p95(stages), 2) if stages else None
+    peak_dis = round(_p95(dis), 0) if dis else None
+    # ตลิ่ง (stage>min_bank) เป็นเกณฑ์หลัก (ตรงกับ "ล้นตลิ่ง"); discharge>qmax เป็น fallback ถ้าไม่มีระดับ
+    if peak_stage is not None and mb is not None:
         over = peak_stage > float(mb)
         basis = f"stage {peak_stage}{'>' if over else '<='}bank {mb}"
+    elif peak_dis is not None and qmax is not None:
+        over = peak_dis > float(qmax)
+        basis = f"discharge {peak_dis}{'>' if over else '<='}qmax {qmax}"
     else:
         return None
     return {"over_bank": over, "basis": basis, "peak_stage": peak_stage,
@@ -127,16 +144,26 @@ def reach_signal(sid: int, start: str, end: str) -> dict | None:
 
 
 def event_reach_overflow(event: str, start: str, end: str) -> dict:
-    """per-reach gate จาก control gauge (survey-grounded). key `reach_overbank` ให้ fixtures อ่าน."""
+    """per-reach gate: reach ล้น = สถานีที่อยู่บน reach นั้น *สถานีใดสถานีหนึ่ง* ล้นตลิ่ง (p95>bank).
+    key `reach_overbank` ให้ fixtures อ่าน. de-circularized (ไม่ดู gold), snap สถานีตามที่ตั้งจริง."""
     reach = {}
-    for r, (oldcode, sid) in REACH_GAUGE.items():
-        res = reach_signal(sid, start, end)
-        time.sleep(0.4)
-        reach[r] = {"overflow": bool(res["over_bank"]) if res else False,
-                    "gauge": oldcode, **(res or {})}
-    return {"_meta": {"description": f"Per-reach over-bank gate for {event} — control/index gauge per "
-                      "reach from thaiwater API v3 (main-stream: discharge>qmax; tributary: stage>min_bank). "
-                      "Independent of GISTDA gold (de-circularized). Refs: NHDPlus snapping, NWS index gauge.",
+    for r, gauges in REACH_GAUGES.items():
+        stations = []
+        over_any = False
+        for oldcode, sid in gauges:
+            res = reach_signal(sid, start, end)
+            time.sleep(0.35)
+            if res:
+                stations.append({"gauge": oldcode, **res})
+                over_any = over_any or bool(res["over_bank"])
+        fired = next((s for s in stations if s["over_bank"]), stations[0] if stations else {})
+        reach[r] = {"overflow": over_any, "gauge": fired.get("gauge"),
+                    "basis": fired.get("basis"), "stations": stations}
+    return {"_meta": {"description": f"Per-reach over-bank gate for {event} — gauges snapped to each reach "
+                      "(thaiwater API v3): reach overflows if ANY on-reach gauge p95-stage>min_bank. "
+                      "p95 guards sensor spikes. Independent of GISTDA gold (de-circularized). "
+                      "Refs: NHDPlus snapping, NWS index gauge. Fixed 2026-09-06: per-reach snapping "
+                      "(was C.13 for all CP mainstem).",
                       "source": f"{BASE}waterlevel_graph ({start}..{end})"},
             "reach_overbank": reach,
             "overflow": {r: v["overflow"] for r, v in reach.items()}}

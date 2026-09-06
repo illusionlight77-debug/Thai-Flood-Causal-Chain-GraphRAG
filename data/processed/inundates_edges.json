@@ -6,7 +6,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PING",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -17,7 +17,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PING",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -28,7 +28,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PING",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -39,7 +39,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PING",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -50,7 +50,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-WANG",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -61,7 +61,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-YOM",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -72,7 +72,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-YOM",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -83,7 +83,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-NAN",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -94,7 +94,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-NAN",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -105,7 +105,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-NAN",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -116,7 +116,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-SAKAEKRANG",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -127,7 +127,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-CP-UPPER",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -138,7 +138,7 @@
     "threshold": 9.0,
     "evidence": {
       "station_id": "RR-CP-UPPER",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -149,7 +149,7 @@
     "threshold": 7.0,
     "evidence": {
       "station_id": "RR-CP-L1",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -160,7 +160,7 @@
     "threshold": 7.0,
     "evidence": {
       "station_id": "RR-CP-L1",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -171,7 +171,7 @@
     "threshold": 7.5,
     "evidence": {
       "station_id": "RR-CP-L2",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -182,7 +182,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-CP-L3",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -193,7 +193,7 @@
     "threshold": 9.0,
     "evidence": {
       "station_id": "RR-CP-L3",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -204,7 +204,7 @@
     "threshold": 9.5,
     "evidence": {
       "station_id": "RR-CP-L3",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -215,7 +215,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PASAK",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -226,7 +226,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PASAK",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -237,7 +237,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-PASAK",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -248,7 +248,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-THACHIN",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   },
@@ -259,7 +259,7 @@
     "threshold": 8.0,
     "evidence": {
       "station_id": "RR-THACHIN",
-      "timestamp": "2022-10-10 00:00:00",
+      "timestamp": "2025-11-11 00:00:00",
       "dataset": "D4/basin+province PIP + D3/GISTDA extent"
     }
   }

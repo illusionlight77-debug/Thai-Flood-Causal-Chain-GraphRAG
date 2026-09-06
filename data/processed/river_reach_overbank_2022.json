@@ -1,128 +1,230 @@
 {
   "_meta": {
-    "description": "Per-reach over-bank gate for 2022 — control/index gauge per reach from thaiwater API v3 (main-stream: discharge>qmax; tributary: stage>min_bank). Independent of GISTDA gold (de-circularized). Refs: NHDPlus snapping, NWS index gauge.",
-    "source": "https://api-v3.thaiwater.net/api/v1/thaiwater30/public/waterlevel_graph (2022-09-25..2022-10-20)"
+    "description": "Per-reach over-bank gate for 2022 — gauges snapped to each reach (thaiwater API v3): reach overflows if ANY on-reach gauge p95-stage>min_bank. p95 guards sensor spikes. Independent of GISTDA gold (de-circularized). Refs: NHDPlus snapping, NWS index gauge. Fixed 2026-09-06: per-reach snapping (was C.13 for all CP mainstem).",
+    "source": "https://api-v3.thaiwater.net/api/v1/thaiwater30/public/waterlevel_graph (2022-08-01..2022-11-15)"
   },
   "reach_overbank": {
     "RR-PING": {
       "overflow": false,
       "gauge": "P.7A",
-      "over_bank": false,
-      "basis": "discharge 1561.0<=qmax 3000",
-      "peak_stage": 75.52,
-      "min_bank": 77.070003,
-      "peak_discharge": 1561.0,
-      "qmax": 3000
+      "basis": "stage 74.6<=bank 77.070003",
+      "stations": [
+        {
+          "gauge": "P.7A",
+          "over_bank": false,
+          "basis": "stage 74.6<=bank 77.070003",
+          "peak_stage": 74.6,
+          "min_bank": 77.070003,
+          "peak_discharge": 1038.0,
+          "qmax": 3000
+        }
+      ]
     },
     "RR-WANG": {
-      "overflow": true,
+      "overflow": false,
       "gauge": "W.4A",
-      "over_bank": true,
-      "basis": "discharge 624.0>530",
-      "peak_stage": 137.25,
-      "min_bank": 137,
-      "peak_discharge": 624.0,
-      "qmax": 530
+      "basis": "stage 136.96<=bank 137",
+      "stations": [
+        {
+          "gauge": "W.4A",
+          "over_bank": false,
+          "basis": "stage 136.96<=bank 137",
+          "peak_stage": 136.96,
+          "min_bank": 137,
+          "peak_discharge": 574.0,
+          "qmax": 530
+        }
+      ]
     },
     "RR-YOM": {
       "overflow": true,
       "gauge": "Y.16",
-      "over_bank": true,
-      "basis": "discharge 395.0>230",
-      "peak_stage": 42.42,
-      "min_bank": 38.929999,
-      "peak_discharge": 395.0,
-      "qmax": 230
+      "basis": "stage 42.34>bank 38.929999",
+      "stations": [
+        {
+          "gauge": "Y.16",
+          "over_bank": true,
+          "basis": "stage 42.34>bank 38.929999",
+          "peak_stage": 42.34,
+          "min_bank": 38.929999,
+          "peak_discharge": 371.0,
+          "qmax": 230
+        }
+      ]
     },
     "RR-NAN": {
       "overflow": false,
       "gauge": "N.67",
-      "over_bank": false,
-      "basis": "discharge 1369.0<=qmax 1435",
-      "peak_stage": 27.88,
-      "min_bank": 28.209999,
-      "peak_discharge": 1369.0,
-      "qmax": 1435
+      "basis": "stage 27.84<=bank 28.209999",
+      "stations": [
+        {
+          "gauge": "N.67",
+          "over_bank": false,
+          "basis": "stage 27.84<=bank 28.209999",
+          "peak_stage": 27.84,
+          "min_bank": 28.209999,
+          "peak_discharge": 1285.0,
+          "qmax": 1435
+        }
+      ]
     },
     "RR-SAKAEKRANG": {
       "overflow": true,
       "gauge": "SKG002",
-      "over_bank": true,
-      "basis": "stage 23.36>bank 17.66",
-      "peak_stage": 23.36,
-      "min_bank": 17.66,
-      "peak_discharge": null,
-      "qmax": null
+      "basis": "stage 19.91>bank 17.66",
+      "stations": [
+        {
+          "gauge": "SKG002",
+          "over_bank": true,
+          "basis": "stage 19.91>bank 17.66",
+          "peak_stage": 19.91,
+          "min_bank": 17.66,
+          "peak_discharge": null,
+          "qmax": null
+        }
+      ]
     },
     "RR-CP-UPPER": {
-      "overflow": true,
-      "gauge": "C.13",
-      "over_bank": true,
-      "basis": "discharge 3180.0>2720",
-      "peak_stage": 17.41,
-      "min_bank": 16.34,
-      "peak_discharge": 3180.0,
-      "qmax": 2720
+      "overflow": false,
+      "gauge": "C.2",
+      "basis": "stage 25.28<=bank 25.700001",
+      "stations": [
+        {
+          "gauge": "C.2",
+          "over_bank": false,
+          "basis": "stage 25.28<=bank 25.700001",
+          "peak_stage": 25.28,
+          "min_bank": 25.700001,
+          "peak_discharge": 2739.0,
+          "qmax": 3735
+        }
+      ]
     },
     "RR-CP-L1": {
-      "overflow": true,
-      "gauge": "C.13",
-      "over_bank": true,
-      "basis": "discharge 3180.0>2720",
-      "peak_stage": 17.41,
-      "min_bank": 16.34,
-      "peak_discharge": 3180.0,
-      "qmax": 2720
+      "overflow": false,
+      "gauge": "C.3",
+      "basis": "stage 13.18<=bank 13.2",
+      "stations": [
+        {
+          "gauge": "C.3",
+          "over_bank": false,
+          "basis": "stage 13.18<=bank 13.2",
+          "peak_stage": 13.18,
+          "min_bank": 13.2,
+          "peak_discharge": 2576.0,
+          "qmax": 2997
+        },
+        {
+          "gauge": "C.7A",
+          "over_bank": false,
+          "basis": "stage 9.52<=bank 9.9",
+          "peak_stage": 9.52,
+          "min_bank": 9.9,
+          "peak_discharge": 2580.0,
+          "qmax": 2862
+        }
+      ]
     },
     "RR-CP-L2": {
       "overflow": true,
       "gauge": "C.35",
-      "over_bank": true,
-      "basis": "discharge 1543.0>1159",
-      "peak_stage": 5.8,
-      "min_bank": 4.35,
-      "peak_discharge": 1543.0,
-      "qmax": 1159
+      "basis": "stage 5.77>bank 4.35",
+      "stations": [
+        {
+          "gauge": "C.35",
+          "over_bank": true,
+          "basis": "stage 5.77>bank 4.35",
+          "peak_stage": 5.77,
+          "min_bank": 4.35,
+          "peak_discharge": 1459.0,
+          "qmax": 1159
+        },
+        {
+          "gauge": "C.36",
+          "over_bank": true,
+          "basis": "stage 7.02>bank 4.3",
+          "peak_stage": 7.02,
+          "min_bank": 4.3,
+          "peak_discharge": 955.0,
+          "qmax": 441
+        },
+        {
+          "gauge": "C.67",
+          "over_bank": true,
+          "basis": "stage 5.76>bank 2.75",
+          "peak_stage": 5.76,
+          "min_bank": 2.75,
+          "peak_discharge": null,
+          "qmax": null
+        }
+      ]
     },
     "RR-CP-L3": {
       "overflow": true,
       "gauge": "C.37",
-      "over_bank": true,
-      "basis": "discharge 290.0>97",
-      "peak_stage": 5.82,
-      "min_bank": 4.14,
-      "peak_discharge": 290.0,
-      "qmax": 97
+      "basis": "stage 5.8>bank 4.14",
+      "stations": [
+        {
+          "gauge": "C.12",
+          "over_bank": false,
+          "basis": "stage 2.05<=bank 2.26",
+          "peak_stage": 2.05,
+          "min_bank": 2.26,
+          "peak_discharge": null,
+          "qmax": null
+        },
+        {
+          "gauge": "C.37",
+          "over_bank": true,
+          "basis": "stage 5.8>bank 4.14",
+          "peak_stage": 5.8,
+          "min_bank": 4.14,
+          "peak_discharge": 287.0,
+          "qmax": 97
+        }
+      ]
     },
     "RR-PASAK": {
       "overflow": true,
       "gauge": "S.26",
-      "over_bank": true,
-      "basis": "discharge 1052.0>633",
-      "peak_stage": 9.86,
-      "min_bank": 7.2,
-      "peak_discharge": 1052.0,
-      "qmax": 633
+      "basis": "stage 9.72>bank 7.2",
+      "stations": [
+        {
+          "gauge": "S.26",
+          "over_bank": true,
+          "basis": "stage 9.72>bank 7.2",
+          "peak_stage": 9.72,
+          "min_bank": 7.2,
+          "peak_discharge": 952.0,
+          "qmax": 633
+        }
+      ]
     },
     "RR-THACHIN": {
       "overflow": false,
       "gauge": "T.1",
-      "over_bank": false,
-      "basis": "stage -7.32<=bank 1.5",
-      "peak_stage": -7.32,
-      "min_bank": 1.5,
-      "peak_discharge": null,
-      "qmax": null
+      "basis": "stage -7.41<=bank 1.5",
+      "stations": [
+        {
+          "gauge": "T.1",
+          "over_bank": false,
+          "basis": "stage -7.41<=bank 1.5",
+          "peak_stage": -7.41,
+          "min_bank": 1.5,
+          "peak_discharge": null,
+          "qmax": null
+        }
+      ]
     }
   },
   "overflow": {
     "RR-PING": false,
-    "RR-WANG": true,
+    "RR-WANG": false,
     "RR-YOM": true,
     "RR-NAN": false,
     "RR-SAKAEKRANG": true,
-    "RR-CP-UPPER": true,
-    "RR-CP-L1": true,
+    "RR-CP-UPPER": false,
+    "RR-CP-L1": false,
     "RR-CP-L2": true,
     "RR-CP-L3": true,
     "RR-PASAK": true,

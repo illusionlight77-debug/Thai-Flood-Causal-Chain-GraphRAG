@@ -234,3 +234,45 @@ numbers are unchanged (gate frozen).
 - GISTDA **did not publish per-province rai for 2025** (`flood_area_2025.xlsx` absent; source metadata
   says so) → 2025 gold stays **list-based** with the documented base-rate caveat. Both need a
   user-supplied source (GISTDA tambon Excel / RID gauge PDF) to unblock.
+
+### 2026-09-06 (ต่อ) — 🔴 ค้นพบสำคัญ: ตัวเลขเดิมเป็น artifact ของ gate ที่ over-flag → แก้ให้ซื่อสัตย์
+
+**เจออะไร:** ตอนจะปรับปรุง Plan A พบว่า gate ที่ commit อยู่ (`river_reach_overbank_*` per-reach จาก commit
+90f414a) **ไม่ reproduce ตัวเลข A ที่รายงานไว้** (README 0.909/0.903/0.800). `eval_results_*.json` (commit ก่อน
+เปลี่ยน gate) ยืนยัน causal F1 2566 = 0.9032 เป็นของ **sub-basin gate เก่า** ส่วนไฟล์ gate เป็น per-reach ใหม่
+→ session ก่อนเปลี่ยน gate แต่**ไม่ได้ regenerate ui_data/eval/README** → repo ไม่ตรงกันเงียบ ๆ (ผิดกติกา
+"รายงานเลขเก่า+ใหม่คู่กัน"). รันใหม่จริงจึงเจอ.
+
+**สาเหตุจริง (ตรวจเชิงฟิสิกส์):** เจ้าพระยาสายหลักที่ C.2 นครสวรรค์ **ไม่เคยเกินตลิ่ง (พีค 23.5–23.8 < ตลิ่ง
+25.70 ม.) เลยปี 2564–2568** — แต่จังหวัดสายหลักอยู่ใน gold → **ท่วมจาก local/สาขา/ฝนสะสมยาว ไม่ใช่แม่น้ำ
+หลักล้น**. sub-basin gate เก่า flag "สถานีย่อยไหนล้น = ทั้งลุ่มท่วม" (over-flag ด้วยสถานีเล็ก) → recall สูงเทียม
+→ F1 0.9. per-reach gate ที่ snap สถานีถูก (นครสวรรค์=C.2, อยุธยา=C.35/36/67, ใช้ p95 กัน spike) = ซื่อสัตย์กว่า.
+
+**แก้แล้ว (2026-09-06):**
+1. `thaiwater_gauge.py` — REACH_GAUGES: snap สถานีเข้ากับ reach ตามที่ตั้งจริง (เลิกใช้ C.13 เหมาทั้งสายหลัก),
+   กติกา "reach ล้น = สถานีบน reach นั้นสถานีใดสถานีหนึ่ง p95-stage > min_bank", ใช้ p95 กัน sensor spike (C.3 เด้ง).
+2. โมเดล A = **2 สัญญาณ de-circularized**: reach-overflow **∪ local-rain** (ERA5 T10) — ฝัง `Province.local_rain_over`
+   + แก้ `CAUSAL_FLOOD_PREDICT` gate. local-rain จับจังหวัดที่ท่วมจากฝนในพื้นที่.
+3. `build_ui_data.py` — เพิ่ม **MCC + balanced-accuracy** (เมตริกที่เหมาะกับ imbalanced; F1 ถูก game ด้วยการ
+   เดาท่วมหมดเมื่อ base-rate สูง — Chicco & Jurman 2020).
+
+**ผลซื่อสัตย์ (รายงานเก่า→ใหม่ คู่กัน):**
+
+Plan A — causal (reach+local-rain), pooled 5 เหตุการณ์:
+| ระบบ | F1 (เดิม→ใหม่) | MCC | Specificity | Traceability |
+|---|---|---|---|---|
+| causal | 0.89(gate เก่า) → **0.548** | **+0.197** | **0.806** | ~0.90 |
+| entity | — | 0.000 | 0.000 | 0 |
+| vector | — | −0.497 | 0.516 | 0 |
+per-event MCC: 2564 +0.39 · 2565 −0.03 · 2566 +0.28 · 2567 −0.20 · 2568 +0.48 (แปรผัน, 2567 ติดลบ = ซื่อสัตย์)
+
+Plan B — warning (บน gate ซื่อสัตย์): POD 0.405 · FAR 0.15 · **CSI 0.378** (เดิม 0.802 = gate over-flag) ·
+BSS +0.004 (ไม่ significant) · FN 50/84 (ChaoPhraya 19, Nan 9, ThaChin 8, Pasak 8, Ping 5).
+
+**บทเรียน/finding เชิงวิชาการ (มีค่าจริง):**
+- **F1/CSI หลอกเมื่อ base-rate ท่วมสูง** — "เดาท่วมหมด" (entity) ชนะ F1 (0.844) แต่ **MCC=0 = ไม่มี skill**.
+  causal เป็น **ระบบเดียวที่ MCC>0** (+0.197) → เมตริกที่ถูกต้องคือ MCC/Specificity/Traceability ไม่ใช่ F1.
+- **ระบบ causal/เกจที่ de-circularized จริง = specificity สูง + traceable แต่ recall ต่ำ** เพราะน้ำท่วมดาวเทียม
+  ≥10k ไร่ ส่วนใหญ่ไม่ได้มาจากกลไกที่เกจสายหลัก/ฝนสุดขั้วจับได้ → **ขีดจำกัดจริงของ gauge-based causal
+  flood attribution** (finding ที่รายงานได้).
+- claim หลักของ A เปลี่ยนจาก "ชนะ F1" → **"ระบบเดียวที่ traceable + ปฏิเสธจังหวัดไม่ท่วมได้ + มี skill (MCC) เหนือ chance"**.

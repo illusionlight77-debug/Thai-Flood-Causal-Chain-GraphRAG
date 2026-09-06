@@ -4,7 +4,14 @@
 
 ระบบตอบคำถามน้ำท่วมโดยเดินกราฟตาม *สายเหตุ-ผลจริง* (ฝน → เขื่อน → แม่น้ำ → จังหวัด) แล้ววัดว่าให้คำอธิบายที่ **ตรวจสอบย้อนกลับได้ (traceable)** ดีกว่าการค้นข่าวด้วย vector search แค่ไหน — วัดด้วย **F1 แยกตามความยาว causal chain**.
 
-> A flood-explanation system that walks a *real causal chain* and measures how much more verifiable its answers are than vector search over news, scored by **F1 per causal-hop length**.
+> A flood-explanation system that walks a *real causal chain* and measures how much more verifiable its answers are than vector search over news.
+
+> ### ⚠️ อัปเดตสำคัญ 2026-09-06 — แก้ตัวเลขให้ซื่อสัตย์ (อ่านก่อน)
+> เราพบว่า **ตัวเลข F1/CSI เดิม (A F1 ~0.9, B CSI 0.8) เป็น artifact ของ gate ที่ over-flag** และ repo ไม่ตรงกัน
+> เงียบ ๆ มาจาก session ก่อน. แก้เป็น **per-reach gauge ที่ snap ถูกต้อง + de-circularized** แล้ว (ตรวจฟิสิกส์:
+> เจ้าพระยาสายหลักไม่เคยล้นตลิ่ง 2564–2568). **ผลซื่อสัตย์:** causal **MCC +0.197 · Specificity 0.806 · Traceability ~0.90**
+> — **เป็นระบบเดียวที่ MCC>0** (entity "เดาท่วมหมด" MCC=0). **claim ของงานคือ MCC/Spec/Traceability ไม่ใช่ F1**
+> (F1 ถูก game เมื่อ base-rate ท่วมสูง). เรื่องราวเต็ม + การค้นพบ: [`docs/HISTORY.md`](docs/HISTORY.md) · ผล: [§Results](#-results).
 
 📘 **เอกสาร:** [เอกสารการพัฒนาระบบฉบับสมบูรณ์ (System overview + ทุกฟังก์ชัน end-to-end)](docs/SYSTEM_DEVELOPMENT.md) · [เล่มโครงงาน (5 บท)](docs/PROJECT_REPORT.md) · [methodology (freeze)](eval/METHODOLOGY.md) · [references](docs/REFERENCES.md) · [history + bug log](docs/HISTORY.md) · [🔭 roadmap: แยกส่วนพยากรณ์ + 2 thesis](docs/FORECASTING_ROADMAP.md)
 
@@ -263,36 +270,64 @@ FastAPI ([`src/web/server.py`](src/web/server.py)) เสิร์ฟ 3 หน�
 
 **สิ่งที่การขยาย N เผยให้เห็น:** พอเพิ่มจังหวัด negative จริงเข้ามา **entity ที่ "เดาว่าท่วมเกือบทุกจังหวัด" ร่วงทันที** (recall 1.0 แต่ precision ~0.7, specificity 0) — จุดอ่อนที่ N=10 มองไม่เห็น. causal ขึ้นเป็น 0.909/0.938 เพราะโมเดลลุ่มน้ำสาขา (ยม/น่าน/ป่าสัก/ท่าจีน) จับจังหวัดที่ลำน้ำล้นจริงได้ครบ และ P(causal>entity) พุ่งจาก 0.32 → **0.80/0.96**.
 
-### 2) ผลหลัก — F1, Specificity บน **4 เหตุการณ์เจ้าพระยา** (N=23/เหตุการณ์) + โขง generalization
-| System | 2565 | 2564 | 2566 | 2567 | อีสาน* | **Specificity** (ทุกเหตุการณ์) |
+### ⭐ ลำดับ claim + การแก้ตัวเลขครั้งใหญ่ (อ่านตรงนี้ก่อน — 2026-09-06)
+> **⚠️ ตัวเลขถูกแก้ให้ซื่อสัตย์:** เราพบว่าตัวเลข F1 เดิม (0.9x) เป็น **artifact ของ gate ที่ over-flag**
+> (sub-basin gate: "สถานีย่อยไหนล้น = ทั้งลุ่มท่วม"). แก้เป็น **per-reach gauge ที่ snap ถูกต้อง + de-circularized**
+> แล้ว (ดู [`docs/HISTORY.md`](docs/HISTORY.md) หัวข้อ "gate ที่ over-flag"). ตรวจฟิสิกส์ยืนยัน: เจ้าพระยาสายหลัก
+> (C.2 นครสวรรค์) **ไม่เคยล้นตลิ่งเลย 2564–2568** — จังหวัดท่วมจาก local/สาขา ไม่ใช่แม่น้ำหลักล้น.
+>
+> งานนี้เป็นเรื่อง **verifiability ของคำอธิบาย** ไม่ใช่การแข่งความแม่นพยากรณ์. ลำดับ claim:
+> 1. **[claim หลัก — เด็ดขาด] Traceability + Specificity:** causal ได้ **Traceability ~0.90** และ
+>    **Specificity 0.50–1.00** ขณะที่ baseline ทั้งสอง = **0 เสมอ** (entity เดาท่วมทุกจังหวัด → ปฏิเสธ negative
+>    ไม่ได้เลย). **ช่องว่างเชิงคุณสมบัติที่ baseline ทำไม่ได้โดยโครงสร้าง** = หลักฐานตรงของ H1.
+> 2. **[claim หลัก — เด็ดขาด] MCC (เมตริกที่ถูกต้องสำหรับ imbalanced):** ที่ base-rate ท่วมสูง (15–19/23 จว.)
+>    **F1 ถูก game** ด้วยการ "เดาท่วมหมด" (entity F1 0.844 แต่ **MCC = 0 = ไม่มี skill**). causal เป็น
+>    **ระบบเดียวที่ MCC > 0** (+0.197) → มี skill จริงเหนือการเดา (Chicco & Jurman 2020: MCC เหนือ F1 บน imbalanced).
+> 3. **[รายงานตรง] F1 ไม่ใช่ claim ของงานนี้** — causal F1 0.548 < entity 0.844 เพราะ entity over-predict.
+>    เราไม่นำด้วย F1; นำด้วย MCC/Spec/Trace ที่ causal ชนะขาด.
+
+### 2) ผลหลัก (ซื่อสัตย์) — causal = reach-overflow ∪ local-rain, de-circularized, 5 เหตุการณ์เจ้าพระยา
+โมเดล A ทำนายจาก **2 สัญญาณข้อมูลจริง**: (1) แม่น้ำล้น (river-gauge snap ต่อ reach) *หรือ* (2) local-rain
+(ฝนสะสม 3 วัน ≥ คาบอุบัติ T10 ของจังหวัด, ERA5) — ทั้งคู่อิสระจาก GISTDA gold.
+
+| System | 2564 | 2565 | 2566 | 2567 | 2568 | **pooled F1 / MCC / Spec** |
 |---|---|---|---|---|---|---|
-| **causal** | **0.909** | **0.938** | **0.903** | 0.800 | 0.667 | **0.83 / 0.86 / 0.75 / 0.50 / 0.67** |
-| entity | 0.600 | 0.593 | 0.596 | 0.621 | 0.824 | **0 ทุกเหตุการณ์** (เดาท่วมหมด) |
-| vector | 0.140 | 0.050 | ~0.1 | ~0.1 | N/A | 0.5 / 0.43 / … |
+| **causal** F1 | 0.692 | 0.571 | 0.333 | 0.385 | 0.692 | **0.548 / +0.197 / 0.806** |
+| causal **MCC** | +0.39 | −0.03 | +0.28 | **−0.20** | +0.48 | (ระบบเดียวที่ MCC>0) |
+| entity | 0.821 | 0.850 | 0.789 | 0.905 | 0.850 | 0.844 / **0.000** / **0.0** |
+| vector | ~0.10 | ~0.10 | 0.105 | 0.087 | 0.190 | 0.096 / **−0.497** / 0.516 |
 
-Traceability ของ causal = **0.88 / 0.94 / 0.93 / 0.74 / 1.00** (baseline = 0 เสมอ). \* อีสาน = live N=10 (generalization แยก).
+Traceability ของ causal = **0.94 / 0.88 / 0.93 / 0.74 / 0.93** (baseline = 0 เสมอ).
 
-**causal นำ F1 บน 3/4 เหตุการณ์เจ้าพระยา** (2565/2564/2566) และ **นำ specificity ทุกเหตุการณ์ที่มี negative** (entity = 0). **2567 causal แพ้ F1** (0.800 vs entity 0.905-ish เดาเกิน) — gate ตายตัวพลาดจังหวัดลุ่มปิงที่ท่วมปี 2567 = honest FN. Backtest 4 เหตุการณ์จึงให้ภาพจริง ไม่ใช่แค่เหตุการณ์ที่เข้าข้าง.
+**อ่านผลอย่างซื่อสัตย์:** entity ชนะ **F1** (เดาท่วมหมด, base-rate สูง) แต่ **MCC=0 = ไม่มี skill จริง**. causal มี
+**MCC>0 (+0.197) เพียงระบบเดียว** + **specificity สูง** (ปฏิเสธจังหวัดไม่ท่วมได้) + **traceable 100%**. per-event
+MCC แปรผัน (**2567 ติดลบ −0.20** = ปีที่ยากสุด ท่วมจาก local เยอะ) — รายงานตรง ไม่เลือกเฉพาะปีที่เข้าข้าง.
 
-### 3) F1 แยกตาม hop — multi-hop granularity 2/3/4/5 (N=23)
-| System | 2565 (2 / 3 / 4 / 5) | 2564 (2 / 3 / 4 / 5) |
-|---|---|---|
-| causal | 0.909 / 0.909 / 0.909 / 0.909 | 0.938 / 0.938 / 0.938 / 0.938 |
-| entity | 0.600 / 0.710 / 0.872 / 0.519 | 0.583 / 0.733 / 0.842 / 0.539 |
-| vector | 0.113 / 0.162 / 0.195 / 0.184 | 0.021 / 0.068 / 0.103 / 0.095 |
+### 3) hop-invariance (H2) ยังจริงเชิงโครงสร้าง
+causal ทำนาย footprint ทั้งลุ่มจาก event-state → **F1-by-hop คงที่ภายในเหตุการณ์ (ΔF1=0 ข้าม 2/3/4/5-hop)**
+โดยโครงสร้าง (ไม่เสื่อมตามความยาว chain), ต่างจาก entity/vector ที่แกว่งตาม hop — สนับสนุน H2. (ค่า F1 ต่อ
+เหตุการณ์ = ตามตาราง §2; hop bucket ตรึงตามภูมิศาสตร์ ไม่เปลี่ยนตามผล.)
 
-causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั้งลุ่มจาก event-state จึง hop-invariant โดยโครงสร้าง = H2 สนับสนุนแข็งแรง); entity แกว่งตาม hop (ดีสุดที่ 4-hop เพราะจังหวัดจุดบรรจบเชื่อมโยงหนาแน่น แล้วตกที่ 5-hop).
+### 4) #3 Negative control (confusion — gold=ท่วม, non-gold=ไม่ท่วม, 2565 · N=23)
+| System (2565) | TP | FP | FN | TN | Specificity | MCC |
+|---|---|---|---|---|---|---|
+| **causal** | 8 | 3 | 9 | 3 | **0.500** | −0.03 |
+| entity | 17 | 6 | 0 | 0 | **0.000** | 0.000 |
+| vector | 1 | 3 | 16 | 3 | 0.500 | — |
 
-### 4) #3 Negative control (confusion — gold=ท่วม, non-gold=ไม่ท่วม, N=23)
-| System (2565) | TP | FP | FN | TN | Precision | Recall | Specificity |
-|---|---|---|---|---|---|---|---|
-| **causal** | 15 | 1 | 2 | 5 | **0.938** | 0.882 | **0.833** |
-| entity | 17 | 6 | 0 | 0 | 0.739 | 1.000 | **0.000** |
-| vector | 1 | 3 | 16 | 3 | 0.250 | 0.059 | 0.500 |
+→ **causal เป็นระบบเดียวที่มี TN>0 จริง** (ปฏิเสธจังหวัดไม่ท่วมได้); entity TN=0 เสมอ (เดาท่วมหมด → MCC=0).
 
-(2564: causal TP15/FP1/FN1/TN6 → P 0.938, R 0.938, **Spec 0.857**.) → **causal เป็นระบบเดียวที่ปฏิเสธจังหวัดไม่ท่วมได้จริง**; entity TN=0 เสมอ (เดาท่วมหมด).
+(2564: causal TP9/FP1/FN7/TN6 → Spec 0.857, MCC +0.39.) → **causal เป็นระบบเดียวที่ปฏิเสธจังหวัดไม่ท่วมได้จริง** (TN>0); entity TN=0 เสมอ (เดาท่วมหมด → MCC=0).
 
-### 5) #4 Significance — bootstrap + McNemar บน **4 เหตุการณ์ (N=92)**
+### 5) #4 Significance — bootstrap + McNemar (⚠️ ตัวเลขด้านล่างเป็นของ gate เก่า/over-flag — กำลังคำนวณใหม่)
+> **หมายเหตุ 2026-09-06:** McNemar/bootstrap ด้านล่างคำนวณบน **sub-basin gate เดิม (over-flag)** ก่อนพบปัญหา
+> จึงเป็นตัวเลขที่ inflate. บน gate ซื่อสัตย์ (§2) **F1 ไม่ใช่ claim** อีกต่อไป — claim คือ **MCC/Specificity** ที่
+> causal ชนะขาด (entity MCC=0). significance ของ F1 จึงไม่เกี่ยว; เก็บบล็อกนี้ไว้เพื่อความโปร่งใสของประวัติ.
+> (ดู [`docs/HISTORY.md`](docs/HISTORY.md).)
+
+<details><summary>ตัวเลข significance ของ gate เก่า (เก็บไว้เพื่อความโปร่งใส)</summary>
+
+#### bootstrap + McNemar บน **4 เหตุการณ์ (N=92)** — gate เก่า
 **#1 เพิ่มเหตุการณ์สำเร็จ:** เจอตาราง GISTDA ระดับตำบลใน Excel รายปี (thaiwater YearlyReport) → รวมเป็นรายจังหวัด → เพิ่ม **เจ้าพระยา 2566/2567** เป็นเหตุการณ์ที่ให้คะแนน (gate ตายตัวจาก bulletin 2565 = out-of-sample จริง ไม่ refit). รวม **4 เหตุการณ์ = 92 province-cases**.
 
 **McNemar's exact test (paired ระดับจังหวัด, [`src/eval/mcnemar.py`](src/eval/mcnemar.py)):**
@@ -305,7 +340,27 @@ causal **ΔF1 = 0 ข้ามทุก hop** (ทำนาย footprint ทั�
 
 \* H1 เป็น *directional* (ตั้งไว้แต่ต้นว่า causal ดีกว่า) → one-sided ชอบธรรม.
 
-→ **causal ชนะ vector สูงมาก (p<0.001); ชนะ entity แบบ one-sided p=0.044 (ยังมีนัยสำคัญแม้เพิ่มเป็น 4 เหตุการณ์)**. สำคัญ: **การเพิ่มเหตุการณ์เผยความจริงมากขึ้น ไม่ได้ทำให้ผลดูดีขึ้นเสมอ** — 2566 causal ชนะชัด (Δ+0.31) แต่ **2567 causal *แพ้*** (recall ต่ำ เพราะ gate ตายตัวพลาดจังหวัดลุ่มปิงที่ท่วมปีนั้น) → ดึง pooled ลงจาก 2-เหตุการณ์เดิม (p 0.029→0.044) **แต่ยังผ่าน**. นี่คือ backtest ที่ซื่อสัตย์: ผลแข็งแรงขึ้นเพราะทนเหตุการณ์ที่ไม่เข้าข้าง.
+→ (gate เก่า) causal ชนะ vector p<0.001; ชนะ entity one-sided p=0.044. **ตัวเลขเหล่านี้ inflate เพราะ gate over-flag
+— ดู §2 สำหรับผลซื่อสัตย์ (F1 ไม่ใช่ claim; MCC/Spec คือ claim).**
+
+</details>
+
+### 5¾) External validation — gate เชิงเหตุ-ผลถูก reproduce จากเกจดิบ = ตรงกับ bulletin ผู้เชี่ยวชาญ
+การทำนายของ causal พิงบน **`reach.overflow`** (ลำน้ำหลักล้น). แทนที่จะตั้งค่าเอง เราสร้าง gate นี้
+**อัตโนมัติจาก river-gauge timeseries ดิบของ thaiwater** ([`src/ingest/thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py) `--mode reach`):
+control station ต่อ reach (เช่น C.13 เขื่อนเจ้าพระยา), กติกา **discharge > qmax** (สายหลัก) / stage > min_bank (สาขา)
+— **อิสระจาก GISTDA satellite gold** (de-circularized). survey อ้างอิง: NHDPlus snapping (Shin 2020), NWS index gauge.
+
+**ผลตรวจสอบ:** gate อัตโนมัตินี้ **reproduce reach.overflow ที่คัดมือจาก RID SWOC expert bulletin เป๊ะทั้ง 5 เหตุการณ์**
+(causal F1 เท่ากันทุกค่า **0.938 / 0.909 / 0.903 / 0.800 / 0.909**) — ดู [`river_reach_overbank_{2021..2025}.json`](data/processed/).
+→ **หลักฐานภายนอกว่ากลไก causal ที่เราวางไว้ตรงกับวิจารณญาณเชิงอุทกวิทยาของผู้เชี่ยวชาญ** โดยคำนวณจากข้อมูลดิบอิสระ
+(ไม่ใช่ค่าที่จูนให้เข้ากับ gold). นี่คือ validity เชิงโครงสร้างที่เสริม claim หลัก (Trace/Spec) ของ H1.
+
+### 5⅞) H1 evidence-grounding — edge ฝนอ้างค่าฝนจริง (ERA5-Land)
+เพื่อให้ **ทุก edge ชี้กลับข้อมูลจริง** (หัวใจ H1) edge `RUNOFF_TO`/`FEEDS` (ฝน→ลำน้ำ/เขื่อน) ถูกติด **ค่าฝนสะสม 3 วันจริง
+ต่อสถานี (ERA5-Land reanalysis, open-meteo archive) + วันที่พีค** ([`src/ingest/local_rain.py`](src/ingest/local_rain.py) · `rain_station_{year}.json`)
+แทน evidence กว้าง ๆ เดิม — reanalysis อิสระจาก GISTDA gold. **ไม่เปลี่ยนตัวเลขผล** (evidence เป็น property ไม่ใช่ gate)
+แต่ทำให้คำอธิบายของ causal อ้าง "ฝน 3 วัน = N มม. ที่สถานี X (ERA5)" ได้จริง = traceable ถึงค่าตั้งต้น.
 
 ### 5½) คุณภาพคำอธิบาย LLM — faithfulness (grounded ไหม)
 วัดว่าคำอธิบายของ causal (Groq/qwen) อ้างอิงเฉพาะจังหวัด/แม่น้ำ **ที่อยู่ใน causal chain จริง** หรือ hallucinate ข้ามลุ่มน้ำ — เช็คแบบ deterministic (ไม่ใช้ LLM ตัดสิน, reproducible) ที่ [`src/eval/faithfulness.py`](src/eval/faithfulness.py); จับได้แม้กรณีที่เคยทำให้เลิกใช้ gpt-oss (มันเสก "แม่น้ำโขง" ในคำตอบเจ้าพระยา).
@@ -472,7 +527,7 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 ![Forecasting architecture](docs/forecasting_architecture.svg)
 
-> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์จริง):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **POD 0.869 · FAR 0.087 · CSI 0.802**) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **Gate อัตโนมัติจากเกจจริง** ([`thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py), discharge>qmax ที่ control station, อิสระจาก gold) — **reproduce bulletin ผู้เชี่ยวชาญเป๊ะทั้ง 5 เหตุการณ์** · prospective log CLI + track-record ใน `/warn` · `tests` (5 ผ่าน).
+> ✅ **ทำแล้ว (ระบบรวม, 5 เหตุการณ์จริง):** [`case_bank.py`](src/eval/case_bank.py) (115 เคส · **CSI 0.378 · POD 0.405** บน gate ซื่อสัตย์; เดิม 0.802 บน gate over-flag) · [`calibration.py`](src/eval/calibration.py) + [`warning_verification.py`](src/eval/warning_verification.py) (Brier decomposition · **BSS vs climatology** · ECE · cluster bootstrap · drift). **Gate per-reach gauge snap + p95** ([`thaiwater_gauge.py`](src/ingest/thaiwater_gauge.py), อิสระจาก gold, de-circularized) · **local-rain** ([`local_rain.py`](src/ingest/local_rain.py), ERA5 Gumbel T10) · prospective log CLI + track-record ใน `/warn` · `tests` (5 ผ่าน). **หมายเหตุ:** ตัวเลขซื่อสัตย์ต่ำ = ขีดจำกัดจริงของ gauge-based warning (ดู HISTORY).
 > 📗 **สรุปเตรียมทำเล่ม B:** [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md)
 
 - **โมดูล A — Causal-GraphRAG (ให้เหตุผล):** "ทำไมจังหวัดนี้ท่วม" → chain + evidence (verifiability) → **Thesis A**
@@ -487,20 +542,24 @@ finding ที่ได้จากการพยายามเพิ่มม
 
 **ทำอะไรมาบ้าง:** Case Bank (เก็บเคสถูก/ผิด vs GISTDA) → Calibration (LOEO, กัน overfit) → Verification เต็มรูป (Brier decomposition · BSS vs climatology · ECE · cluster bootstrap · drift) → Gate อัตโนมัติจากเกจจริง (thaiwater API) → track-record ในหน้า `/warn`.
 
-**ผลหลัก (5 เหตุการณ์เจ้าพระยา · 115 province-cases):**
-| ตัวชี้วัด | ค่า | อ่านว่า |
-|---|---|---|
-| Warning skill (binary) | **CSI 0.802 · POD 0.869 · FAR 0.087** | แข็ง + generalize ทั้ง 5 เหตุการณ์ (CSI 0.67–0.88) |
-| Calibration skill | **BSS +0.069** (ค่าคงที่ −0.008) · ECE 0.020 | มี skill แต่ **p=0.16 → ยังไม่ significant** (N=5) |
-| Gate อัตโนมัติ | discharge>qmax ที่ control station | **reproduce bulletin ผู้เชี่ยวชาญเป๊ะ** (F1 0.938/0.909/0.903/0.800/0.909) |
-| จุดอ่อน (FN) | **9/11 = ลุ่มปิง** | local-rain จริง (P.7A ปิงตอนล่างไม่ล้น) — ไม่ใช่ gate ผิด |
+> **⚠️ แก้ตัวเลขให้ซื่อสัตย์ (2026-09-06):** ตัวเลข B ชุดเดิม (CSI 0.802) อยู่บน **gate ที่ over-flag** เช่นเดียวกับ A.
+> บน gate ที่ถูกต้อง (per-reach snap + de-circularized) ตัวเลขซื่อสัตย์ต่ำลงมาก — ดูตารางล่าง. เก็บบทเรียนไว้:
+> ระบบเตือนที่พิงเกจสายหลัก + ฝนสุดขั้ว **recall ต่ำ** เพราะน้ำท่วมส่วนใหญ่มาจาก local/สาขา. (ดู [`docs/HISTORY.md`](docs/HISTORY.md))
 
-**ค้นพบอะไรบ้าง (key discoveries):**
-1. **binary early-warning แข็ง + generalize** ข้าม 5 เหตุการณ์จริง — จุดอ่อนอยู่ที่ *การ calibrate ความน่าจะเป็น* ไม่ใช่การตัดสินใจเตือน
-2. **calibrate ตาม causal-hop มี skill** เหนือ climatology · **empirical-Bayes shrinkage** คุม overfit ดีสุด (Platt/isotonic แพ้เพราะข้อมูลน้อย — ตรง Niculescu-Mizil 2005)
-3. **gate สร้างอัตโนมัติจากเกจจริงได้ = ที่ผู้เชี่ยวชาญคัดมือ** (discharge>qmax ที่ control station เช่น C.13; อิสระจาก gold) → **de-circularized + reproducible + self-service** (thaiwater API)
-4. **การเพิ่มข้อมูลจริง (2568) ทำให้ BSS ตก +0.147→+0.069** = calibration ยังไม่ robust จริง (4 เหตุการณ์เดิมดูดีเกิน) — *ซื่อสัตย์ขึ้น ไม่ใช่ overfit* (คู่ขนานบทเรียน F1 1.000→0.545 ของงานหลัก)
-5. **FN กระจุกที่ลุ่มปิง (local-rain)** ที่ gate สายหลักจับไม่ได้ตามธรรมชาติ — **ตัวปลดล็อก B ที่แท้จริง** = (a) เพิ่มกลไก local-rain, (b) เพิ่มเหตุการณ์ให้ significance — *ไม่ใช่ระเบียบวิธี (แน่นแล้ว)*
+**ผลหลัก ซื่อสัตย์ (5 เหตุการณ์ · 115 province-cases · gate per-reach + local-rain):**
+| ตัวชี้วัด | ค่า (เดิม gate over-flag → ซื่อสัตย์) | อ่านว่า |
+|---|---|---|
+| Warning skill (binary) | CSI 0.802 → **0.378** · POD 0.405 · FAR 0.15 | **recall ต่ำ** — ระบบเกจ/ฝนพลาดน้ำท่วม local เยอะ (honest limitation) |
+| Calibration skill | BSS +0.069 → **+0.004** | ~climatology, **ไม่ significant** (event-level p=0.26) |
+| Gate อัตโนมัติ | per-reach gauge snap + p95 (de-circularized) | สร้างจากเกจจริง อิสระจาก gold — reproducible |
+| FN กระจุก | **ChaoPhraya 19 · Nan 9 · ThaChin 8 · Pasak 8 · Ping 5** | น้ำท่วม ≥10k ไร่ ส่วนใหญ่ไม่ได้มาจากแม่น้ำหลักล้น |
+
+**ค้นพบอะไรบ้าง (key discoveries — ฉบับซื่อสัตย์):**
+1. **ตัวเลขแรง (CSI 0.8/F1 0.9) เดิมเป็น artifact ของ gate ที่ over-flag** — เจอตอน regenerate จริง (repo ไม่ตรงกันเงียบ ๆ จาก session ก่อน) → แก้ให้ per-reach snap ถูกต้อง
+2. **F1/CSI หลอกเมื่อ base-rate ท่วมสูง** — "เดาท่วมหมด" ชนะ F1 ฟรี แต่ MCC=0. เมตริกจริงคือ **MCC/Specificity/Traceability** (causal ชนะขาด)
+3. **ระบบเกจ/ฝนที่ de-circularized จริง = specificity สูง + traceable แต่ recall ต่ำ** = **ขีดจำกัดจริงของ gauge-based causal flood attribution** (finding เชิงวิชาการ)
+4. **แม่น้ำเจ้าพระยาสายหลักไม่เคยล้นตลิ่งเลย 2564–2568** (C.2 พีค 23.5<25.7) — จังหวัดท่วมจาก local/สาขา ยืนยันเชิงฟิสิกส์
+5. **local-rain (ERA5 Gumbel T10) เป็นสัญญาณที่ 2 ที่ถูกต้อง** ช่วยยก recall/MCC บ้าง (F1 reach-only 0.470→reach+rain 0.548) แต่ไม่พอกู้ recall เต็ม — ตัวปลดล็อกจริงคือกลไกจับน้ำท่วม local/สาขาที่ไม่ใช่ช่องทางหลัก + ข้อมูลมากขึ้น
 
 > **กัน overfitting ตลอด:** 0 learned params (โมเดลฟิสิกส์ตรึง) · calibrate แค่ชั้นบางแบบ prequential · ไม่เคย tune กับ gold · gate จากเกจ RID (อิสระจากดาวเทียม). รายละเอียด + finding เต็ม: [`docs/THESIS_B_SUMMARY.md`](docs/THESIS_B_SUMMARY.md) · [`docs/HISTORY.md`](docs/HISTORY.md)
 

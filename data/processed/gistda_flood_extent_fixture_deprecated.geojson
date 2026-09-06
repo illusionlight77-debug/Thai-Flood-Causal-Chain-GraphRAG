@@ -4,9 +4,9 @@
     {
       "type": "Feature",
       "properties": {
-        "event": "chao_phraya_2022",
+        "event": "chao_phraya_2025",
         "source": "DEPRECATED fixture (box, tuned gold)",
-        "layer_date": "2022-10-10"
+        "layer_date": "2025-11-11"
       },
       "geometry": {
         "type": "MultiPolygon",

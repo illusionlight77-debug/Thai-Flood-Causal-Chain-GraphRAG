@@ -6,7 +6,9 @@
     "active": true,
     "lat": 18.79,
     "lon": 98.98,
-    "basin": "Ping"
+    "basin": "Ping",
+    "rain_3day_peak_mm": 98.6,
+    "rain_peak_date": ""
   },
   {
     "label": "RainStation",
@@ -15,7 +17,9 @@
     "active": true,
     "lat": 18.29,
     "lon": 99.49,
-    "basin": "Wang"
+    "basin": "Wang",
+    "rain_3day_peak_mm": 85.7,
+    "rain_peak_date": ""
   },
   {
     "label": "RainStation",
@@ -24,7 +28,9 @@
     "active": true,
     "lat": 18.14,
     "lon": 100.14,
-    "basin": "Yom"
+    "basin": "Yom",
+    "rain_3day_peak_mm": null,
+    "rain_peak_date": null
   },
   {
     "label": "RainStation",
@@ -33,7 +39,9 @@
     "active": true,
     "lat": 19.19,
     "lon": 100.78,
-    "basin": "Nan"
+    "basin": "Nan",
+    "rain_3day_peak_mm": null,
+    "rain_peak_date": null
   },
   {
     "label": "RainStation",
@@ -42,7 +50,9 @@
     "active": true,
     "lat": 15.38,
     "lon": 99.87,
-    "basin": "SakaeKrang"
+    "basin": "SakaeKrang",
+    "rain_3day_peak_mm": 126.5,
+    "rain_peak_date": ""
   },
   {
     "label": "RainStation",
@@ -51,7 +61,9 @@
     "active": true,
     "lat": 16.42,
     "lon": 101.16,
-    "basin": "Pasak"
+    "basin": "Pasak",
+    "rain_3day_peak_mm": 116.7,
+    "rain_peak_date": ""
   },
   {
     "label": "Reservoir",
@@ -134,7 +146,7 @@
     "basin": "Nan",
     "order": 4,
     "level": 8.0,
-    "overflow": true,
+    "overflow": false,
     "subbasin": "Nan"
   },
   {
@@ -154,7 +166,7 @@
     "basin": "ChaoPhraya",
     "order": 6,
     "level": 8.0,
-    "overflow": true,
+    "overflow": false,
     "subbasin": "ChaoPhraya"
   },
   {
@@ -164,7 +176,7 @@
     "basin": "ChaoPhraya",
     "order": 7,
     "level": 8.0,
-    "overflow": true,
+    "overflow": false,
     "subbasin": "ChaoPhraya"
   },
   {
@@ -194,7 +206,7 @@
     "basin": "Pasak",
     "order": 5,
     "level": 8.0,
-    "overflow": true,
+    "overflow": false,
     "subbasin": "Pasak"
   },
   {
@@ -221,7 +233,10 @@
     "name_en": "Tak",
     "lat": 16.87,
     "lon": 99.13,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 154.6,
+    "local_rain_threshold_mm": 213.9
   },
   {
     "label": "Province",
@@ -230,7 +245,10 @@
     "name_en": "Kamphaeng Phet",
     "lat": 16.48,
     "lon": 99.53,
-    "protected": false
+    "protected": false,
+    "local_rain_over": true,
+    "local_rain_mm": 176.2,
+    "local_rain_threshold_mm": 140.2
   },
   {
     "label": "Province",
@@ -239,7 +257,10 @@
     "name_en": "Sukhothai",
     "lat": 17.01,
     "lon": 99.82,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 124.9,
+    "local_rain_threshold_mm": 146.0
   },
   {
     "label": "Province",
@@ -248,7 +269,10 @@
     "name_en": "Uttaradit",
     "lat": 17.62,
     "lon": 100.1,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 95.7,
+    "local_rain_threshold_mm": 157.3
   },
   {
     "label": "Province",
@@ -257,7 +281,10 @@
     "name_en": "Phitsanulok",
     "lat": 16.82,
     "lon": 100.27,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 72.5,
+    "local_rain_threshold_mm": 148.2
   },
   {
     "label": "Province",
@@ -266,7 +293,10 @@
     "name_en": "Phichit",
     "lat": 16.44,
     "lon": 100.35,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 92.8,
+    "local_rain_threshold_mm": 138.1
   },
   {
     "label": "Province",
@@ -275,7 +305,10 @@
     "name_en": "Nakhon Sawan",
     "lat": 15.7,
     "lon": 100.14,
-    "protected": false
+    "protected": false,
+    "local_rain_over": true,
+    "local_rain_mm": 127.2,
+    "local_rain_threshold_mm": 120.0
   },
   {
     "label": "Province",
@@ -284,7 +317,10 @@
     "name_en": "Uthai Thani",
     "lat": 15.38,
     "lon": 99.87,
-    "protected": false
+    "protected": false,
+    "local_rain_over": true,
+    "local_rain_mm": 126.5,
+    "local_rain_threshold_mm": 119.9
   },
   {
     "label": "Province",
@@ -293,7 +329,10 @@
     "name_en": "Chai Nat",
     "lat": 15.19,
     "lon": 100.13,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 114.0,
+    "local_rain_threshold_mm": 128.2
   },
   {
     "label": "Province",
@@ -302,7 +341,10 @@
     "name_en": "Sing Buri",
     "lat": 14.89,
     "lon": 100.4,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 92.6,
+    "local_rain_threshold_mm": 142.9
   },
   {
     "label": "Province",
@@ -311,7 +353,10 @@
     "name_en": "Ang Thong",
     "lat": 14.59,
     "lon": 100.46,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 124.2,
+    "local_rain_threshold_mm": 143.3
   },
   {
     "label": "Province",
@@ -320,7 +365,10 @@
     "name_en": "Ayutthaya",
     "lat": 14.35,
     "lon": 100.58,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 85.7,
+    "local_rain_threshold_mm": 134.6
   },
   {
     "label": "Province",
@@ -329,7 +377,10 @@
     "name_en": "Lopburi",
     "lat": 15.05,
     "lon": 100.65,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 143.1,
+    "local_rain_threshold_mm": 152.8
   },
   {
     "label": "Province",
@@ -338,7 +389,10 @@
     "name_en": "Saraburi",
     "lat": 14.53,
     "lon": 100.92,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 85.3,
+    "local_rain_threshold_mm": 137.9
   },
   {
     "label": "Province",
@@ -347,7 +401,10 @@
     "name_en": "Phetchabun",
     "lat": 16.42,
     "lon": 101.16,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 116.7,
+    "local_rain_threshold_mm": 163.2
   },
   {
     "label": "Province",
@@ -356,7 +413,10 @@
     "name_en": "Suphan Buri",
     "lat": 14.47,
     "lon": 100.12,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 90.2,
+    "local_rain_threshold_mm": 126.5
   },
   {
     "label": "Province",
@@ -365,7 +425,10 @@
     "name_en": "Nakhon Pathom",
     "lat": 13.82,
     "lon": 100.06,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 108.6,
+    "local_rain_threshold_mm": 127.1
   },
   {
     "label": "Province",
@@ -374,7 +437,10 @@
     "name_en": "Pathum Thani",
     "lat": 14.02,
     "lon": 100.53,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 80.7,
+    "local_rain_threshold_mm": 123.7
   },
   {
     "label": "Province",
@@ -383,7 +449,10 @@
     "name_en": "Nonthaburi",
     "lat": 13.86,
     "lon": 100.51,
-    "protected": true
+    "protected": true,
+    "local_rain_over": false,
+    "local_rain_mm": 103.7,
+    "local_rain_threshold_mm": 122.8
   },
   {
     "label": "Province",
@@ -392,7 +461,10 @@
     "name_en": "Bangkok",
     "lat": 13.75,
     "lon": 100.52,
-    "protected": true
+    "protected": true,
+    "local_rain_over": false,
+    "local_rain_mm": 92.0,
+    "local_rain_threshold_mm": 123.7
   },
   {
     "label": "Province",
@@ -401,7 +473,10 @@
     "name_en": "Chiang Mai",
     "lat": 18.79,
     "lon": 98.99,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 98.6,
+    "local_rain_threshold_mm": 123.3
   },
   {
     "label": "Province",
@@ -410,7 +485,10 @@
     "name_en": "Lampang",
     "lat": 18.29,
     "lon": 99.49,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 85.7,
+    "local_rain_threshold_mm": 134.4
   },
   {
     "label": "Province",
@@ -419,6 +497,9 @@
     "name_en": "Lamphun",
     "lat": 18.58,
     "lon": 99.01,
-    "protected": false
+    "protected": false,
+    "local_rain_over": false,
+    "local_rain_mm": 101.8,
+    "local_rain_threshold_mm": 130.8
   }
 ]

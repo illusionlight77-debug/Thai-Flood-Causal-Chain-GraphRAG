@@ -56,7 +56,9 @@ _EN = {"TAK": "Tak", "KAMPHAENGPHET": "Kamphaeng Phet", "SUKHOTHAI": "Sukhothai"
        "NONTHABURI": "Nonthaburi", "BANGKOK": "Bangkok", "CHIANGMAI": "Chiang Mai",
        "LAMPANG": "Lampang", "LAMPHUN": "Lamphun"}
 _PROTECTED = {"BANGKOK", "NONTHABURI"}
-LOCAL_RAIN_GATE = os.environ.get("LOCAL_RAIN_GATE", "1") != "0"  # เปิดโดย default; =0 เพื่อ baseline
+# local-rain ย้ายเข้า "โมเดล" แล้ว (fixtures Province.local_rain_over + CAUSAL_FLOOD_PREDICT) →
+# ui_data สะท้อนมันแล้ว. ปิด default ที่นี่กันนับซ้ำ; =1 เฉพาะกรณีอยากทดสอบ OR ซ้ำ (idempotent).
+LOCAL_RAIN_GATE = os.environ.get("LOCAL_RAIN_GATE", "0") != "0"
 
 
 def _local_rain_over(year: str) -> set[str]:

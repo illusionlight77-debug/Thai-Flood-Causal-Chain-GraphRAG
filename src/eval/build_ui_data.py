@@ -127,9 +127,17 @@ def build() -> Path:
         rec = tp / (tp + fn) if (tp + fn) else 0.0
         spec = tn / (tn + fp) if (tn + fp) else 0.0
         acc = (tp + tn) / len(allprov) if allprov else 0.0
+        f1_val = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+        # #A2 (2026-09-06): MCC + balanced-acc — เมตริกที่เหมาะกับ imbalanced (base-rate ท่วมสูง)
+        #   F1 ถูก game ด้วยการเดาท่วมหมด (entity); MCC ลงโทษการไม่ปฏิเสธ negative (Chicco & Jurman 2020)
+        denom = ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)) ** 0.5
+        mcc = (tp * tn - fp * fn) / denom if denom else 0.0
+        bal_acc = (rec + spec) / 2
         confusion[sysname] = {"tp": tp, "fp": fp, "fn": fn, "tn": tn,
                               "precision": round(prec, 3), "recall": round(rec, 3),
-                              "specificity": round(spec, 3), "accuracy": round(acc, 3)}
+                              "specificity": round(spec, 3), "accuracy": round(acc, 3),
+                              "f1": round(f1_val, 3), "mcc": round(mcc, 3),
+                              "balanced_acc": round(bal_acc, 3)}
 
     # #4 bootstrap significance — resample province universe (N เล็ก → CI กว้าง = ความจริง)
     significance = _bootstrap(allprov, goldset, predicted_by, n=3000)

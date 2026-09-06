@@ -6,8 +6,10 @@
     "lag_hours": 48,
     "evidence": {
       "station_id": "RS-PING",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th telemetry"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 98.6,
+      "peak_date": ""
     }
   },
   {
@@ -17,8 +19,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-PING",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 98.6,
+      "peak_date": ""
     }
   },
   {
@@ -28,8 +32,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-WANG",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 85.7,
+      "peak_date": ""
     }
   },
   {
@@ -39,8 +45,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-YOM",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": null,
+      "peak_date": null
     }
   },
   {
@@ -50,8 +58,10 @@
     "lag_hours": 48,
     "evidence": {
       "station_id": "RS-NAN",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th telemetry"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": null,
+      "peak_date": null
     }
   },
   {
@@ -61,8 +71,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-NAN",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": null,
+      "peak_date": null
     }
   },
   {
@@ -72,8 +84,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-SAKAEKRANG",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 126.5,
+      "peak_date": ""
     }
   },
   {
@@ -83,8 +97,10 @@
     "lag_hours": 48,
     "evidence": {
       "station_id": "RS-PASAK",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th telemetry"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 116.7,
+      "peak_date": ""
     }
   },
   {
@@ -94,8 +110,10 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RS-PASAK",
-      "timestamp": "2022-10-10",
-      "dataset": "D1/data.go.th rain→runoff"
+      "timestamp": "2025-11-11",
+      "dataset": "ERA5-Land daily precip 3-day peak (open-meteo archive)",
+      "rain_3day_peak_mm": 116.7,
+      "peak_date": ""
     }
   },
   {
@@ -105,7 +123,7 @@
     "spillway": 260.0,
     "evidence": {
       "station_id": "RES-BHUMIBOL",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
@@ -116,7 +134,7 @@
     "spillway": 162.0,
     "evidence": {
       "station_id": "RES-SIRIKIT",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
@@ -127,7 +145,7 @@
     "spillway": 42.0,
     "evidence": {
       "station_id": "RES-PASAK",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
@@ -138,7 +156,7 @@
     "spillway": 16.5,
     "evidence": {
       "station_id": "RES-CHAOPHRAYA",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D2/dam_specs.json (EGAT/RID)"
     }
   },
@@ -149,7 +167,7 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RR-WANG",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -160,7 +178,7 @@
     "lag_hours": 36,
     "evidence": {
       "station_id": "RR-PING",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -171,7 +189,7 @@
     "lag_hours": 36,
     "evidence": {
       "station_id": "RR-YOM",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -182,7 +200,7 @@
     "lag_hours": 36,
     "evidence": {
       "station_id": "RR-NAN",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -193,7 +211,7 @@
     "lag_hours": 12,
     "evidence": {
       "station_id": "CONF-PAKNAMPHO",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -204,7 +222,7 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RR-CP-UPPER",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -215,7 +233,7 @@
     "lag_hours": 24,
     "evidence": {
       "station_id": "RR-CP-L1",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -226,7 +244,7 @@
     "lag_hours": 48,
     "evidence": {
       "station_id": "RR-CP-L2",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -237,7 +255,7 @@
     "lag_hours": 96,
     "evidence": {
       "station_id": "RR-CP-UPPER",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -248,7 +266,7 @@
     "lag_hours": 18,
     "evidence": {
       "station_id": "RR-SAKAEKRANG",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   },
@@ -259,7 +277,7 @@
     "lag_hours": 18,
     "evidence": {
       "station_id": "RR-PASAK",
-      "timestamp": "2022-10-10",
+      "timestamp": "2025-11-11",
       "dataset": "D1/RID river network (flow direction)"
     }
   }

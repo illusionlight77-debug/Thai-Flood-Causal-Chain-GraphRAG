@@ -1,204 +1,222 @@
 {
   "note": "verify คำเตือนความน่าจะเป็น (Brier decomp + BSS + ECE) · calibrate LOEO (กัน overfit) · ไม่แตะกราฟ/gate",
-  "n_warned": 86,
-  "base_rate": 0.895,
+  "n_warned": 40,
+  "base_rate": 0.85,
   "models": {
     "const": {
-      "brier": 0.0955,
-      "ece": 0.0427,
+      "brier": 0.1352,
+      "ece": 0.088,
       "sharpness_sd": 0.0,
       "mean_prob": 0.938,
-      "reliability": 0.0018,
+      "reliability": 0.0077,
       "resolution": 0.0,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": -0.019,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.061,
       "reliability_bins": [
         {
           "bin": "0.85-0.95",
-          "n": 86,
+          "n": 40,
           "mean_pred": 0.938,
-          "obs_freq": 0.895
+          "obs_freq": 0.85
         }
       ]
     },
     "climatology": {
-      "brier": 0.0945,
-      "ece": 0.0005,
-      "sharpness_sd": 0.0099,
-      "mean_prob": 0.8959,
-      "reliability": 0.0023,
-      "resolution": 0.0015,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": -0.009,
+      "brier": 0.1369,
+      "ece": 0.1477,
+      "sharpness_sd": 0.0352,
+      "mean_prob": 0.853,
+      "reliability": 0.0242,
+      "resolution": 0.0147,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.074,
       "reliability_bins": [
         {
+          "bin": "0.70-0.85",
+          "n": 22,
+          "mean_pred": 0.823,
+          "obs_freq": 0.955
+        },
+        {
           "bin": "0.85-0.95",
-          "n": 86,
-          "mean_pred": 0.896,
-          "obs_freq": 0.895
+          "n": 18,
+          "mean_pred": 0.89,
+          "obs_freq": 0.722
         }
       ]
     },
     "by_hop": {
-      "brier": 0.0887,
-      "ece": 0.0242,
-      "sharpness_sd": 0.0899,
-      "mean_prob": 0.8963,
-      "reliability": 0.0077,
-      "resolution": 0.0127,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": 0.053,
+      "brier": 0.1335,
+      "ece": 0.023,
+      "sharpness_sd": 0.1804,
+      "mean_prob": 0.8387,
+      "reliability": 0.0621,
+      "resolution": 0.0561,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.047,
       "reliability_bins": [
         {
           "bin": "0.00-0.70",
-          "n": 3,
-          "mean_pred": 0.667,
-          "obs_freq": 1.0
+          "n": 6,
+          "mean_pred": 0.45,
+          "obs_freq": 0.5
         },
         {
           "bin": "0.70-0.85",
-          "n": 12,
-          "mean_pred": 0.75,
-          "obs_freq": 0.667
+          "n": 2,
+          "mean_pred": 0.806,
+          "obs_freq": 1.0
         },
         {
           "bin": "0.85-0.95",
-          "n": 46,
-          "mean_pred": 0.893,
-          "obs_freq": 0.891
+          "n": 27,
+          "mean_pred": 0.898,
+          "obs_freq": 0.889
         },
         {
           "bin": "0.95-1.01",
-          "n": 25,
+          "n": 5,
           "mean_pred": 1.0,
           "obs_freq": 1.0
         }
       ]
     },
     "by_hop_shrunk": {
-      "brier": 0.0889,
-      "ece": 0.0195,
-      "sharpness_sd": 0.0627,
-      "mean_prob": 0.8947,
-      "reliability": 0.0079,
-      "resolution": 0.0127,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": 0.051,
+      "brier": 0.127,
+      "ece": 0.0307,
+      "sharpness_sd": 0.0938,
+      "mean_prob": 0.8551,
+      "reliability": 0.0556,
+      "resolution": 0.0561,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": 0.004,
       "reliability_bins": [
         {
+          "bin": "0.00-0.70",
+          "n": 4,
+          "mean_pred": 0.622,
+          "obs_freq": 0.75
+        },
+        {
           "bin": "0.70-0.85",
-          "n": 15,
-          "mean_pred": 0.781,
-          "obs_freq": 0.733
+          "n": 11,
+          "mean_pred": 0.821,
+          "obs_freq": 0.818
         },
         {
           "bin": "0.85-0.95",
-          "n": 46,
-          "mean_pred": 0.893,
-          "obs_freq": 0.891
-        },
-        {
-          "bin": "0.95-1.01",
           "n": 25,
-          "mean_pred": 0.965,
-          "obs_freq": 1.0
+          "mean_pred": 0.908,
+          "obs_freq": 0.88
         }
       ]
     },
     "by_subbasin_shrunk": {
-      "brier": 0.0928,
-      "ece": 0.0251,
-      "sharpness_sd": 0.0629,
-      "mean_prob": 0.9038,
-      "reliability": 0.0363,
-      "resolution": 0.0372,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": 0.01,
+      "brier": 0.1278,
+      "ece": 0.0394,
+      "sharpness_sd": 0.1008,
+      "mean_prob": 0.8546,
+      "reliability": 0.0953,
+      "resolution": 0.095,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.002,
       "reliability_bins": [
         {
+          "bin": "0.00-0.70",
+          "n": 4,
+          "mean_pred": 0.622,
+          "obs_freq": 0.75
+        },
+        {
           "bin": "0.70-0.85",
-          "n": 13,
-          "mean_pred": 0.796,
-          "obs_freq": 0.846
+          "n": 10,
+          "mean_pred": 0.782,
+          "obs_freq": 0.8
         },
         {
           "bin": "0.85-0.95",
-          "n": 43,
-          "mean_pred": 0.894,
-          "obs_freq": 0.86
-        },
-        {
-          "bin": "0.95-1.01",
-          "n": 30,
-          "mean_pred": 0.964,
-          "obs_freq": 0.967
+          "n": 26,
+          "mean_pred": 0.918,
+          "obs_freq": 0.885
         }
       ]
     },
     "platt": {
-      "brier": 0.0952,
-      "ece": 0.0008,
-      "sharpness_sd": 0.0128,
-      "mean_prob": 0.8961,
-      "reliability": 0.0096,
-      "resolution": 0.0081,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": -0.016,
+      "brier": 0.1651,
+      "ece": 0.1051,
+      "sharpness_sd": 0.1546,
+      "mean_prob": 0.8258,
+      "reliability": 0.0937,
+      "resolution": 0.0561,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.295,
       "reliability_bins": [
         {
+          "bin": "0.00-0.70",
+          "n": 4,
+          "mean_pred": 0.395,
+          "obs_freq": 1.0
+        },
+        {
+          "bin": "0.70-0.85",
+          "n": 7,
+          "mean_pred": 0.803,
+          "obs_freq": 0.571
+        },
+        {
           "bin": "0.85-0.95",
-          "n": 86,
-          "mean_pred": 0.896,
-          "obs_freq": 0.895
+          "n": 29,
+          "mean_pred": 0.891,
+          "obs_freq": 0.897
         }
       ]
     },
     "isotonic": {
-      "brier": 0.0933,
-      "ece": 0.0006,
-      "sharpness_sd": 0.0391,
-      "mean_prob": 0.896,
-      "reliability": 0.0037,
-      "resolution": 0.0041,
-      "uncertainty": 0.0937,
-      "bss_vs_climatology": 0.005,
+      "brier": 0.1364,
+      "ece": 0.1479,
+      "sharpness_sd": 0.0338,
+      "mean_prob": 0.8458,
+      "reliability": 0.0237,
+      "resolution": 0.0147,
+      "uncertainty": 0.1275,
+      "bss_vs_climatology": -0.07,
       "reliability_bins": [
         {
-          "bin": "0.85-0.95",
-          "n": 76,
-          "mean_pred": 0.882,
-          "obs_freq": 0.882
+          "bin": "0.70-0.85",
+          "n": 22,
+          "mean_pred": 0.816,
+          "obs_freq": 0.955
         },
         {
-          "bin": "0.95-1.01",
-          "n": 10,
-          "mean_pred": 1.0,
-          "obs_freq": 1.0
+          "bin": "0.85-0.95",
+          "n": 18,
+          "mean_pred": 0.882,
+          "obs_freq": 0.722
         }
       ]
     }
   },
-  "best_by_bss": "by_hop",
+  "best_by_bss": "by_hop_shrunk",
   "recommended": "by_hop_shrunk",
   "recommended_reason": "empirical-Bayes shrinkage: BSS ≈ best แต่ ECE ต่ำกว่า + ไม่ over-confident → robust กว่าเมื่อ N น้อย",
   "best_ci_case_level": {
     "brier_ci95": [
-      0.0477,
-      0.1346
+      0.0587,
+      0.2107
     ],
     "bss_ci95": [
-      -0.145,
-      0.154
+      -0.352,
+      0.176
     ]
   },
   "best_ci_event_level": {
     "brier_ci95": [
-      0.0714,
-      0.1125
+      0.0342,
+      0.2099
     ],
     "bss_ci95": [
-      -0.155,
-      0.125
+      -0.544,
+      0.162
     ],
     "n_events": 5,
     "method": "event-level cluster bootstrap"
@@ -206,115 +224,116 @@
   "per_event_loeo": [
     {
       "event": "2021",
-      "n_warned": 16,
-      "brier": 0.0516,
-      "obs_rate": 0.938,
-      "bss": 0.119
+      "n_warned": 10,
+      "brier": 0.0742,
+      "obs_rate": 0.9,
+      "bss": 0.176
     },
     {
       "event": "2022",
-      "n_warned": 19,
-      "brier": 0.1277,
-      "obs_rate": 0.842,
-      "bss": 0.04
+      "n_warned": 11,
+      "brier": 0.2126,
+      "obs_rate": 0.727,
+      "bss": -0.072
     },
     {
       "event": "2023",
-      "n_warned": 16,
-      "brier": 0.0979,
-      "obs_rate": 0.875,
-      "bss": 0.105
+      "n_warned": 3,
+      "brier": 0.0135,
+      "obs_rate": 1.0,
+      "bss": null
     },
     {
       "event": "2024",
-      "n_warned": 18,
-      "brier": 0.0883,
-      "obs_rate": 0.889,
-      "bss": 0.106
+      "n_warned": 7,
+      "brier": 0.2007,
+      "obs_rate": 0.714,
+      "bss": 0.017
     },
     {
       "event": "2025",
-      "n_warned": 17,
-      "brier": 0.0719,
-      "obs_rate": 0.941,
-      "bss": -0.299
+      "n_warned": 9,
+      "brier": 0.0617,
+      "obs_rate": 1.0,
+      "bss": null
     }
   ],
   "skill_significance": {
     "per_event_bss": [
-      0.089,
-      0.027,
-      0.086,
-      0.088,
-      -0.184
+      0.176,
+      -0.072,
+      0.017
     ],
-    "mean_bss": 0.021,
-    "sd": 0.118,
+    "mean_bss": 0.04,
+    "sd": 0.126,
     "ci95_t": [
-      -0.125,
-      0.167
+      -0.272,
+      0.352
     ],
-    "boot_p_le0": 0.288,
-    "n_events": 5,
+    "boot_p_le0": 0.259,
+    "n_events": 3,
     "verdict": "ยังสรุป skill>0 ไม่ได้ (p≥0.05)"
   },
   "shrinkage_tuning": {
     "sweep": [
       {
         "m": 2.0,
-        "brier": 0.0886
+        "brier": 0.1273
       },
       {
         "m": 5.0,
-        "brier": 0.0889
+        "brier": 0.127
       },
       {
         "m": 10.0,
-        "brier": 0.0896
+        "brier": 0.1288
       },
       {
         "m": 20.0,
-        "brier": 0.0908
+        "brier": 0.1312
       }
     ],
-    "best_m": 2.0
+    "best_m": 5.0
   },
   "fn_analysis": {
-    "n_fn": 7,
+    "n_fn": 50,
     "by_subbasin": {
+      "ChaoPhraya": 19,
+      "Nan": 9,
+      "ThaChin": 8,
+      "Pasak": 8,
       "Ping": 5,
-      "Wang": 1,
-      "ChaoPhraya": 1
+      "Wang": 1
     },
     "note": "FN กระจุกที่ต้นน้ำ (Ping ฯลฯ) = จุดอ่อน gate ตายตัวไม่รับ local-rain — แก้ต้องมี gauge/ฝนต้นน้ำจริงต่อเหตุการณ์ (ไม่ tune กับ gold)"
   },
   "drift_csi_by_event": [
     {
       "event": "2021",
-      "csi": 0.882,
-      "alarm": false
+      "csi": 0.529,
+      "alarm": true
     },
     {
       "event": "2022",
-      "csi": 0.8,
-      "alarm": false
+      "csi": 0.4,
+      "alarm": true
     },
     {
       "event": "2023",
-      "csi": 0.824,
-      "alarm": false
+      "csi": 0.2,
+      "alarm": true
     },
     {
       "event": "2024",
-      "csi": 0.762,
-      "alarm": false
+      "csi": 0.238,
+      "alarm": true
     },
     {
       "event": "2025",
-      "csi": 0.889,
-      "alarm": false
+      "csi": 0.529,
+      "alarm": true
     }
   ],
   "ci_note": "รายงาน CI สองแบบ: case-level (แคบเกินจริงเพราะ province-cases correlated) และ event-level cluster bootstrap (ถูกต้องกว่า, กว้างกว่า) — ใช้ event-level เป็นหลัก",
-  "caveat": "ข้อมูลน้อย (86 คำเตือน / 5 เหตุการณ์) → CI ยังกว้าง; ทางแก้ที่ซื่อสัตย์คือ 'เพิ่มเหตุการณ์' (ผ่าน prospective log) ไม่ใช่จูน. isotonic เสี่ยง overfit → empirical/Platt ปลอดภัยกว่า (Niculescu-Mizil 2005)"
+  "caveat": "ข้อมูลน้อย (40 คำเตือน / 5 เหตุการณ์) → CI ยังกว้าง; ทางแก้ที่ซื่อสัตย์คือ 'เพิ่มเหตุการณ์' (ผ่าน prospective log) ไม่ใช่จูน. isotonic เสี่ยง overfit → empirical/Platt ปลอดภัยกว่า (Niculescu-Mizil 2005)"
 }

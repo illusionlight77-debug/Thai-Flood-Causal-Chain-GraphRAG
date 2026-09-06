@@ -156,6 +156,20 @@ def _load_reach_overflow() -> dict:
 
 REACH_OVERFLOW = _load_reach_overflow()
 
+# ── H1 evidence-grounding: ฝนจริงต่อสถานี (ERA5-Land) สำหรับ edge RUNOFF_TO/FEEDS ──
+#   ทำให้ evidence ของ edge ฝนชี้ค่าจริง (3-day peak mm + วันที่) แทน "D1 telemetry" กว้าง ๆ
+#   = เสริม H1 (traceability). *ไม่* เปลี่ยนการทำนาย (evidence เป็น property string ไม่ใช่ gate).
+_RAINSTA_PATH = _PROC / f"rain_station_{_YEAR}.json"
+
+
+def _load_rain_station() -> dict:
+    if _RAINSTA_PATH.exists():
+        return json.loads(_RAINSTA_PATH.read_text("utf-8")).get("stations", {})
+    return {}
+
+
+RAIN_STATION_OBS = _load_rain_station()
+
 # ── สถานีฝน (1 ต่อลุ่มน้ำต้นน้ำ) — active ทั้งหมด (ฝนกระจายทั้งลุ่ม = ข้อเท็จจริงของเหตุการณ์) ──
 RAIN_STATIONS = {  # rid -> (ชื่อ, lat, lon, basin)
     "RS-PING": ("สถานีฝนปิงตอนบน (Ping upper)", 18.79, 98.98, "Ping"),
@@ -183,6 +197,19 @@ def _load_gold() -> list[str]:
 
 
 GOLD_FLOODED = _load_gold()
+
+# ── local-rain gate (lever-1b): จังหวัดที่ท่วมจากฝนในพื้นที่ (ERA5 3-day peak ≥ Gumbel T10)
+#   = สัญญาณที่ 2 ของโมเดล (นอกจากแม่น้ำหลักล้น) — จับ FN ที่ gauge สายหลักมองไม่เห็น. de-circularized.
+_LOCALRAIN_PATH = _PROC / f"local_rain_{_YEAR}.json"
+
+
+def _load_local_rain() -> dict:
+    if _LOCALRAIN_PATH.exists():
+        return json.loads(_LOCALRAIN_PATH.read_text("utf-8")).get("local_rain", {})
+    return {}
+
+
+LOCAL_RAIN = _load_local_rain()
 
 # ── geometry จริง: GADM level-1 ────────────────────────────────────
 _GADM_PATH = _PROC.parent / "raw" / "gadm41_THA_1.json"
@@ -223,11 +250,25 @@ def _ev(station_id: str, dataset: str, timestamp: str = LAYER_DATE) -> dict:
     return {"station_id": station_id, "timestamp": timestamp, "dataset": dataset}
 
 
+def _rain_ev(rs: str, kind: str) -> dict:
+    """evidence ของ edge ฝน + ค่าฝนจริง 3 วัน (ERA5-Land) ถ้ามี — เสริม H1 traceability."""
+    ev = _ev(rs, f"D1/ERA5-Land rain→{kind}")
+    obs = RAIN_STATION_OBS.get(rs)
+    if obs:
+        ev["rain_3day_peak_mm"] = obs.get("rain_3day_peak_mm")
+        ev["peak_date"] = obs.get("peak_start")
+        ev["dataset"] = "ERA5-Land daily precip 3-day peak (open-meteo archive)"
+    return ev
+
+
 def build_nodes() -> list[dict]:
     nodes: list[dict] = []
     for rid, (name, lat, lon, basin) in RAIN_STATIONS.items():
+        obs = RAIN_STATION_OBS.get(rid, {})
         nodes.append({"label": "RainStation", "id": rid, "name": name,
-                      "active": RAIN_ACTIVE[rid], "lat": lat, "lon": lon, "basin": basin})
+                      "active": RAIN_ACTIVE[rid], "lat": lat, "lon": lon, "basin": basin,
+                      "rain_3day_peak_mm": obs.get("rain_3day_peak_mm"),
+                      "rain_peak_date": obs.get("peak_start")})
     for rid, (name, cap, lat, lon, basin) in _DAM_META.items():
         nodes.append({"label": "Reservoir", "id": rid, "name": name, "capacity_mcm": cap,
                       "spillway_level": RESERVOIR_SPILLWAY[rid], "active": RESERVOIR_ACTIVE[rid],
@@ -239,8 +280,12 @@ def build_nodes() -> list[dict]:
     cid, cname, clat, clon = CONFLUENCE
     nodes.append({"label": "Confluence", "id": cid, "name": cname, "lat": clat, "lon": clon})
     for pid, (lon, lat, th, en) in PROVINCES.items():
+        lr = LOCAL_RAIN.get(pid, {})
         nodes.append({"label": "Province", "id": pid, "name_th": th, "name_en": en,
-                      "lat": lat, "lon": lon, "protected": pid in PROTECTED_PROVINCES})
+                      "lat": lat, "lon": lon, "protected": pid in PROTECTED_PROVINCES,
+                      "local_rain_over": bool(lr.get("over", False)),
+                      "local_rain_mm": lr.get("event_max_3day_mm"),
+                      "local_rain_threshold_mm": lr.get("threshold_primary_mm")})
     return nodes
 
 
@@ -253,9 +298,9 @@ def build_causal_edges() -> list[dict]:
     for rs in RAIN_STATIONS:
         if rs in dam_of:
             edges.append({"type": "FEEDS", "src": rs, "dst": dam_of[rs], "lag_hours": 48,
-                          "evidence": _ev(rs, "D1/data.go.th telemetry")})
+                          "evidence": _rain_ev(rs, "reservoir")})
         edges.append({"type": "RUNOFF_TO", "src": rs, "dst": reach_of[rs], "lag_hours": 24,
-                      "evidence": _ev(rs, "D1/data.go.th rain→runoff")})
+                      "evidence": _rain_ev(rs, "runoff")})
     # OVERFLOWS_TO (เขื่อน → ลำน้ำ)
     dam_reach = {"RES-BHUMIBOL": "RR-PING", "RES-SIRIKIT": "RR-NAN",
                  "RES-PASAK": "RR-PASAK", "RES-CHAOPHRAYA": "RR-CP-L1"}
