@@ -116,6 +116,7 @@ Legend — **Facts** = what the paragraph must say · **Keep** = terms/numbers t
 - [ ] Backwater stated as hypothesis, not asserted.
 - [ ] Limitations declared incl. where we lose (entity beats F1; B not significant).
 - [ ] Every citation verified and appears in the reference list both ways.
-- [ ] Figure text ≥ 8 pt at final size: `pt = (font_px / 2600) × display_width_in × 72`. The figure uses ≥46 px fonts; at 6.9 in wide that is ≈ 8.8 pt ✔ (re-check after any resize).
+- [ ] Figure text ≥ 8 pt at final size: `pt = (font_px / 1200) × display_width_in × 72`. Fig. 1 is **vertical, single-column** (1200 × 1690 px placed at 240 pt = 3.33 in); its smallest font is 40 px → **exactly 8.0 pt** ✔ — this is at the limit, so **do not shrink the figure**; if you narrow the column, enlarge the fonts in `docs/fig_system_overview.png` first.
+- [ ] Tables follow IEEE **three-line** style (rule above header, below header, at bottom; **no vertical rules**), centered, 8 pt, header row repeats. Keep it that way if you edit them.
 - [ ] Acknowledgment approved by advisor; blind version keeps it; metadata cleared with the word processor's own inspector — never forge Producer/Creator.
 - [ ] Page count checked on the exported PDF.
