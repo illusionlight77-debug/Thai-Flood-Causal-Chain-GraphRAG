@@ -118,5 +118,8 @@ Legend — **Facts** = what the paragraph must say · **Keep** = terms/numbers t
 - [ ] Every citation verified and appears in the reference list both ways.
 - [ ] Figure text ≥ 8 pt at final size: `pt = (font_px / 1200) × display_width_in × 72`. Fig. 1 is **vertical, single-column** (1200 × 1690 px placed at 240 pt = 3.33 in); its smallest font is 40 px → **exactly 8.0 pt** ✔ — this is at the limit, so **do not shrink the figure**; if you narrow the column, enlarge the fonts in `docs/fig_system_overview.png` first.
 - [ ] Tables follow IEEE **three-line** style (rule above header, below header, at bottom; **no vertical rules**), centered, 8 pt, header row repeats. Keep it that way if you edit them.
+- [ ] 🔴 **Do NOT type “Fig. 1.” or “Table I.” into a caption.** The template's `figurecaption` and `tablehead` styles **auto-number**; typing the label yourself produces “Fig. 2. Fig. 1. …”. Type only the caption text. (This bug was found and fixed on 2026-09-07.)
+- [ ] 🔴 **Verify every reference before submission.** Entries marked “(verify authors)” in the reference list — [2] arXiv:2502.11371, [3] arXiv:2412.18004, [9] arXiv:1907.03555 — are recorded in `docs/REFERENCES.md` **without confirmed author lists**. Fill in the authors from the actual papers, or drop the citation. Never invent an author list.
+- [ ] Every citation [1]–[14] appears in the body text and every in-text number resolves to the right entry (checked 2026-09-07; re-check after any edit).
 - [ ] Acknowledgment approved by advisor; blind version keeps it; metadata cleared with the word processor's own inspector — never forge Producer/Creator.
 - [ ] Page count checked on the exported PDF.
