@@ -95,6 +95,18 @@ def run():
         baselines[name] = {"mcc": round(_mcc(*a), 3), "f1": round(_f1(*a[:3]), 3),
                            "tp": a[0], "fp": a[1], "fn": a[2], "tn": a[3]}
 
+    # (a2) warning-skill view of the same control (Plan B)
+    def _warn(a):
+        tp, fp, fn_, tn = a
+        return {"pod": round(tp / (tp + fn_), 3) if tp + fn_ else 0.0,
+                "far": round(fp / (tp + fp), 3) if tp + fp else 0.0,
+                "csi": round(tp / (tp + fp + fn_), 3) if tp + fp + fn_ else 0.0}
+    warning = {
+        "causal_gate": _warn(ev(causal, allp)),
+        "trivial_warn_all_except_protected": _warn(ev(lambda p, y: p not in PROT, allp)),
+        "trivial_warn_everything": _warn(ev(lambda p, y: True, allp)),
+    }
+
     tps = []
     for y in EVENTS:
         for pid in nonprot:
@@ -121,7 +133,8 @@ def run():
                              for y in EVENTS},
     }
     return {"note": "Trivial-baseline control + mechanism-agreement audit of the causal gate.",
-            "trivial_baselines": baselines, "mechanism_agreement": mech}
+            "trivial_baselines": baselines, "warning_skill_control": warning,
+            "mechanism_agreement": mech}
 
 
 def main():
@@ -130,6 +143,9 @@ def main():
     print("=== (a) trivial-baseline control ===")
     for k, v in res["trivial_baselines"].items():
         print(f"  {k:38s} MCC={v['mcc']:+.3f} F1={v['f1']:.3f}  tp{v['tp']}/fp{v['fp']}/fn{v['fn']}/tn{v['tn']}")
+    print("=== (a2) warning-skill control (Plan B) ===")
+    for k, v in res["warning_skill_control"].items():
+        print(f"  {k:38s} POD={v['pod']:.3f} FAR={v['far']:.3f} CSI={v['csi']:.3f}")
     m = res["mechanism_agreement"]
     print("=== (b) mechanism agreement ===")
     print(f"  TPs={m['n_true_positives']} | corroborated {m['corroborated_ge2_mechanisms']['pct']:.0%}"

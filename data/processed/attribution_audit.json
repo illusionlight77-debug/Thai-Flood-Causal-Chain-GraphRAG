@@ -42,6 +42,23 @@
       "tn": 0
     }
   },
+  "warning_skill_control": {
+    "causal_gate": {
+      "pod": 0.81,
+      "far": 0.218,
+      "csi": 0.66
+    },
+    "trivial_warn_all_except_protected": {
+      "pod": 0.988,
+      "far": 0.21,
+      "csi": 0.783
+    },
+    "trivial_warn_everything": {
+      "pod": 1.0,
+      "far": 0.27,
+      "csi": 0.73
+    }
+  },
   "mechanism_agreement": {
     "n_true_positives": 68,
     "corroborated_ge2_mechanisms": {
