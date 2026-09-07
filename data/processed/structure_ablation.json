@@ -1,0 +1,57 @@
+{
+  "n_permutations": 2000,
+  "A_fluvial_topology": {
+    "observed_mcc": 0.157,
+    "observed_f1": 0.68,
+    "observed_confusion": {
+      "tp": 50,
+      "fp": 13,
+      "fn": 34,
+      "tn": 18
+    },
+    "null_mean_mcc": 0.142,
+    "null_p95_mcc": 0.196,
+    "null_max_mcc": 0.275,
+    "p_value": 0.5462
+  },
+  "B_full_model": {
+    "observed_mcc": 0.203,
+    "observed_f1": 0.795,
+    "observed_confusion": {
+      "tp": 68,
+      "fp": 19,
+      "fn": 16,
+      "tn": 12
+    },
+    "null_mean_mcc": 0.173,
+    "null_p95_mcc": 0.221,
+    "null_max_mcc": 0.264,
+    "p_value": 0.2769
+  },
+  "C_pluvial_locality": {
+    "observed_mcc": 0.121,
+    "observed_f1": 0.629,
+    "observed_confusion": {
+      "tp": 44,
+      "fp": 12,
+      "fn": 40,
+      "tn": 19
+    },
+    "null_mean_mcc": 0.097,
+    "null_p95_mcc": 0.229,
+    "null_max_mcc": 0.357,
+    "p_value": 0.3978
+  },
+  "frozen_baselines": {
+    "entity-graphrag": {
+      "mcc": 0.0,
+      "f1": 0.844,
+      "specificity": 0.0
+    },
+    "vector-rag": {
+      "mcc": -0.497,
+      "f1": 0.096,
+      "specificity": 0.516
+    }
+  }
+}

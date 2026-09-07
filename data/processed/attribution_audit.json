@@ -1,0 +1,115 @@
+{
+  "note": "Trivial-baseline control + mechanism-agreement audit of the causal gate.",
+  "trivial_baselines": {
+    "causal_gate_23prov": {
+      "mcc": 0.203,
+      "f1": 0.795,
+      "tp": 68,
+      "fp": 19,
+      "fn": 16,
+      "tn": 12
+    },
+    "predict_all_minus_protected_23prov": {
+      "mcc": 0.438,
+      "f1": 0.878,
+      "tp": 83,
+      "fp": 22,
+      "fn": 1,
+      "tn": 9
+    },
+    "predict_all_23prov": {
+      "mcc": 0.0,
+      "f1": 0.844,
+      "tp": 84,
+      "fp": 31,
+      "fn": 0,
+      "tn": 0
+    },
+    "causal_gate_21nonprotected": {
+      "mcc": -0.048,
+      "f1": 0.8,
+      "tp": 68,
+      "fp": 19,
+      "fn": 15,
+      "tn": 3
+    },
+    "predict_all_21nonprotected": {
+      "mcc": 0.0,
+      "f1": 0.883,
+      "tp": 83,
+      "fp": 22,
+      "fn": 0,
+      "tn": 0
+    }
+  },
+  "mechanism_agreement": {
+    "n_true_positives": 68,
+    "corroborated_ge2_mechanisms": {
+      "n": 30,
+      "pct": 0.441
+    },
+    "single_mechanism": {
+      "n": 38,
+      "pct": 0.559
+    },
+    "only_nonspecific_30day": {
+      "n": 14,
+      "pct": 0.206,
+      "cases": [
+        "2021 PHITSANULOK (margin 0.04)",
+        "2021 SUKHOTHAI (margin 0.216)",
+        "2023 ANGTHONG (margin 0.038)",
+        "2023 AYUTTHAYA (margin 0.125)",
+        "2023 CHAINAT (margin 0.004)",
+        "2023 NAKHONPATHOM (margin 0.01)",
+        "2023 PHETCHABUN (margin 0.182)",
+        "2023 PHICHIT (margin 0.062)",
+        "2023 PHITSANULOK (margin 0.03)",
+        "2023 SARABURI (margin 0.228)",
+        "2023 SUKHOTHAI (margin 0.056)",
+        "2023 UTTARADIT (margin 0.147)",
+        "2024 KAMPHAENGPHET (margin 0.032)",
+        "2024 SARABURI (margin 0.079)"
+      ]
+    },
+    "single_and_thin_margin_lt20pct": {
+      "n": 31,
+      "pct": 0.456
+    },
+    "saraburi_by_year": {
+      "2021": {
+        "gold": true,
+        "mechanisms": {
+          "fluvial": 0.957,
+          "pluvial3": 0.115,
+          "pluvial30": 0.056
+        }
+      },
+      "2022": {
+        "gold": true,
+        "mechanisms": {
+          "fluvial": 1.072,
+          "pluvial30": 0.318
+        }
+      },
+      "2023": {
+        "gold": true,
+        "mechanisms": {
+          "pluvial30": 0.228
+        }
+      },
+      "2024": {
+        "gold": true,
+        "mechanisms": {
+          "pluvial30": 0.079
+        }
+      },
+      "2025": {
+        "gold": false,
+        "mechanisms": {
+          "fluvial": 0.424
+        }
+      }
+    }
+  }
+}
